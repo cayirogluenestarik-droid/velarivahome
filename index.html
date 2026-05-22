@@ -1894,31 +1894,28 @@ body {
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ══════════ FIREBASE YAPILANDIRMASI ══════════
   // BURAYA KENDİ FIREBASE PROJENİZİN BİLGİLERİNİ GİRİN:
   const firebaseConfig = {
-    apiKey: "BURAYA_API_KEY",
-    authDomain: "BURAYA_AUTH_DOMAIN",
-    projectId: "BURAYA_PROJECT_ID",
-    storageBucket: "BURAYA_STORAGE_BUCKET",
-    messagingSenderId: "BURAYA_MESSAGING_SENDER_ID",
-    appId: "BURAYA_APP_ID"
+    apiKey: "AIzaSyAOAOnNWmEinTBn1aQPTczEoBX5iXRJWqc",
+    authDomain: "velarivahome-7c9cd.firebaseapp.com",
+    projectId: "velarivahome-7c9cd",
+    storageBucket: "velarivahome-7c9cd.firebasestorage.app",
+    messagingSenderId: "882286954062",
+    appId: "1:882286954062:web:7ee75e038ab751fe18651f"
   };
 
   // Firebase başlatma
-  let app, db, storage;
+  let app, db;
   let firebaseReady = false;
 
   try {
     app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-    storage = getStorage(app);
     firebaseReady = true;
     window._firebaseDB = db;
-    window._firebaseStorage = storage;
     console.log('✅ Firebase bağlantısı başarılı');
     // Update status badge
     setTimeout(() => {
@@ -1933,9 +1930,25 @@ body {
     }, 800);
   }
 
-  // Firebase hazır olunca global fonksiyonları override et
+  // ── Görseli sıkıştır (canvas) ──
+  window.compressImage = function(base64, maxWidth = 800, quality = 0.75) {
+    return new Promise((resolve) => {
+      if (!base64 || !base64.startsWith('data:')) { resolve(base64); return; }
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve(base64);
+      img.src = base64;
+    });
+  };
+    // Firebase hazır olunca global fonksiyonları override et
   if (firebaseReady) {
-    // ── Ürünleri Firebase'den yükle ──
     window.loadProductsFromFirebase = async function() {
       try {
         const snap = await getDocs(collection(db, 'products'));
@@ -1950,33 +1963,29 @@ body {
       }
     };
 
-    // ── Ürün ekle (Firebase + localStorage) ──
+    // ── Ürün ekle (Firestore, Storage YOK — base64 sıkıştırılmış) ──
     window.addProductFirebase = async function(productData) {
       try {
-        // Görselleri Storage'a yükle
-        const uploadedImages = [];
-        for (let i = 0; i < (productData.images || []).length; i++) {
-          const imgData = productData.images[i];
-          if (imgData && imgData.startsWith('data:')) {
-            const storageRef = ref(storage, `products/${Date.now()}_${i}.jpg`);
-            await uploadString(storageRef, imgData, 'data_url');
-            const url = await getDownloadURL(storageRef);
-            uploadedImages.push(url);
-          } else if (imgData) {
-            uploadedImages.push(imgData); // zaten URL
-          }
+        showToast('Görseller sıkıştırılıyor...');
+        // Görselleri sıkıştır
+        const compressedImages = [];
+        for (const imgData of (productData.images || [])) {
+          const compressed = await window.compressImage(imgData, 900, 0.72);
+          compressedImages.push(compressed);
         }
+
         const finalProduct = {
           ...productData,
-          images: uploadedImages,
-          image: uploadedImages[0] || null,
+          images: compressedImages,
+          image: compressedImages[0] || null,
           _storedAt: new Date().toISOString()
         };
+        delete finalProduct._docId;
+
         const docRef = await addDoc(collection(db, 'products'), finalProduct);
         finalProduct._docId = docRef.id;
-        finalProduct.id = productData.id; // localStorage id'yi koru
 
-        // localStorage'ı güncelle
+        // localStorage güncelle
         const products = JSON.parse(localStorage.getItem('vh_products') || '[]');
         products.push(finalProduct);
         localStorage.setItem('vh_products', JSON.stringify(products));
@@ -1986,7 +1995,8 @@ body {
         window.renderAdminProducts && window.renderAdminProducts();
         return finalProduct;
       } catch(e) {
-        console.warn('Firebase kayıt hatası, localStorage\'a kaydedildi:', e);
+        console.warn('Firebase kayıt hatası:', e);
+        showToast('⚠️ Firebase hatası, yerel kaydedildi: ' + e.message);
         return null;
       }
     };
