@@ -296,7 +296,130 @@ body {
   background: var(--gold);
   color: var(--green-deep);
 }
-.hero-scroll {
+/* ══════════ HERO SEARCH ══════════ */
+.hero-search {
+  margin-top: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+.hero-search-input {
+  flex: 1;
+  padding: 14px 20px;
+  background: rgba(250,246,239,0.08);
+  border: 1px solid rgba(201,169,110,0.35);
+  border-right: none;
+  color: var(--cream);
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  outline: none;
+  transition: var(--transition);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.hero-search-input::placeholder {
+  color: rgba(232,213,181,0.4);
+  font-style: italic;
+}
+.hero-search-input:focus {
+  background: rgba(250,246,239,0.13);
+  border-color: var(--gold);
+}
+.hero-search-btn {
+  padding: 14px 22px;
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  color: var(--green-deep);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.hero-search-btn:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+}
+.hero-search-btn svg {
+  width: 17px; height: 17px;
+  stroke: var(--green-deep);
+  fill: none;
+  stroke-width: 2;
+}
+.hero-search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: rgba(28,46,29,0.97);
+  border: 1px solid rgba(201,169,110,0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 200;
+  max-height: 280px;
+  overflow-y: auto;
+  display: none;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.hero-search-results.open { display: block; }
+.hero-search-results::-webkit-scrollbar { width: 4px; }
+.hero-search-results::-webkit-scrollbar-thumb { background: var(--gold); }
+.hero-search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(201,169,110,0.08);
+  transition: background 0.2s ease;
+}
+.hero-search-result-item:last-child { border-bottom: none; }
+.hero-search-result-item:hover { background: rgba(201,169,110,0.1); }
+.hero-search-result-img {
+  width: 44px; height: 44px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(45,74,46,0.5);
+}
+.hero-search-result-img-placeholder {
+  width: 44px; height: 44px;
+  flex-shrink: 0;
+  background: rgba(45,74,46,0.4);
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-search-result-img-placeholder svg {
+  width: 18px; height: 18px; opacity: 0.3; stroke: var(--cream); fill: none;
+}
+.hero-search-result-name {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  color: var(--cream-light);
+  letter-spacing: 0.5px;
+}
+.hero-search-result-cat {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-top: 2px;
+}
+.hero-search-no-result {
+  padding: 18px 16px;
+  font-size: 12px;
+  color: rgba(232,213,181,0.4);
+  letter-spacing: 1px;
+  font-style: italic;
+  text-align: center;
+}
+@media(max-width:600px) {
+  .hero-search { max-width: 100%; padding: 0 4px; margin-top: 28px; }
+}
   position: absolute;
   bottom: 40px; left: 50%;
   transform: translateX(-50%);
@@ -1649,6 +1772,16 @@ body {
     <div class="hero-divider"></div>
     <p class="hero-tagline" data-i18n="hero.tagline">Zarafet ve konforun buluştuğu yer</p>
     <a href="#urunler" class="hero-cta" data-i18n="hero.cta">Koleksiyonu Keşfet</a>
+    <div class="hero-search">
+      <input class="hero-search-input" id="heroSearchInput" type="text" placeholder="Ürün adı veya kategori ara..." autocomplete="off"
+        oninput="heroSearch(this.value)"
+        onkeydown="if(event.key==='Enter'){heroSearchGo();}"
+        onfocus="if(this.value.trim()) heroSearch(this.value)">
+      <button class="hero-search-btn" onclick="heroSearchGo()" aria-label="Ara">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      </button>
+      <div class="hero-search-results" id="heroSearchResults"></div>
+    </div>
   </div>
   <div class="hero-scroll">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
@@ -2407,6 +2540,76 @@ async function deleteProduct(id) {
 }
 
 // ══════════ RENDER PRODUCTS (Frontend) ══════════
+// ══════════ HERO SEARCH ══════════
+function heroSearch(val) {
+  const results = document.getElementById('heroSearchResults');
+  const q = val.trim().toLowerCase();
+  if (!q) { results.classList.remove('open'); return; }
+
+  const products = getData(STORAGE_KEYS.products);
+  const matched = products.filter(p => {
+    const name = (p.name || '') + ' ' + (p.name_en || '') + ' ' + (p.name_de || '');
+    return name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q);
+  }).slice(0, 6);
+
+  if (matched.length === 0) {
+    results.innerHTML = `<div class="hero-search-no-result">Sonuç bulunamadı.</div>`;
+  } else {
+    results.innerHTML = matched.map(p => {
+      const name = (currentLang === 'en' && p.name_en) ? p.name_en : (currentLang === 'de' && p.name_de) ? p.name_de : p.name;
+      return `<div class="hero-search-result-item" onclick="heroSearchSelect(${p.id})">
+        ${p.image
+          ? `<img class="hero-search-result-img" src="${p.image}" alt="${name}">`
+          : `<div class="hero-search-result-img-placeholder"><svg viewBox="0 0 24 24" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>`
+        }
+        <div>
+          <div class="hero-search-result-name">${name}</div>
+          <div class="hero-search-result-cat">${p.category}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  results.classList.add('open');
+}
+
+function heroSearchSelect(id) {
+  document.getElementById('heroSearchResults').classList.remove('open');
+  document.getElementById('heroSearchInput').value = '';
+  const section = document.getElementById('urunler');
+  const offset = 80;
+  const y = section.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({ top: y, behavior: 'smooth' });
+  setTimeout(() => openProductModal(id), 400);
+}
+
+function heroSearchGo() {
+  const q = document.getElementById('heroSearchInput').value.trim().toLowerCase();
+  if (!q) return;
+  document.getElementById('heroSearchResults').classList.remove('open');
+  document.getElementById('heroSearchInput').value = '';
+  const section = document.getElementById('urunler');
+  const offset = 80;
+  const y = section.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({ top: y, behavior: 'smooth' });
+  // Ürünleri filtrele ve ara
+  setTimeout(() => {
+    currentFilter = 'Tümü';
+    currentSearchQuery = q;
+    renderProducts();
+  }, 300);
+}
+
+let currentSearchQuery = '';
+
+// Dışarı tıklayınca arama sonuçlarını kapat
+document.addEventListener('click', function(e) {
+  const box = document.getElementById('heroSearchResults');
+  const input = document.getElementById('heroSearchInput');
+  if (box && input && !box.contains(e.target) && e.target !== input) {
+    box.classList.remove('open');
+  }
+});
+
 let currentFilter = 'Tümü';
 
 function renderProducts() {
@@ -2421,7 +2624,16 @@ function renderProducts() {
   filters.innerHTML = cats.map(c => `<button class="filter-btn${c===currentFilter?' active':''}" onclick="filterProducts('${c}')">${c}</button>`).join('');
 
   const isAll = currentFilter === allLabel;
-  const filtered = isAll ? products : products.filter(p => p.category === currentFilter);
+  let filtered = isAll ? products : products.filter(p => p.category === currentFilter);
+
+  // Arama sorgusu varsa isim/kategori üzerinden filtrele
+  if (currentSearchQuery) {
+    const q = currentSearchQuery;
+    filtered = filtered.filter(p => {
+      const name = (p.name || '') + ' ' + (p.name_en || '') + ' ' + (p.name_de || '');
+      return name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q);
+    });
+  }
 
   if (filtered.length === 0) {
     grid.innerHTML = `<div class="no-products">${t('products.empty')}</div>`;
@@ -2452,6 +2664,7 @@ function renderProducts() {
 
 function filterProducts(cat) {
   currentFilter = cat;
+  currentSearchQuery = '';
   renderProducts();
   document.getElementById('urunler').scrollIntoView({ behavior: 'smooth' });
 }
