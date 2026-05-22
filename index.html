@@ -1773,7 +1773,7 @@ body {
     <p class="hero-tagline" data-i18n="hero.tagline">Zarafet ve konforun buluştuğu yer</p>
     <a href="#urunler" class="hero-cta" data-i18n="hero.cta">Koleksiyonu Keşfet</a>
     <div class="hero-search">
-      <input class="hero-search-input" id="heroSearchInput" type="text" placeholder="Ürün adı veya kategori ara..." autocomplete="off"
+      <input class="hero-search-input" id="heroSearchInput" type="text" data-i18n-placeholder="search.placeholder" placeholder="Ürün adı veya kategori ara..." autocomplete="off"
         oninput="heroSearch(this.value)"
         onkeydown="if(event.key==='Enter'){heroSearchGo();}"
         onfocus="if(this.value.trim()) heroSearch(this.value)">
@@ -1792,36 +1792,36 @@ body {
 <section class="categories" id="kategoriler">
   <div class="container">
     <div class="categories-header">
-      <div class="section-label">Koleksiyonlar</div>
-      <h2 class="section-title">Kategoriler</h2>
+      <div class="section-label" data-i18n="cats.label">Koleksiyonlar</div>
+      <h2 class="section-title" data-i18n="cats.title">Kategoriler</h2>
     </div>
     <div class="cat-grid">
       <div class="cat-card" onclick="filterProducts('Koltuk Takımı')">
         <div class="cat-card-bg" style="background-image:url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80')"></div>
         <div class="cat-card-content">
-          <h3>Koltuk Takımları</h3>
-          <p>Konfor ve Şıklık</p>
+          <h3 data-i18n="cats.sofa">Koltuk Takımları</h3>
+          <p data-i18n="cats.sofa.sub">Konfor ve Şıklık</p>
         </div>
       </div>
       <div class="cat-card" onclick="filterProducts('Yatak Odası')">
         <div class="cat-card-bg" style="background-image:url('https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80')"></div>
         <div class="cat-card-content">
-          <h3>Yatak Odaları</h3>
-          <p>Huzurlu Uykular</p>
+          <h3 data-i18n="cats.bedroom">Yatak Odaları</h3>
+          <p data-i18n="cats.bedroom.sub">Huzurlu Uykular</p>
         </div>
       </div>
       <div class="cat-card" onclick="filterProducts('Yemek Odası')">
         <div class="cat-card-bg" style="background-image:url('https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80')"></div>
         <div class="cat-card-content">
-          <h3>Yemek Odaları</h3>
-          <p>Bir Arada Olmak</p>
+          <h3 data-i18n="cats.dining">Yemek Odaları</h3>
+          <p data-i18n="cats.dining.sub">Bir Arada Olmak</p>
         </div>
       </div>
       <div class="cat-card" onclick="filterProducts('TV Ünitesi')">
         <div class="cat-card-bg" style="background-image:url('https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80')"></div>
         <div class="cat-card-content">
-          <h3>TV Üniteleri</h3>
-          <p>Modern Çizgiler</p>
+          <h3 data-i18n="cats.tv">TV Üniteleri</h3>
+          <p data-i18n="cats.tv.sub">Modern Çizgiler</p>
         </div>
       </div>
     </div>
@@ -1896,13 +1896,13 @@ body {
     </div>
     <div class="contact-grid">
       <div class="contact-info">
-        <h3>İletişim Bilgileri</h3>
+        <h3 data-i18n="contact.info.title">İletişim Bilgileri</h3>
         <div class="contact-item">
           <div class="contact-icon">
             <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           </div>
           <div class="contact-item-text">
-            <h4>Adres</h4>
+            <h4 data-i18n="contact.address.label">Adres</h4>
             <p id="contactAddress">Bursa, Türkiye</p>
           </div>
         </div>
@@ -1911,7 +1911,7 @@ body {
             <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
           </div>
           <div class="contact-item-text">
-            <h4>Telefon</h4>
+            <h4 data-i18n="contact.phone.label">Telefon</h4>
             <p id="contactPhone">+90 (xxx) xxx xx xx</p>
           </div>
         </div>
@@ -1920,7 +1920,7 @@ body {
             <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
           </div>
           <div class="contact-item-text">
-            <h4>E-Posta</h4>
+            <h4 data-i18n="contact.email.label">E-Posta</h4>
             <p id="contactEmail">info@velarivahome.com</p>
           </div>
         </div>
@@ -1929,18 +1929,18 @@ body {
             <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
           </div>
           <div class="contact-item-text">
-            <h4>Sosyal Medya</h4>
+            <h4 data-i18n="contact.social.label">Sosyal Medya</h4>
             <p>@velarivahome</p>
           </div>
         </div>
       </div>
       <div class="contact-form">
-        <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--green-deep); margin-bottom:24px;">Mesaj Gönderin</h3>
-        <input type="text" placeholder="Adınız Soyadınız">
-        <input type="email" placeholder="E-Posta Adresiniz">
-        <input type="tel" placeholder="Telefon Numaranız">
-        <textarea placeholder="Mesajınız..."></textarea>
-        <button type="button" onclick="showToast('Mesajınız gönderildi!')">Gönder</button>
+        <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--green-deep); margin-bottom:24px;" data-i18n="contact.form.title">Mesaj Gönderin</h3>
+        <input type="text" data-i18n-placeholder="contact.form.name" placeholder="Adınız Soyadınız">
+        <input type="email" data-i18n-placeholder="contact.form.email" placeholder="E-Posta Adresiniz">
+        <input type="tel" data-i18n-placeholder="contact.form.phone" placeholder="Telefon Numaranız">
+        <textarea data-i18n-placeholder="contact.form.message" placeholder="Mesajınız..."></textarea>
+        <button type="button" data-i18n="contact.form.send" onclick="showToast(t('contact.form.sent'))">Gönder</button>
       </div>
     </div>
   </div>
@@ -1952,24 +1952,24 @@ body {
     <div class="footer-top">
       <div class="footer-brand">
         <a href="#" class="nav-logo">VELARIVA<span>— HOME —</span></a>
-        <p>Zarafet ve konforun buluştuğu yer. Yaşam alanlarınıza değer katıyoruz.</p>
+        <p data-i18n="footer.brand.desc">Zarafet ve konforun buluştuğu yer. Yaşam alanlarınıza değer katıyoruz.</p>
       </div>
       <div class="footer-links">
-        <h4>Hızlı Erişim</h4>
-        <a href="#anasayfa">Ana Sayfa</a>
-        <a href="#urunler">Ürünler</a>
-        <a href="#katalog">Katalog</a>
-        <a href="#iletisim">İletişim</a>
+        <h4 data-i18n="footer.quicklinks">Hızlı Erişim</h4>
+        <a href="#anasayfa" data-i18n="nav.home">Ana Sayfa</a>
+        <a href="#urunler" data-i18n="nav.products">Ürünler</a>
+        <a href="#katalog" data-i18n="nav.catalog">Katalog</a>
+        <a href="#iletisim" data-i18n="nav.contact">İletişim</a>
       </div>
       <div class="footer-links">
-        <h4>Kategoriler</h4>
-        <a href="#" onclick="filterProducts('Koltuk Takımı')">Koltuk Takımları</a>
-        <a href="#" onclick="filterProducts('Yatak Odası')">Yatak Odaları</a>
-        <a href="#" onclick="filterProducts('Yemek Odası')">Yemek Odaları</a>
-        <a href="#" onclick="filterProducts('TV Ünitesi')">TV Üniteleri</a>
+        <h4 data-i18n="footer.categories">Kategoriler</h4>
+        <a href="#" onclick="filterProducts('Koltuk Takımı')" data-i18n="cats.sofa">Koltuk Takımları</a>
+        <a href="#" onclick="filterProducts('Yatak Odası')" data-i18n="cats.bedroom">Yatak Odaları</a>
+        <a href="#" onclick="filterProducts('Yemek Odası')" data-i18n="cats.dining">Yemek Odaları</a>
+        <a href="#" onclick="filterProducts('TV Ünitesi')" data-i18n="cats.tv">TV Üniteleri</a>
       </div>
     </div>
-    <div class="footer-bottom">
+    <div class="footer-bottom" data-i18n="footer.copyright">
       © 2026 Velariva Home — Tüm Hakları Saklıdır.
     </div>
   </div>
@@ -2553,7 +2553,7 @@ function heroSearch(val) {
   }).slice(0, 6);
 
   if (matched.length === 0) {
-    results.innerHTML = `<div class="hero-search-no-result">Sonuç bulunamadı.</div>`;
+    results.innerHTML = `<div class="hero-search-no-result">${t('search.no-result')}</div>`;
   } else {
     results.innerHTML = matched.map(p => {
       const name = (currentLang === 'en' && p.name_en) ? p.name_en : (currentLang === 'de' && p.name_de) ? p.name_de : p.name;
@@ -2981,7 +2981,23 @@ const DEFAULT_TEXTS = {
     'about.p2':'Modern tasarım anlayışımızla, evinizin her köşesine zarafet ve konfor katıyoruz. Müşteri memnuniyetini ön planda tutarak, size en uygun çözümleri sunuyoruz.',
     'about.stat1':'Mutlu Müşteri','about.stat2':'Ürün Çeşidi','about.stat3':'Yıllık Tecrübe',
     'contact.label':'Bize Ulaşın','contact.title':'İletişim',
-    'modal.whatsapp':'WhatsApp ile Bilgi Al','modal.no-desc':'Bu ürün hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.'
+    'modal.whatsapp':'WhatsApp ile Bilgi Al','modal.no-desc':'Bu ürün hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.',
+    'cats.label':'Koleksiyonlar','cats.title':'Kategoriler',
+    'cats.sofa':'Koltuk Takımları','cats.sofa.sub':'Konfor ve Şıklık',
+    'cats.bedroom':'Yatak Odaları','cats.bedroom.sub':'Huzurlu Uykular',
+    'cats.dining':'Yemek Odaları','cats.dining.sub':'Bir Arada Olmak',
+    'cats.tv':'TV Üniteleri','cats.tv.sub':'Modern Çizgiler',
+    'contact.info.title':'İletişim Bilgileri',
+    'contact.address.label':'Adres','contact.phone.label':'Telefon',
+    'contact.email.label':'E-Posta','contact.social.label':'Sosyal Medya',
+    'contact.form.title':'Mesaj Gönderin','contact.form.send':'Gönder',
+    'contact.form.sent':'Mesajınız gönderildi!',
+    'contact.form.name':'Adınız Soyadınız','contact.form.email':'E-Posta Adresiniz',
+    'contact.form.phone':'Telefon Numaranız','contact.form.message':'Mesajınız...',
+    'footer.brand.desc':'Zarafet ve konforun buluştuğu yer. Yaşam alanlarınıza değer katıyoruz.',
+    'footer.quicklinks':'Hızlı Erişim','footer.categories':'Kategoriler',
+    'footer.copyright':'© 2026 Velariva Home — Tüm Hakları Saklıdır.',
+    'search.placeholder':'Ürün adı veya kategori ara...','search.no-result':'Sonuç bulunamadı.'
   },
   en: {
     'nav.home':'Home','nav.categories':'Collections','nav.products':'Products',
@@ -2997,7 +3013,23 @@ const DEFAULT_TEXTS = {
     'about.p2':'With our modern design approach, we add elegance and comfort to every corner of your home. We prioritize customer satisfaction and offer you the most suitable solutions.',
     'about.stat1':'Happy Customers','about.stat2':'Product Varieties','about.stat3':'Years of Experience',
     'contact.label':'Reach Us','contact.title':'Contact',
-    'modal.whatsapp':'Get Info via WhatsApp','modal.no-desc':'Please contact us for detailed information about this product.'
+    'modal.whatsapp':'Get Info via WhatsApp','modal.no-desc':'Please contact us for detailed information about this product.',
+    'cats.label':'Collections','cats.title':'Categories',
+    'cats.sofa':'Sofa Sets','cats.sofa.sub':'Comfort & Style',
+    'cats.bedroom':'Bedrooms','cats.bedroom.sub':'Peaceful Nights',
+    'cats.dining':'Dining Rooms','cats.dining.sub':'Together at the Table',
+    'cats.tv':'TV Units','cats.tv.sub':'Modern Lines',
+    'contact.info.title':'Contact Information',
+    'contact.address.label':'Address','contact.phone.label':'Phone',
+    'contact.email.label':'E-Mail','contact.social.label':'Social Media',
+    'contact.form.title':'Send a Message','contact.form.send':'Send',
+    'contact.form.sent':'Your message has been sent!',
+    'contact.form.name':'Your Full Name','contact.form.email':'Your E-Mail Address',
+    'contact.form.phone':'Your Phone Number','contact.form.message':'Your message...',
+    'footer.brand.desc':'Where elegance meets comfort. We add value to your living spaces.',
+    'footer.quicklinks':'Quick Links','footer.categories':'Categories',
+    'footer.copyright':'© 2026 Velariva Home — All Rights Reserved.',
+    'search.placeholder':'Search by product name or category...','search.no-result':'No results found.'
   },
   de: {
     'nav.home':'Startseite','nav.categories':'Kollektionen','nav.products':'Produkte',
@@ -3013,7 +3045,23 @@ const DEFAULT_TEXTS = {
     'about.p2':'Mit unserem modernen Designansatz bringen wir Eleganz und Komfort in jeden Winkel Ihres Hauses. Wir stellen die Kundenzufriedenheit in den Vordergrund und bieten Ihnen die passenden Lösungen.',
     'about.stat1':'Zufriedene Kunden','about.stat2':'Produktvarianten','about.stat3':'Jahre Erfahrung',
     'contact.label':'Kontakt aufnehmen','contact.title':'Kontakt',
-    'modal.whatsapp':'Infos per WhatsApp','modal.no-desc':'Bitte kontaktieren Sie uns für detaillierte Informationen zu diesem Produkt.'
+    'modal.whatsapp':'Infos per WhatsApp','modal.no-desc':'Bitte kontaktieren Sie uns für detaillierte Informationen zu diesem Produkt.',
+    'cats.label':'Kollektionen','cats.title':'Kategorien',
+    'cats.sofa':'Sofagarnituren','cats.sofa.sub':'Komfort & Stil',
+    'cats.bedroom':'Schlafzimmer','cats.bedroom.sub':'Erholsamer Schlaf',
+    'cats.dining':'Esszimmer','cats.dining.sub':'Gemeinsam am Tisch',
+    'cats.tv':'TV-Einheiten','cats.tv.sub':'Moderne Linien',
+    'contact.info.title':'Kontaktinformationen',
+    'contact.address.label':'Adresse','contact.phone.label':'Telefon',
+    'contact.email.label':'E-Mail','contact.social.label':'Soziale Medien',
+    'contact.form.title':'Nachricht senden','contact.form.send':'Senden',
+    'contact.form.sent':'Ihre Nachricht wurde gesendet!',
+    'contact.form.name':'Ihr vollständiger Name','contact.form.email':'Ihre E-Mail-Adresse',
+    'contact.form.phone':'Ihre Telefonnummer','contact.form.message':'Ihre Nachricht...',
+    'footer.brand.desc':'Wo Eleganz auf Komfort trifft. Wir verleihen Ihren Wohnräumen Wert.',
+    'footer.quicklinks':'Schnellzugriff','footer.categories':'Kategorien',
+    'footer.copyright':'© 2026 Velariva Home — Alle Rechte vorbehalten.',
+    'search.placeholder':'Nach Produkt oder Kategorie suchen...','search.no-result':'Keine Ergebnisse gefunden.'
   }
 };
 
@@ -3047,6 +3095,10 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = t(key);
   });
 }
 
@@ -3089,7 +3141,21 @@ const LANG_LABELS = {
   'modal.whatsapp': 'Ürün Modal — WhatsApp Butonu',
   'modal.no-desc': 'Ürün Modal — Varsayılan Açıklama',
   'nav.home':'Navbar — Ana Sayfa','nav.categories':'Navbar — Kategoriler','nav.products':'Navbar — Ürünler',
-  'nav.catalog':'Navbar — Katalog','nav.about':'Navbar — Hakkımızda','nav.contact':'Navbar — İletişim'
+  'nav.catalog':'Navbar — Katalog','nav.about':'Navbar — Hakkımızda','nav.contact':'Navbar — İletişim',
+  'cats.label':'Kategoriler — Üst Etiket','cats.title':'Kategoriler — Başlık',
+  'cats.sofa':'Kategori — Koltuk Takımları','cats.sofa.sub':'Koltuk — Alt Başlık',
+  'cats.bedroom':'Kategori — Yatak Odaları','cats.bedroom.sub':'Yatak Odası — Alt Başlık',
+  'cats.dining':'Kategori — Yemek Odaları','cats.dining.sub':'Yemek Odası — Alt Başlık',
+  'cats.tv':'Kategori — TV Üniteleri','cats.tv.sub':'TV Ünitesi — Alt Başlık',
+  'contact.info.title':'İletişim — Bilgiler Başlığı',
+  'contact.address.label':'İletişim — Adres Etiketi','contact.phone.label':'İletişim — Telefon Etiketi',
+  'contact.email.label':'İletişim — E-Posta Etiketi','contact.social.label':'İletişim — Sosyal Medya Etiketi',
+  'contact.form.title':'İletişim Formu — Başlık','contact.form.send':'İletişim Formu — Gönder Butonu',
+  'contact.form.name':'İletişim Formu — Ad Placeholder','contact.form.email':'İletişim Formu — E-Posta Placeholder',
+  'contact.form.phone':'İletişim Formu — Telefon Placeholder','contact.form.message':'İletişim Formu — Mesaj Placeholder',
+  'footer.brand.desc':'Footer — Marka Açıklaması','footer.quicklinks':'Footer — Hızlı Erişim Başlığı',
+  'footer.categories':'Footer — Kategoriler Başlığı','footer.copyright':'Footer — Telif Hakkı',
+  'search.placeholder':'Arama — Placeholder','search.no-result':'Arama — Sonuç Bulunamadı'
 };
 
 function renderLangMgmt() {
