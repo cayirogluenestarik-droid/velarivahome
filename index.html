@@ -1181,17 +1181,92 @@ body {
 .product-modal-overlay.open { display: flex; }
 .product-modal {
   background: var(--white);
-  width: 1100px;
+  width: 1200px;
   max-width: 96vw;
   max-height: 92vh;
   display: grid;
-  grid-template-columns: 58% 42%;
+  grid-template-columns: 60% 40%;
   overflow: hidden;
   box-shadow: 0 30px 100px rgba(0,0,0,0.4);
   position: relative;
 }
 @media(max-width:768px) {
   .product-modal { grid-template-columns: 1fr; max-height: 95vh; overflow-y: auto; }
+}
+
+/* ══════════ LIGHTBOX (ZOOM) ══════════ */
+.lightbox-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 9000;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+.lightbox-overlay.open { display: flex; }
+.lightbox-overlay img {
+  max-width: 92vw;
+  max-height: 92vh;
+  object-fit: contain;
+  user-select: none;
+  box-shadow: 0 0 80px rgba(0,0,0,0.8);
+}
+.lightbox-close {
+  position: fixed;
+  top: 20px; right: 24px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  width: 44px; height: 44px;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  backdrop-filter: blur(6px);
+  z-index: 9001;
+}
+.lightbox-close:hover { background: #c0392b; border-color: #c0392b; }
+.lightbox-nav {
+  position: fixed;
+  top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  width: 52px; height: 52px;
+  cursor: pointer;
+  font-size: 28px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9001;
+  transition: var(--transition);
+  backdrop-filter: blur(6px);
+}
+.lightbox-nav:hover { background: var(--gold); border-color: var(--gold); color: var(--green-deep); }
+.lightbox-nav.prev { left: 20px; }
+.lightbox-nav.next { right: 20px; }
+.lightbox-counter {
+  position: fixed;
+  bottom: 24px; left: 50%; transform: translateX(-50%);
+  color: rgba(255,255,255,0.6);
+  font-size: 12px; letter-spacing: 2px;
+  background: rgba(0,0,0,0.5);
+  padding: 6px 16px;
+  backdrop-filter: blur(4px);
+}
+.zoom-hint {
+  position: absolute;
+  bottom: 52px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.55);
+  color: rgba(255,255,255,0.65);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  pointer-events: none;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  z-index: 3;
+  transition: opacity 0.4s ease;
 }
 .product-modal-close {
   position: absolute;
@@ -1214,9 +1289,10 @@ body {
   flex-direction: column;
   background: #1a1a1a;
   overflow: hidden;
-  min-height: 520px;
+  min-height: 600px;
+  height: 100%;
 }
-@media(max-width:768px) { .product-modal-img { min-height: 300px; } }
+@media(max-width:768px) { .product-modal-img { min-height: 320px; } }
 
 .modal-gallery {
   position: relative;
@@ -1224,13 +1300,18 @@ body {
   overflow: hidden;
   background: #111;
   display: flex; align-items: center; justify-content: center;
+  cursor: zoom-in;
+  min-height: 480px;
 }
 .modal-gallery-img {
   width: 100%; height: 100%;
   object-fit: contain;
   display: block;
-  transition: opacity 0.35s ease;
-  max-height: 500px;
+  transition: opacity 0.35s ease, transform 0.3s ease;
+  min-height: 480px;
+}
+.modal-gallery:hover .modal-gallery-img {
+  transform: scale(1.02);
 }
 .modal-gallery-placeholder {
   display: flex; align-items: center; justify-content: center;
@@ -1620,7 +1701,7 @@ body {
 <!-- ═══ ADMIN PANEL ═══ -->
 <div class="admin-panel" id="adminPanel">
   <div class="admin-topbar">
-    <h2>Velariva Home — Yönetim</h2>
+    <h2>Velariva Home — Yönetim <span id="firebaseStatus" style="display:inline-block;font-size:11px;font-family:'Jost',sans-serif;font-weight:400;letter-spacing:1.5px;padding:3px 10px;margin-left:12px;background:rgba(201,169,110,0.15);color:var(--gold);border:1px solid rgba(201,169,110,0.3);vertical-align:middle;">⏳ Firebase...</span></h2>
     <div class="admin-topbar-actions">
       <button onclick="window.location.hash=''; document.getElementById('adminPanel').classList.remove('open');" class="btn-close-admin">Siteye Dön</button>
     </div>
@@ -1801,8 +1882,145 @@ body {
   </div>
 </div>
 
-<!-- ═══ TOAST ═══ -->
-<div class="toast" id="toast"></div>
+<!-- ═══ LIGHTBOX ═══ -->
+<div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <button class="lightbox-nav prev" id="lbPrev" onclick.stop onclick="event.stopPropagation();changeLightboxImg(-1)">&#8249;</button>
+  <img id="lightboxImg" src="" alt="zoom">
+  <button class="lightbox-nav next" id="lbNext" onclick="event.stopPropagation();changeLightboxImg(1)">&#8250;</button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+  // ══════════ FIREBASE YAPILANDIRMASI ══════════
+  // BURAYA KENDİ FIREBASE PROJENİZİN BİLGİLERİNİ GİRİN:
+  const firebaseConfig = {
+    apiKey: "BURAYA_API_KEY",
+    authDomain: "BURAYA_AUTH_DOMAIN",
+    projectId: "BURAYA_PROJECT_ID",
+    storageBucket: "BURAYA_STORAGE_BUCKET",
+    messagingSenderId: "BURAYA_MESSAGING_SENDER_ID",
+    appId: "BURAYA_APP_ID"
+  };
+
+  // Firebase başlatma
+  let app, db, storage;
+  let firebaseReady = false;
+
+  try {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    storage = getStorage(app);
+    firebaseReady = true;
+    window._firebaseDB = db;
+    window._firebaseStorage = storage;
+    console.log('✅ Firebase bağlantısı başarılı');
+    // Update status badge
+    setTimeout(() => {
+      const badge = document.getElementById('firebaseStatus');
+      if (badge) { badge.textContent = '🟢 Firebase Bağlı'; badge.style.background = 'rgba(37,211,102,0.12)'; badge.style.color = '#25d366'; badge.style.borderColor = 'rgba(37,211,102,0.3)'; }
+    }, 800);
+  } catch(e) {
+    console.warn('⚠️ Firebase bağlantısı kurulamadı, localStorage kullanılıyor:', e.message);
+    setTimeout(() => {
+      const badge = document.getElementById('firebaseStatus');
+      if (badge) { badge.textContent = '🔴 Firebase Bağlı Değil (Yerel)'; badge.style.background = 'rgba(192,57,43,0.1)'; badge.style.color = '#e74c3c'; badge.style.borderColor = 'rgba(192,57,43,0.3)'; }
+    }, 800);
+  }
+
+  // Firebase hazır olunca global fonksiyonları override et
+  if (firebaseReady) {
+    // ── Ürünleri Firebase'den yükle ──
+    window.loadProductsFromFirebase = async function() {
+      try {
+        const snap = await getDocs(collection(db, 'products'));
+        const products = snap.docs.map(d => ({ ...d.data(), _docId: d.id }));
+        localStorage.setItem('vh_products', JSON.stringify(products));
+        window.renderProducts();
+        window.renderAdminProducts && window.renderAdminProducts();
+        return products;
+      } catch(e) {
+        console.warn('Firebase ürün yükleme hatası:', e);
+        return null;
+      }
+    };
+
+    // ── Ürün ekle (Firebase + localStorage) ──
+    window.addProductFirebase = async function(productData) {
+      try {
+        // Görselleri Storage'a yükle
+        const uploadedImages = [];
+        for (let i = 0; i < (productData.images || []).length; i++) {
+          const imgData = productData.images[i];
+          if (imgData && imgData.startsWith('data:')) {
+            const storageRef = ref(storage, `products/${Date.now()}_${i}.jpg`);
+            await uploadString(storageRef, imgData, 'data_url');
+            const url = await getDownloadURL(storageRef);
+            uploadedImages.push(url);
+          } else if (imgData) {
+            uploadedImages.push(imgData); // zaten URL
+          }
+        }
+        const finalProduct = {
+          ...productData,
+          images: uploadedImages,
+          image: uploadedImages[0] || null,
+          _storedAt: new Date().toISOString()
+        };
+        const docRef = await addDoc(collection(db, 'products'), finalProduct);
+        finalProduct._docId = docRef.id;
+        finalProduct.id = productData.id; // localStorage id'yi koru
+
+        // localStorage'ı güncelle
+        const products = JSON.parse(localStorage.getItem('vh_products') || '[]');
+        products.push(finalProduct);
+        localStorage.setItem('vh_products', JSON.stringify(products));
+
+        showToast('✅ Ürün Firebase\'e kaydedildi!');
+        window.renderProducts();
+        window.renderAdminProducts && window.renderAdminProducts();
+        return finalProduct;
+      } catch(e) {
+        console.warn('Firebase kayıt hatası, localStorage\'a kaydedildi:', e);
+        return null;
+      }
+    };
+
+    // ── Ürün sil (Firebase) ──
+    window.deleteProductFirebase = async function(id) {
+      try {
+        const products = JSON.parse(localStorage.getItem('vh_products') || '[]');
+        const product = products.find(p => p.id === id);
+        if (product && product._docId) {
+          await deleteDoc(doc(db, 'products', product._docId));
+        }
+        showToast('Ürün Firebase\'den silindi.');
+      } catch(e) {
+        console.warn('Firebase silme hatası:', e);
+      }
+    };
+
+    // Sayfa yüklenince Firebase'den verileri çek
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => window.loadProductsFromFirebase(), 500);
+    });
+
+    // Real-time listener — başka sekme/cihaz eklerse otomatik günceller
+    onSnapshot(collection(db, 'products'), (snap) => {
+      const products = snap.docs.map(d => ({ ...d.data(), _docId: d.id }));
+      localStorage.setItem('vh_products', JSON.stringify(products));
+      window.renderProducts && window.renderProducts();
+      window.renderAdminProducts && window.renderAdminProducts();
+    });
+  }
+
+  window.firebaseReady = firebaseReady;
+</script>
 
 <script>
 // ══════════ DATA STORE (localStorage) ══════════
@@ -1920,7 +2138,7 @@ function removeProductImg(index) {
 }
 
 // ══════════ ADD PRODUCT ══════════
-function addProduct() {
+async function addProduct() {
   const name_tr = document.getElementById('pName_tr').value.trim();
   const name_en = document.getElementById('pName_en').value.trim();
   const name_de = document.getElementById('pName_de').value.trim();
@@ -1938,16 +2156,34 @@ function addProduct() {
     return;
   }
 
-  const products = getData(STORAGE_KEYS.products);
-  products.push({
+  const productData = {
     id: Date.now(),
     name: name_tr, name_en, name_de,
     desc: desc_tr, desc_en, desc_de,
     category, price, oldPrice, badge, whatsapp,
     image: currentProductImgs[0] || null,
     images: currentProductImgs.length > 0 ? [...currentProductImgs] : []
-  });
-  setData(STORAGE_KEYS.products, products);
+  };
+
+  // Firebase varsa Firebase'e kaydet, yoksa localStorage
+  if (window.firebaseReady && window.addProductFirebase) {
+    showToast('Görseller yükleniyor...');
+    const result = await window.addProductFirebase(productData);
+    if (!result) {
+      // Firebase başarısız olduysa localStorage'a kaydet
+      const products = getData(STORAGE_KEYS.products);
+      products.push(productData);
+      setData(STORAGE_KEYS.products, products);
+      showToast('Ürün eklendi (yerel kayıt).');
+      renderProducts();
+    }
+  } else {
+    const products = getData(STORAGE_KEYS.products);
+    products.push(productData);
+    setData(STORAGE_KEYS.products, products);
+    showToast('Ürün başarıyla eklendi!');
+    renderProducts();
+  }
 
   // Reset form
   ['pName_tr','pName_en','pName_de','pDesc_tr','pDesc_en','pDesc_de','pPrice','pOldPrice','pWhatsapp'].forEach(id => {
@@ -1956,20 +2192,22 @@ function addProduct() {
   document.getElementById('pBadge').value = '';
   currentProductImgs = [];
   renderImgThumbs();
-
-  showToast('Ürün başarıyla eklendi!');
-  renderProducts();
+  renderAdminProducts();
 }
 
 // ══════════ DELETE PRODUCT ══════════
-function deleteProduct(id) {
+async function deleteProduct(id) {
   if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
   let products = getData(STORAGE_KEYS.products);
   products = products.filter(p => p.id !== id);
   setData(STORAGE_KEYS.products, products);
+  if (window.firebaseReady && window.deleteProductFirebase) {
+    await window.deleteProductFirebase(id);
+  } else {
+    showToast('Ürün silindi.');
+  }
   renderAdminProducts();
   renderProducts();
-  showToast('Ürün silindi.');
 }
 
 // ══════════ RENDER PRODUCTS (Frontend) ══════════
@@ -2067,13 +2305,14 @@ function renderModalGallery() {
   }
   const hasMany = modalGalleryImgs.length > 1;
   container.innerHTML = `
-    <div class="modal-gallery">
+    <div class="modal-gallery" onclick="openLightbox(${modalGalleryIdx})" title="Büyütmek için tıklayın">
       <img class="modal-gallery-img" src="${modalGalleryImgs[0]}" id="modalMainImg" alt="ürün görseli">
       ${hasMany ? `
-        <button class="gallery-nav prev" onclick="changeModalImg(-1)">&#8249;</button>
-        <button class="gallery-nav next" onclick="changeModalImg(1)">&#8250;</button>
+        <button class="gallery-nav prev" onclick="event.stopPropagation();changeModalImg(-1)">&#8249;</button>
+        <button class="gallery-nav next" onclick="event.stopPropagation();changeModalImg(1)">&#8250;</button>
         <div class="gallery-counter" id="galleryCounter">1 / ${modalGalleryImgs.length}</div>
       ` : ''}
+      <div class="zoom-hint">🔍 BÜYÜTMEK İÇİN TIKLAYIN</div>
     </div>
     ${hasMany ? `
     <div class="gallery-thumbs">
@@ -2081,6 +2320,53 @@ function renderModalGallery() {
     </div>` : ''}
   `;
 }
+
+// ══════════ LIGHTBOX (ZOOM) ══════════
+function openLightbox(startIdx) {
+  const overlay = document.getElementById('lightboxOverlay');
+  overlay.classList.add('open');
+  const lbImg = document.getElementById('lightboxImg');
+  lbImg.src = modalGalleryImgs[startIdx !== undefined ? startIdx : modalGalleryIdx];
+  document.getElementById('lightboxCounter').textContent = modalGalleryImgs.length > 1
+    ? (startIdx !== undefined ? startIdx + 1 : modalGalleryIdx + 1) + ' / ' + modalGalleryImgs.length
+    : '';
+  const hasMany = modalGalleryImgs.length > 1;
+  document.getElementById('lbPrev').style.display = hasMany ? 'flex' : 'none';
+  document.getElementById('lbNext').style.display = hasMany ? 'flex' : 'none';
+}
+
+function closeLightbox(e) {
+  if (!e || e.target === document.getElementById('lightboxOverlay') || e.currentTarget === document.querySelector('.lightbox-close')) {
+    document.getElementById('lightboxOverlay').classList.remove('open');
+  }
+}
+
+function changeLightboxImg(dir) {
+  modalGalleryIdx = (modalGalleryIdx + dir + modalGalleryImgs.length) % modalGalleryImgs.length;
+  const lbImg = document.getElementById('lightboxImg');
+  lbImg.style.opacity = '0';
+  setTimeout(() => {
+    lbImg.src = modalGalleryImgs[modalGalleryIdx];
+    lbImg.style.opacity = '1';
+  }, 120);
+  document.getElementById('lightboxCounter').textContent = (modalGalleryIdx + 1) + ' / ' + modalGalleryImgs.length;
+  updateModalImg();
+}
+
+// Klavye desteği (ESC / sol-sağ ok)
+document.addEventListener('keydown', function(e) {
+  const lb = document.getElementById('lightboxOverlay');
+  if (lb.classList.contains('open')) {
+    if (e.key === 'Escape') lb.classList.remove('open');
+    if (e.key === 'ArrowLeft') changeLightboxImg(-1);
+    if (e.key === 'ArrowRight') changeLightboxImg(1);
+  }
+  if (document.getElementById('productModal').classList.contains('open')) {
+    if (e.key === 'Escape') closeProductModal();
+    if (e.key === 'ArrowLeft' && modalGalleryImgs.length > 1) changeModalImg(-1);
+    if (e.key === 'ArrowRight' && modalGalleryImgs.length > 1) changeModalImg(1);
+  }
+});
 
 function changeModalImg(dir) {
   modalGalleryIdx = (modalGalleryIdx + dir + modalGalleryImgs.length) % modalGalleryImgs.length;
@@ -2403,6 +2689,11 @@ renderCatalogs();
 applyI18n();
 // Set active lang button on load
 document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === currentLang));
+
+// Expose globals for Firebase module
+window.renderProducts = renderProducts;
+window.renderAdminProducts = renderAdminProducts;
+window.showToast = showToast;
 
 // Smooth scroll fix for anchors
 document.querySelectorAll('a[href^="#"]').forEach(a => {
