@@ -2564,7 +2564,7 @@ function heroSearch(val) {
         }
         <div>
           <div class="hero-search-result-name">${name}</div>
-          <div class="hero-search-result-cat">${p.category}</div>
+          <div class="hero-search-result-cat">${translateCat(p.category)}</div>
         </div>
       </div>`;
     }).join('');
@@ -2610,6 +2610,23 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// Kategori çeviri haritası — TR değeri anahtar, dile göre çevrisi gösterilir
+const CAT_TRANSLATIONS = {
+  'Koltuk Takımı': { tr: 'Koltuk Takımı', en: 'Sofa Set', de: 'Sofagarnitur' },
+  'Yatak Odası':   { tr: 'Yatak Odası',   en: 'Bedroom',  de: 'Schlafzimmer' },
+  'Yemek Odası':   { tr: 'Yemek Odası',   en: 'Dining Room', de: 'Esszimmer' },
+  'TV Ünitesi':    { tr: 'TV Ünitesi',    en: 'TV Unit',  de: 'TV-Einheit' },
+  'Köşe Takımı':   { tr: 'Köşe Takımı',   en: 'Corner Sofa', de: 'Ecksofa' },
+  'Genç Odası':    { tr: 'Genç Odası',    en: "Youth Room", de: 'Jugendzimmer' },
+  'Aksesuar':      { tr: 'Aksesuar',      en: 'Accessory', de: 'Zubehör' },
+};
+
+function translateCat(trKey) {
+  const map = CAT_TRANSLATIONS[trKey];
+  if (!map) return trKey;
+  return map[currentLang] || map['tr'] || trKey;
+}
+
 let currentFilter = 'Tümü';
 
 function renderProducts() {
@@ -2617,14 +2634,20 @@ function renderProducts() {
   const grid = document.getElementById('productGrid');
   const filters = document.getElementById('productFilters');
 
-  // Build filter buttons
-  const cats = [t('products.all'), ...new Set(products.map(p => p.category))];
+  // Build filter buttons — Türkçe key'i sakla, çevrilmiş label göster
+  const catKeys = [...new Set(products.map(p => p.category))]; // Türkçe değerler
   const allLabel = t('products.all');
   if (currentFilter === 'Tümü' || currentFilter === 'All' || currentFilter === 'Alle') currentFilter = allLabel;
-  filters.innerHTML = cats.map(c => `<button class="filter-btn${c===currentFilter?' active':''}" onclick="filterProducts('${c}')">${c}</button>`).join('');
+  const allBtn = `<button class="filter-btn${currentFilter===allLabel?' active':''}" onclick="filterProducts('${allLabel}')">${allLabel}</button>`;
+  const catBtns = catKeys.map(k => {
+    const label = translateCat(k);
+    const isActive = currentFilter === k || currentFilter === label;
+    return `<button class="filter-btn${isActive?' active':''}" onclick="filterProducts('${k}')">${label}</button>`;
+  }).join('');
+  filters.innerHTML = allBtn + catBtns;
 
   const isAll = currentFilter === allLabel;
-  let filtered = isAll ? products : products.filter(p => p.category === currentFilter);
+  let filtered = isAll ? products : products.filter(p => p.category === currentFilter || translateCat(p.category) === currentFilter);
 
   // Arama sorgusu varsa isim/kategori üzerinden filtrele
   if (currentSearchQuery) {
@@ -2650,7 +2673,7 @@ function renderProducts() {
         : `<div class="product-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>`
       }
       <div class="product-info">
-        <div class="product-category">${p.category}</div>
+        <div class="product-category">${translateCat(p.category)}</div>
         <div class="product-name">${name}</div>
         ${p.price ? `<div class="product-price">
           ${p.oldPrice ? `<span class="old-price">${p.oldPrice} ₺</span>` : ''}
@@ -2663,7 +2686,9 @@ function renderProducts() {
 }
 
 function filterProducts(cat) {
-  currentFilter = cat;
+  // Eğer tümü/all/alle geldiyse allLabel'e normalize et, aksi hâlde TR key sakla
+  const allLabel = t('products.all');
+  currentFilter = (cat === 'Tümü' || cat === 'All' || cat === 'Alle' || cat === allLabel) ? allLabel : cat;
   currentSearchQuery = '';
   renderProducts();
   document.getElementById('urunler').scrollIntoView({ behavior: 'smooth' });
@@ -2691,7 +2716,7 @@ function openProductModal(id) {
   renderModalGallery();
 
   document.getElementById('modalInfo').innerHTML = `
-    <div class="modal-label">${p.category}</div>
+    <div class="modal-label">${translateCat(p.category)}</div>
     <h2>${name}</h2>
     <div class="modal-divider"></div>
     ${p.oldPrice ? `<span class="modal-old-price">${p.oldPrice} ₺</span>` : ''}
@@ -2817,7 +2842,7 @@ function renderAdminProducts() {
     <div class="admin-product-item">
       ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div style="height:160px;background:var(--cream);display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--text-mid);font-size:12px;">Görsel Yok</div>`}
       <h4>${p.name}</h4>
-      <div class="admin-prod-price">${p.category} — ${p.price ? p.price + ' ₺' : 'Fiyat Belirtilmedi'}</div>
+      <div class="admin-prod-price">${translateCat(p.category)} — ${p.price ? p.price + ' ₺' : 'Fiyat Belirtilmedi'}</div>
       <div class="admin-prod-actions">
         <button class="btn-danger" onclick="deleteProduct(${p.id})">Sil</button>
       </div>
