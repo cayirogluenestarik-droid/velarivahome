@@ -207,11 +207,12 @@ body {
   background: rgba(0,0,0,0.5);
   z-index: 998;
 }
+.mobile-overlay.open { display: block; }
 
 @media(max-width:900px) {
   .nav-links { display: none; }
   .hamburger { display: flex; }
-  .mobile-menu, .mobile-overlay { display: block; }
+  .mobile-menu { display: block; }
   .navbar { padding: 0 20px; }
 }
 
