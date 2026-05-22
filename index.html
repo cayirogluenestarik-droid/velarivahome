@@ -2347,8 +2347,8 @@ async function addProduct() {
   const badge = document.getElementById('pBadge').value;
   const whatsapp = document.getElementById('pWhatsapp').value.trim();
 
-  if (!name_tr || !price) {
-    showToast('Lütfen en az Türkçe ürün adı ve fiyat girin!');
+  if (!name_tr) {
+    showToast('Lütfen en az Türkçe ürün adı girin!');
     return;
   }
 
