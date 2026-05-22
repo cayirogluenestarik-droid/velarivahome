@@ -908,6 +908,49 @@ body {
 }
 .admin-overlay.open { display: flex; align-items: center; justify-content: center; }
 
+/* ══════════ EDIT MODAL ══════════ */
+.edit-modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 5000;
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.edit-modal-overlay.open { display: flex; }
+.edit-modal {
+  background: var(--white);
+  width: 700px;
+  max-width: 96vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 40px;
+  position: relative;
+  border-top: 3px solid var(--gold);
+}
+.edit-modal::-webkit-scrollbar { width: 4px; }
+.edit-modal::-webkit-scrollbar-thumb { background: var(--gold); }
+.edit-modal h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--green-deep);
+  margin-bottom: 24px;
+}
+.edit-modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-mid);
+  line-height: 1;
+}
+.edit-modal-close:hover { color: var(--green-deep); }
+@media(max-width:600px) { .edit-modal { padding: 24px 16px; } }
+
 .admin-login {
   background: var(--white);
   padding: 50px;
@@ -1946,6 +1989,93 @@ body {
   </div>
 </section>
 
+<!-- ═══ EDIT PRODUCT MODAL ═══ -->
+<div class="edit-modal-overlay" id="editModalOverlay" onclick="if(event.target===this)closeEditModal()">
+  <div class="edit-modal">
+    <button class="edit-modal-close" onclick="closeEditModal()">×</button>
+    <h3>Ürünü Düzenle</h3>
+
+    <!-- Görseller -->
+    <div class="form-group">
+      <label>Görseller <span style="color:var(--gold);font-size:10px;letter-spacing:1px;">(İLK GÖRSEL KAPAK)</span></label>
+      <div class="img-preview-grid" id="editImgPreviewGrid">
+        <div class="img-upload-add-btn" onclick="document.getElementById('editImgInput').click()" id="editImgAddBtn">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>
+          <span>Görsel Ekle</span>
+        </div>
+      </div>
+      <input type="file" id="editImgInput" accept="image/*" multiple style="display:none" onchange="previewEditImgs(this)">
+    </div>
+
+    <!-- Dil sekmeleri -->
+    <div style="margin-bottom:20px;">
+      <div style="display:flex;gap:0;border-bottom:2px solid rgba(45,74,46,0.1);margin-bottom:16px;">
+        <button class="lang-tab-btn active" onclick="switchEditLangTab('tr',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid var(--gold);margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--green-deep);">🇹🇷 Türkçe</button>
+        <button class="lang-tab-btn" onclick="switchEditLangTab('en',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--text-mid);">🇬🇧 English</button>
+        <button class="lang-tab-btn" onclick="switchEditLangTab('de',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--text-mid);">🇩🇪 Deutsch</button>
+      </div>
+      <div id="editLangTr">
+        <div class="form-row">
+          <div class="form-group"><label>Ürün Adı (TR)</label><input type="text" id="eName_tr" placeholder="Ör: Alaska Koltuk Takımı"></div>
+          <div class="form-group"><label>Açıklama (TR)</label><textarea id="eDesc_tr" placeholder="Türkçe açıklama..."></textarea></div>
+        </div>
+      </div>
+      <div id="editLangEn" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label>Product Name (EN)</label><input type="text" id="eName_en" placeholder="e.g. Alaska Sofa Set"></div>
+          <div class="form-group"><label>Description (EN)</label><textarea id="eDesc_en" placeholder="English description..."></textarea></div>
+        </div>
+      </div>
+      <div id="editLangDe" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label>Produktname (DE)</label><input type="text" id="eName_de" placeholder="z.B. Alaska Sofagarnitur"></div>
+          <div class="form-group"><label>Beschreibung (DE)</label><textarea id="eDesc_de" placeholder="Deutsche Beschreibung..."></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Kategori</label>
+        <select id="eCategory">
+          <option value="Koltuk Takımı">Koltuk Takımı</option>
+          <option value="Yatak Odası">Yatak Odası</option>
+          <option value="Yemek Odası">Yemek Odası</option>
+          <option value="TV Ünitesi">TV Ünitesi</option>
+          <option value="Köşe Takımı">Köşe Takımı</option>
+          <option value="Genç Odası">Genç Odası</option>
+          <option value="Aksesuar">Aksesuar</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Etiket</label>
+        <select id="eBadge">
+          <option value="">Etiket Yok</option>
+          <option value="Yeni">Yeni</option>
+          <option value="İndirim">İndirim</option>
+          <option value="Çok Satan">Çok Satan</option>
+          <option value="Özel">Özel</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fiyat (₺) — <span style="color:var(--gold);font-size:10px;">Boş bırakılabilir</span></label>
+        <input type="text" id="ePrice" placeholder="Boş bırakırsanız fiyat gösterilmez">
+      </div>
+      <div class="form-group">
+        <label>İndirimli Fiyat (₺) — Opsiyonel</label>
+        <input type="text" id="eOldPrice" placeholder="Ör: 75.000 (eski fiyat)">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>WhatsApp Numarası</label>
+      <input type="text" id="eWhatsapp" placeholder="Ör: 905xxxxxxxxx">
+    </div>
+    <button class="btn-primary" onclick="saveEditProduct()">Kaydet</button>
+  </div>
+</div>
+
 <!-- ═══ FOOTER ═══ -->
 <footer class="footer">
   <div class="container">
@@ -2192,7 +2322,7 @@ body {
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ══════════ FIREBASE YAPILANDIRMASI ══════════
   // BURAYA KENDİ FIREBASE PROJENİZİN BİLGİLERİNİ GİRİN:
@@ -2306,10 +2436,55 @@ body {
         const product = products.find(p => p.id === id);
         if (product && product._docId) {
           await deleteDoc(doc(db, 'products', product._docId));
+          showToast('Ürün silindi.');
+        } else {
+          showToast('Ürün silindi (yerel).');
         }
-        showToast('Ürün Firebase\'den silindi.');
+        // localStorage'ı güncelle (listener geç gelirse diye)
+        const updated = products.filter(p => p.id !== id);
+        localStorage.setItem('vh_products', JSON.stringify(updated));
+        window.renderProducts && window.renderProducts();
+        window.renderAdminProducts && window.renderAdminProducts();
       } catch(e) {
         console.warn('Firebase silme hatası:', e);
+        showToast('Silme hatası: ' + e.message);
+      }
+    };
+
+    // ── Ürün güncelle (Firebase) ──
+    window.updateProductFirebase = async function(productData) {
+      try {
+        showToast('Güncelleniyor...');
+        const compressedImages = [];
+        for (const imgData of (productData.images || [])) {
+          const compressed = imgData.startsWith('data:') ? await window.compressImage(imgData, 900, 0.72) : imgData;
+          compressedImages.push(compressed);
+        }
+        const finalProduct = {
+          ...productData,
+          images: compressedImages,
+          image: compressedImages[0] || null,
+          _updatedAt: new Date().toISOString()
+        };
+        if (finalProduct._docId) {
+          const docId = finalProduct._docId;
+          delete finalProduct._docId;
+          await updateDoc(doc(db, 'products', docId), finalProduct);
+          finalProduct._docId = docId;
+        }
+        // localStorage güncelle
+        const products = JSON.parse(localStorage.getItem('vh_products') || '[]');
+        const idx = products.findIndex(p => p.id === finalProduct.id);
+        if (idx !== -1) products[idx] = finalProduct;
+        localStorage.setItem('vh_products', JSON.stringify(products));
+        showToast('✅ Ürün güncellendi!');
+        window.renderProducts && window.renderProducts();
+        window.renderAdminProducts && window.renderAdminProducts();
+        return finalProduct;
+      } catch(e) {
+        console.warn('Firebase güncelleme hatası:', e);
+        showToast('⚠️ Güncelleme hatası: ' + e.message);
+        return null;
       }
     };
 
@@ -2527,19 +2702,144 @@ async function addProduct() {
 // ══════════ DELETE PRODUCT ══════════
 async function deleteProduct(id) {
   if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
-  let products = getData(STORAGE_KEYS.products);
-  products = products.filter(p => p.id !== id);
-  setData(STORAGE_KEYS.products, products);
   if (window.firebaseReady && window.deleteProductFirebase) {
     await window.deleteProductFirebase(id);
   } else {
+    let products = getData(STORAGE_KEYS.products);
+    products = products.filter(p => p.id !== id);
+    setData(STORAGE_KEYS.products, products);
     showToast('Ürün silindi.');
+    renderAdminProducts();
+    renderProducts();
   }
-  renderAdminProducts();
-  renderProducts();
 }
 
-// ══════════ RENDER PRODUCTS (Frontend) ══════════
+// ══════════ EDIT PRODUCT ══════════
+let editProductId = null;
+let editProductImgs = [];
+
+function openEditModal(id) {
+  const products = getData(STORAGE_KEYS.products);
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  editProductId = id;
+  editProductImgs = p.images && p.images.length > 0 ? [...p.images] : (p.image ? [p.image] : []);
+
+  document.getElementById('eName_tr').value = p.name || '';
+  document.getElementById('eName_en').value = p.name_en || '';
+  document.getElementById('eName_de').value = p.name_de || '';
+  document.getElementById('eDesc_tr').value = p.desc || '';
+  document.getElementById('eDesc_en').value = p.desc_en || '';
+  document.getElementById('eDesc_de').value = p.desc_de || '';
+  document.getElementById('eCategory').value = p.category || 'Koltuk Takımı';
+  document.getElementById('eBadge').value = p.badge || '';
+  document.getElementById('ePrice').value = p.price || '';
+  document.getElementById('eOldPrice').value = p.oldPrice || '';
+  document.getElementById('eWhatsapp').value = p.whatsapp || '';
+
+  // Dil sekme sıfırla
+  document.getElementById('editLangTr').style.display = '';
+  document.getElementById('editLangEn').style.display = 'none';
+  document.getElementById('editLangDe').style.display = 'none';
+  document.querySelectorAll('#editModalOverlay .lang-tab-btn').forEach((b, i) => {
+    b.style.borderBottomColor = i === 0 ? 'var(--gold)' : 'transparent';
+    b.style.color = i === 0 ? 'var(--green-deep)' : 'var(--text-mid)';
+  });
+
+  renderEditImgThumbs();
+  document.getElementById('editModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditModal() {
+  document.getElementById('editModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  editProductId = null;
+  editProductImgs = [];
+}
+
+function switchEditLangTab(lang, btn) {
+  ['Tr','En','De'].forEach(l => {
+    const el = document.getElementById('editLang' + l);
+    if (el) el.style.display = l.toLowerCase() === lang ? '' : 'none';
+  });
+  document.querySelectorAll('#editModalOverlay .lang-tab-btn').forEach(b => {
+    b.style.borderBottomColor = 'transparent';
+    b.style.color = 'var(--text-mid)';
+  });
+  btn.style.borderBottomColor = 'var(--gold)';
+  btn.style.color = 'var(--green-deep)';
+}
+
+function previewEditImgs(input) {
+  const files = Array.from(input.files);
+  let loaded = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      editProductImgs.push(e.target.result);
+      loaded++;
+      if (loaded === files.length) renderEditImgThumbs();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+function renderEditImgThumbs() {
+  const grid = document.getElementById('editImgPreviewGrid');
+  const thumbs = editProductImgs.map((src, i) => `
+    <div style="position:relative;display:inline-block;">
+      <img src="${src}" style="width:80px;height:80px;object-fit:cover;border:2px solid var(--cream);">
+      <button onclick="editProductImgs.splice(${i},1);renderEditImgThumbs()" style="position:absolute;top:2px;right:2px;background:#c0392b;color:#fff;border:none;width:18px;height:18px;font-size:12px;cursor:pointer;line-height:1;padding:0;">×</button>
+    </div>`).join('');
+  grid.innerHTML = thumbs + `
+    <div class="img-upload-add-btn" onclick="document.getElementById('editImgInput').click()" id="editImgAddBtn">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>
+      <span>Görsel Ekle</span>
+    </div>`;
+}
+
+async function saveEditProduct() {
+  if (!editProductId) return;
+  const name_tr = document.getElementById('eName_tr').value.trim();
+  if (!name_tr) { showToast('Türkçe ürün adı zorunlu!'); return; }
+
+  const products = getData(STORAGE_KEYS.products);
+  const existing = products.find(p => p.id === editProductId);
+  if (!existing) return;
+
+  const updated = {
+    ...existing,
+    name:     name_tr,
+    name_en:  document.getElementById('eName_en').value.trim(),
+    name_de:  document.getElementById('eName_de').value.trim(),
+    desc:     document.getElementById('eDesc_tr').value.trim(),
+    desc_en:  document.getElementById('eDesc_en').value.trim(),
+    desc_de:  document.getElementById('eDesc_de').value.trim(),
+    category: document.getElementById('eCategory').value,
+    badge:    document.getElementById('eBadge').value,
+    price:    document.getElementById('ePrice').value.trim(),
+    oldPrice: document.getElementById('eOldPrice').value.trim(),
+    whatsapp: document.getElementById('eWhatsapp').value.trim(),
+    images:   editProductImgs,
+    image:    editProductImgs[0] || null,
+  };
+
+  if (window.firebaseReady && window.updateProductFirebase) {
+    await window.updateProductFirebase(updated);
+  } else {
+    const idx = products.findIndex(p => p.id === editProductId);
+    if (idx !== -1) products[idx] = updated;
+    setData(STORAGE_KEYS.products, products);
+    showToast('Ürün güncellendi!');
+    renderProducts();
+    renderAdminProducts();
+  }
+  closeEditModal();
+}
+
+
 // ══════════ HERO SEARCH ══════════
 function heroSearch(val) {
   const results = document.getElementById('heroSearchResults');
@@ -2844,6 +3144,7 @@ function renderAdminProducts() {
       <h4>${p.name}</h4>
       <div class="admin-prod-price">${translateCat(p.category)} — ${p.price ? p.price + ' ₺' : 'Fiyat Belirtilmedi'}</div>
       <div class="admin-prod-actions">
+        <button class="btn-primary" onclick="openEditModal(${p.id})" style="margin-right:8px;padding:8px 16px;font-size:11px;">Düzenle</button>
         <button class="btn-danger" onclick="deleteProduct(${p.id})">Sil</button>
       </div>
     </div>
