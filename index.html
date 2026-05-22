@@ -1737,15 +1737,15 @@ body {
         <p data-i18n="about.p2">Modern tasarım anlayışımızla, evinizin her köşesine zarafet ve konfor katıyoruz. Müşteri memnuniyetini ön planda tutarak, size en uygun çözümleri sunuyoruz.</p>
         <div class="about-stats">
           <div class="about-stat">
-            <h4>500+</h4>
+            <h4 id="statNumber1">500+</h4>
             <p data-i18n="about.stat1">Mutlu Müşteri</p>
           </div>
           <div class="about-stat">
-            <h4>200+</h4>
+            <h4 id="statNumber2">200+</h4>
             <p data-i18n="about.stat2">Ürün Çeşidi</p>
           </div>
           <div class="about-stat">
-            <h4>10+</h4>
+            <h4 id="statNumber3">10+</h4>
             <p data-i18n="about.stat3">Yıllık Tecrübe</p>
           </div>
         </div>
@@ -1928,8 +1928,8 @@ body {
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Fiyat (₺)</label>
-            <input type="text" id="pPrice" placeholder="Ör: 65.000">
+            <label>Fiyat (₺) — <span style="color:var(--gold);font-size:10px;letter-spacing:1px;">Boş bırakılabilir</span></label>
+            <input type="text" id="pPrice" placeholder="Boş bırakırsanız fiyat gösterilmez">
           </div>
           <div class="form-group">
             <label>İndirimli Fiyat (₺) — Opsiyonel</label>
@@ -2002,6 +2002,23 @@ body {
         <div class="form-group">
           <label>Adres</label>
           <input type="text" id="settingsAddress" placeholder="Bursa, Türkiye">
+        </div>
+        <div style="margin:24px 0 8px;padding-top:20px;border-top:1px solid rgba(45,74,46,0.1);">
+          <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Hakkımızda — İstatistik Sayıları</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+            <div class="form-group" style="margin:0">
+              <label>Müşteri Sayısı</label>
+              <input type="text" id="settingsStat1" placeholder="500+">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>Ürün Çeşidi</label>
+              <input type="text" id="settingsStat2" placeholder="200+">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>Yıllık Tecrübe</label>
+              <input type="text" id="settingsStat3" placeholder="10+">
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <label>Şifre Değiştir (Yeni Şifre)</label>
@@ -2423,10 +2440,10 @@ function renderProducts() {
       <div class="product-info">
         <div class="product-category">${p.category}</div>
         <div class="product-name">${name}</div>
-        <div class="product-price">
+        ${p.price ? `<div class="product-price">
           ${p.oldPrice ? `<span class="old-price">${p.oldPrice} ₺</span>` : ''}
           ${p.price} ₺
-        </div>
+        </div>` : ''}
         <span class="product-detail-btn">${t('products.detail')}</span>
       </div>
     </div>`;
@@ -2465,7 +2482,7 @@ function openProductModal(id) {
     <h2>${name}</h2>
     <div class="modal-divider"></div>
     ${p.oldPrice ? `<span class="modal-old-price">${p.oldPrice} ₺</span>` : ''}
-    <div class="modal-price">${p.price} ₺</div>
+    ${p.price ? `<div class="modal-price">${p.price} ₺</div>` : ''}
     <p class="modal-desc">${desc}</p>
     <a href="https://wa.me/${wa}?text=${encodeURIComponent('Merhaba, ' + name + ' hakkında bilgi almak istiyorum.')}" target="_blank" class="product-modal-whatsapp">
       <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
@@ -2587,7 +2604,7 @@ function renderAdminProducts() {
     <div class="admin-product-item">
       ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div style="height:160px;background:var(--cream);display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--text-mid);font-size:12px;">Görsel Yok</div>`}
       <h4>${p.name}</h4>
-      <div class="admin-prod-price">${p.category} — ${p.price} ₺</div>
+      <div class="admin-prod-price">${p.category} — ${p.price ? p.price + ' ₺' : 'Fiyat Belirtilmedi'}</div>
       <div class="admin-prod-actions">
         <button class="btn-danger" onclick="deleteProduct(${p.id})">Sil</button>
       </div>
@@ -2686,6 +2703,12 @@ function saveSettings() {
   settings.phone = document.getElementById('settingsPhone').value.trim();
   settings.email = document.getElementById('settingsEmail').value.trim();
   settings.address = document.getElementById('settingsAddress').value.trim();
+  const s1 = document.getElementById('settingsStat1').value.trim();
+  const s2 = document.getElementById('settingsStat2').value.trim();
+  const s3 = document.getElementById('settingsStat3').value.trim();
+  if (s1) settings.stat1 = s1;
+  if (s2) settings.stat2 = s2;
+  if (s3) settings.stat3 = s3;
   if (newPass) settings.password = newPass;
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(settings));
   document.getElementById('settingsNewPass').value = '';
@@ -2702,6 +2725,28 @@ function updateContactDisplay() {
   if (addr && s.address) addr.textContent = s.address;
   if (phone && s.phone) phone.textContent = s.phone;
   if (email && s.email) email.textContent = s.email;
+  // İstatistik sayılarını güncelle
+  const stat1El = document.getElementById('statNumber1');
+  const stat2El = document.getElementById('statNumber2');
+  const stat3El = document.getElementById('statNumber3');
+  if (stat1El && s.stat1) stat1El.textContent = s.stat1;
+  if (stat2El && s.stat2) stat2El.textContent = s.stat2;
+  if (stat3El && s.stat3) stat3El.textContent = s.stat3;
+  // Ayarlar panelindeki alanları doldur
+  const sw = document.getElementById('settingsWhatsapp');
+  const sp = document.getElementById('settingsPhone');
+  const se = document.getElementById('settingsEmail');
+  const sa = document.getElementById('settingsAddress');
+  const ss1 = document.getElementById('settingsStat1');
+  const ss2 = document.getElementById('settingsStat2');
+  const ss3 = document.getElementById('settingsStat3');
+  if (sw && s.whatsapp) sw.value = s.whatsapp;
+  if (sp && s.phone) sp.value = s.phone;
+  if (se && s.email) se.value = s.email;
+  if (sa && s.address) sa.value = s.address;
+  if (ss1 && s.stat1) ss1.value = s.stat1;
+  if (ss2 && s.stat2) ss2.value = s.stat2;
+  if (ss3 && s.stat3) ss3.value = s.stat3;
 }
 
 // ══════════ LANGUAGE SYSTEM ══════════
