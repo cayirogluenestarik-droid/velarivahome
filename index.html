@@ -127,6 +127,45 @@ body {
 .nav-admin::after { display: none !important; }
 .nav-admin:hover { background: var(--green-mid) !important; }
 
+/* Language Switcher */
+.lang-switcher {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-left: 8px;
+}
+.lang-btn {
+  background: transparent;
+  border: 1px solid rgba(45,74,46,0.18);
+  color: var(--text-mid);
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 5px 9px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-transform: uppercase;
+}
+.lang-btn.active, .lang-btn:hover {
+  background: var(--green-deep);
+  color: var(--cream);
+  border-color: var(--green-deep);
+}
+@media(max-width:900px) { .lang-switcher { display: none; } }
+.mobile-lang {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(232,213,181,0.1);
+}
+.mobile-lang .lang-btn {
+  border-color: rgba(232,213,181,0.3);
+  color: var(--cream-light);
+}
+.mobile-lang .lang-btn.active { background: var(--gold); border-color: var(--gold); color: var(--green-deep); }
+
 .hamburger {
   display: none;
   flex-direction: column;
@@ -1128,74 +1167,200 @@ body {
   opacity: 1;
 }
 
-/* ══════════ PRODUCT MODAL ══════════ */
+/* ══════════ PRODUCT MODAL — LARGE CINEMATIC ══════════ */
 .product-modal-overlay {
   display: none;
   position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(10,10,10,0.85);
   z-index: 4000;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 .product-modal-overlay.open { display: flex; }
 .product-modal {
   background: var(--white);
-  width: 700px;
-  max-width: 90vw;
-  max-height: 85vh;
-  overflow-y: auto;
+  width: 1100px;
+  max-width: 96vw;
+  max-height: 92vh;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-@media(max-width:600px) { .product-modal { grid-template-columns: 1fr; } }
-.product-modal-img {
-  height: 100%;
-  min-height: 300px;
-  background: var(--cream);
-  display: flex;
-  flex-direction: column;
+  grid-template-columns: 58% 42%;
   overflow: hidden;
+  box-shadow: 0 30px 100px rgba(0,0,0,0.4);
+  position: relative;
 }
-.product-modal-info {
-  padding: 40px;
-}
-.product-modal-info .product-category { margin-bottom: 8px; }
-.product-modal-info h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 26px;
-  color: var(--green-deep);
-  margin-bottom: 16px;
-}
-.product-modal-info .product-price { font-size: 20px; margin-bottom: 20px; }
-.product-modal-info p {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--text-mid);
-  margin-bottom: 24px;
+@media(max-width:768px) {
+  .product-modal { grid-template-columns: 1fr; max-height: 95vh; overflow-y: auto; }
 }
 .product-modal-close {
   position: absolute;
-  top: 16px; right: 20px;
-  background: none; border: none;
-  font-size: 28px;
-  color: var(--text-mid);
+  top: 0; right: 0;
+  width: 52px; height: 52px;
+  background: var(--green-deep);
+  border: none;
+  color: var(--cream);
+  font-size: 22px;
   cursor: pointer;
+  z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.product-modal-close:hover { background: #c0392b; }
+
+/* Left: Gallery */
+.product-modal-img {
+  display: flex;
+  flex-direction: column;
+  background: #1a1a1a;
+  overflow: hidden;
+  min-height: 520px;
+}
+@media(max-width:768px) { .product-modal-img { min-height: 300px; } }
+
+.modal-gallery {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: #111;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-gallery-img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.35s ease;
+  max-height: 500px;
+}
+.modal-gallery-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  min-height: 400px;
+  color: rgba(255,255,255,0.15);
+}
+.gallery-nav {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: var(--cream);
+  border: 1px solid rgba(255,255,255,0.15);
+  width: 44px; height: 44px;
+  cursor: pointer;
+  font-size: 22px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3;
+  transition: var(--transition);
+  backdrop-filter: blur(4px);
+}
+.gallery-nav:hover { background: var(--gold); border-color: var(--gold); color: var(--green-deep); }
+.gallery-nav.prev { left: 14px; }
+.gallery-nav.next { right: 14px; }
+
+.gallery-counter {
+  position: absolute;
+  bottom: 14px; right: 16px;
+  background: rgba(0,0,0,0.55);
+  color: rgba(255,255,255,0.7);
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  backdrop-filter: blur(4px);
+}
+
+.gallery-thumbs {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: #0f0f0f;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.gallery-thumbs::-webkit-scrollbar { height: 3px; }
+.gallery-thumbs::-webkit-scrollbar-thumb { background: var(--gold); }
+.gallery-thumb-item {
+  width: 70px; height: 56px;
+  flex-shrink: 0;
+  cursor: pointer;
+  object-fit: cover;
+  border: 2px solid transparent;
+  opacity: 0.55;
+  transition: var(--transition);
+  display: block;
+}
+.gallery-thumb-item:hover { opacity: 0.85; }
+.gallery-thumb-item.active { border-color: var(--gold); opacity: 1; }
+
+/* Right: Info */
+.product-modal-info {
+  padding: 52px 44px 40px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--white);
+}
+@media(max-width:768px) { .product-modal-info { padding: 30px 24px; } }
+.product-modal-info .modal-label {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.product-modal-info h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 2.5vw, 32px);
+  color: var(--green-deep);
+  margin-bottom: 8px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+.product-modal-info .modal-divider {
+  width: 40px; height: 1px;
+  background: var(--gold);
+  margin: 18px 0;
+}
+.product-modal-info .modal-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: var(--green-deep);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.product-modal-info .modal-old-price {
+  text-decoration: line-through;
+  color: var(--text-mid);
+  font-size: 15px;
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  margin-bottom: 20px;
+  display: block;
+}
+.product-modal-info .modal-desc {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text-mid);
+  flex: 1;
+  margin-bottom: 28px;
 }
 .product-modal-whatsapp {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 32px;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 32px;
   background: #25D366;
   color: white;
   text-decoration: none;
+  font-family: 'Jost', sans-serif;
   font-size: 13px;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
   transition: var(--transition);
+  margin-top: auto;
 }
 .product-modal-whatsapp:hover { background: #1da851; }
-.product-modal-whatsapp svg { width: 18px; height: 18px; fill: white; }
+.product-modal-whatsapp svg { width: 20px; height: 20px; fill: white; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -1204,14 +1369,19 @@ body {
 <nav class="navbar" id="navbar">
   <a href="#" class="nav-logo">VELARIVA<span>— HOME —</span></a>
   <ul class="nav-links">
-    <li><a href="#anasayfa">Ana Sayfa</a></li>
-    <li><a href="#kategoriler">Kategoriler</a></li>
-    <li><a href="#urunler">Ürünler</a></li>
-    <li><a href="#katalog">Katalog</a></li>
-    <li><a href="#hakkimizda">Hakkımızda</a></li>
-    <li><a href="#iletisim">İletişim</a></li>
-    <li><a class="nav-admin" onclick="openLogin()">Yönetim</a></li>
+    <li><a href="#anasayfa" data-i18n="nav.home">Ana Sayfa</a></li>
+    <li><a href="#kategoriler" data-i18n="nav.categories">Kategoriler</a></li>
+    <li><a href="#urunler" data-i18n="nav.products">Ürünler</a></li>
+    <li><a href="#katalog" data-i18n="nav.catalog">Katalog</a></li>
+    <li><a href="#hakkimizda" data-i18n="nav.about">Hakkımızda</a></li>
+    <li><a href="#iletisim" data-i18n="nav.contact">İletişim</a></li>
+    <li><a class="nav-admin" onclick="openLogin()" data-i18n="nav.admin">Yönetim</a></li>
   </ul>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('tr')">TR</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('de')">DE</button>
+  </div>
   <div class="hamburger" onclick="toggleMobile()">
     <span></span><span></span><span></span>
   </div>
@@ -1219,13 +1389,18 @@ body {
 
 <div class="mobile-overlay" onclick="toggleMobile()"></div>
 <div class="mobile-menu">
-  <a href="#anasayfa" onclick="toggleMobile()">Ana Sayfa</a>
-  <a href="#kategoriler" onclick="toggleMobile()">Kategoriler</a>
-  <a href="#urunler" onclick="toggleMobile()">Ürünler</a>
-  <a href="#katalog" onclick="toggleMobile()">Katalog</a>
-  <a href="#hakkimizda" onclick="toggleMobile()">Hakkımızda</a>
-  <a href="#iletisim" onclick="toggleMobile()">İletişim</a>
-  <a onclick="toggleMobile(); openLogin()">Yönetim Paneli</a>
+  <a href="#anasayfa" onclick="toggleMobile()" data-i18n="nav.home">Ana Sayfa</a>
+  <a href="#kategoriler" onclick="toggleMobile()" data-i18n="nav.categories">Kategoriler</a>
+  <a href="#urunler" onclick="toggleMobile()" data-i18n="nav.products">Ürünler</a>
+  <a href="#katalog" onclick="toggleMobile()" data-i18n="nav.catalog">Katalog</a>
+  <a href="#hakkimizda" onclick="toggleMobile()" data-i18n="nav.about">Hakkımızda</a>
+  <a href="#iletisim" onclick="toggleMobile()" data-i18n="nav.contact">İletişim</a>
+  <a onclick="toggleMobile(); openLogin()" data-i18n="nav.admin">Yönetim Paneli</a>
+  <div class="mobile-lang">
+    <button class="lang-btn active" onclick="setLang('tr')">TR</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('de')">DE</button>
+  </div>
 </div>
 
 <!-- ═══ HERO ═══ -->
@@ -1234,8 +1409,8 @@ body {
     <div class="hero-logo">VELARIVA</div>
     <div class="hero-sub">— HOME —</div>
     <div class="hero-divider"></div>
-    <p class="hero-tagline">Zarafet ve konforun buluştuğu yer</p>
-    <a href="#urunler" class="hero-cta">Koleksiyonu Keşfet</a>
+    <p class="hero-tagline" data-i18n="hero.tagline">Zarafet ve konforun buluştuğu yer</p>
+    <a href="#urunler" class="hero-cta" data-i18n="hero.cta">Koleksiyonu Keşfet</a>
   </div>
   <div class="hero-scroll">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
@@ -1286,8 +1461,8 @@ body {
 <section class="products" id="urunler">
   <div class="container">
     <div class="products-header">
-      <div class="section-label">Ürünlerimiz</div>
-      <h2 class="section-title">Öne Çıkanlar</h2>
+      <div class="section-label" data-i18n="products.label">Ürünlerimiz</div>
+      <h2 class="section-title" data-i18n="products.title">Öne Çıkanlar</h2>
     </div>
     <div class="product-filters" id="productFilters"></div>
     <div class="product-grid" id="productGrid"></div>
@@ -1297,9 +1472,9 @@ body {
 <!-- ═══ CATALOG ═══ -->
 <section class="catalog-section" id="katalog">
   <div class="container">
-    <div class="section-label">Dijital Katalog</div>
-    <h2 class="section-title">Kataloglarımız</h2>
-    <p>Tüm koleksiyonlarımızı dijital kataloglarımız üzerinden inceleyebilirsiniz.</p>
+    <div class="section-label" data-i18n="catalog.label">Dijital Katalog</div>
+    <h2 class="section-title" data-i18n="catalog.title">Kataloglarımız</h2>
+    <p data-i18n="catalog.desc">Tüm koleksiyonlarımızı dijital kataloglarımız üzerinden inceleyebilirsiniz.</p>
     <div class="catalog-grid" id="catalogGrid">
       <div class="catalog-item" style="opacity:0.5">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.5" width="36" height="36"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
@@ -1318,22 +1493,22 @@ body {
         <div class="about-visual-text">VH</div>
       </div>
       <div class="about-content">
-        <div class="section-label">Hakkımızda</div>
-        <h2 class="section-title">Evinize Değer Katan Tasarımlar</h2>
-        <p>Velariva Home olarak, yaşam alanlarınızı estetik ve fonksiyonelliğin mükemmel uyumuyla şekillendiriyoruz. Her ürünümüz, kaliteli malzeme ve usta işçilikle özenle üretilmektedir.</p>
-        <p>Modern tasarım anlayışımızla, evinizin her köşesine zarafet ve konfor katıyoruz. Müşteri memnuniyetini ön planda tutarak, size en uygun çözümleri sunuyoruz.</p>
+        <div class="section-label" data-i18n="about.label">Hakkımızda</div>
+        <h2 class="section-title" data-i18n="about.title">Evinize Değer Katan Tasarımlar</h2>
+        <p data-i18n="about.p1">Velariva Home olarak, yaşam alanlarınızı estetik ve fonksiyonelliğin mükemmel uyumuyla şekillendiriyoruz. Her ürünümüz, kaliteli malzeme ve usta işçilikle özenle üretilmektedir.</p>
+        <p data-i18n="about.p2">Modern tasarım anlayışımızla, evinizin her köşesine zarafet ve konfor katıyoruz. Müşteri memnuniyetini ön planda tutarak, size en uygun çözümleri sunuyoruz.</p>
         <div class="about-stats">
           <div class="about-stat">
             <h4>500+</h4>
-            <p>Mutlu Müşteri</p>
+            <p data-i18n="about.stat1">Mutlu Müşteri</p>
           </div>
           <div class="about-stat">
             <h4>200+</h4>
-            <p>Ürün Çeşidi</p>
+            <p data-i18n="about.stat2">Ürün Çeşidi</p>
           </div>
           <div class="about-stat">
             <h4>10+</h4>
-            <p>Yıllık Tecrübe</p>
+            <p data-i18n="about.stat3">Yıllık Tecrübe</p>
           </div>
         </div>
       </div>
@@ -1345,8 +1520,8 @@ body {
 <section class="contact" id="iletisim">
   <div class="container">
     <div class="categories-header" style="margin-bottom:50px">
-      <div class="section-label">Bize Ulaşın</div>
-      <h2 class="section-title">İletişim</h2>
+      <div class="section-label" data-i18n="contact.label">Bize Ulaşın</div>
+      <h2 class="section-title" data-i18n="contact.title">İletişim</h2>
     </div>
     <div class="contact-grid">
       <div class="contact-info">
@@ -1454,7 +1629,8 @@ body {
     <div class="admin-tabs">
       <button class="admin-tab active" onclick="switchTab('products', this)">Ürün Ekle</button>
       <button class="admin-tab" onclick="switchTab('productList', this)">Ürün Listesi</button>
-      <button class="admin-tab" onclick="switchTab('catalogs', this)">Katalog Yönetimi</button>
+      <button class="admin-tab" onclick="switchTab('catalogs', this)">Katalog</button>
+      <button class="admin-tab" onclick="switchTab('langMgmt', this)">🌐 Dil Metinleri</button>
       <button class="admin-tab" onclick="switchTab('settings', this)">Ayarlar</button>
     </div>
 
@@ -1472,11 +1648,35 @@ body {
           </div>
           <input type="file" id="productImgInput" accept="image/*" multiple style="display:none" onchange="previewProductImgs(this)">
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Ürün Adı</label>
-            <input type="text" id="pName" placeholder="Ör: Alaska Koltuk Takımı">
+
+        <!-- Dil Sekmeleri -->
+        <div style="margin-bottom:20px;">
+          <div style="display:flex;gap:0;border-bottom:2px solid rgba(45,74,46,0.1);margin-bottom:16px;">
+            <button class="lang-tab-btn active" onclick="switchLangTab('tr',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid var(--gold);margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--green-deep);">🇹🇷 Türkçe</button>
+            <button class="lang-tab-btn" onclick="switchLangTab('en',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--text-mid);">🇬🇧 English</button>
+            <button class="lang-tab-btn" onclick="switchLangTab('de',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--text-mid);">🇩🇪 Deutsch</button>
           </div>
+          <div id="langFieldsTr">
+            <div class="form-row">
+              <div class="form-group"><label>Ürün Adı (TR)</label><input type="text" id="pName_tr" placeholder="Ör: Alaska Koltuk Takımı"></div>
+              <div class="form-group"><label>Açıklama (TR)</label><textarea id="pDesc_tr" placeholder="Türkçe açıklama..."></textarea></div>
+            </div>
+          </div>
+          <div id="langFieldsEn" style="display:none">
+            <div class="form-row">
+              <div class="form-group"><label>Product Name (EN)</label><input type="text" id="pName_en" placeholder="e.g. Alaska Sofa Set"></div>
+              <div class="form-group"><label>Description (EN)</label><textarea id="pDesc_en" placeholder="English description..."></textarea></div>
+            </div>
+          </div>
+          <div id="langFieldsDe" style="display:none">
+            <div class="form-row">
+              <div class="form-group"><label>Produktname (DE)</label><input type="text" id="pName_de" placeholder="z.B. Alaska Sofagarnitur"></div>
+              <div class="form-group"><label>Beschreibung (DE)</label><textarea id="pDesc_de" placeholder="Deutsche Beschreibung..."></textarea></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
           <div class="form-group">
             <label>Kategori</label>
             <select id="pCategory">
@@ -1487,6 +1687,16 @@ body {
               <option value="Köşe Takımı">Köşe Takımı</option>
               <option value="Genç Odası">Genç Odası</option>
               <option value="Aksesuar">Aksesuar</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Etiket (Opsiyonel)</label>
+            <select id="pBadge">
+              <option value="">Etiket Yok</option>
+              <option value="Yeni">Yeni</option>
+              <option value="İndirim">İndirim</option>
+              <option value="Çok Satan">Çok Satan</option>
+              <option value="Özel">Özel</option>
             </select>
           </div>
         </div>
@@ -1501,24 +1711,8 @@ body {
           </div>
         </div>
         <div class="form-group">
-          <label>Açıklama</label>
-          <textarea id="pDesc" placeholder="Ürün hakkında kısa açıklama..."></textarea>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Etiket (Opsiyonel)</label>
-            <select id="pBadge">
-              <option value="">Etiket Yok</option>
-              <option value="Yeni">Yeni</option>
-              <option value="İndirim">İndirim</option>
-              <option value="Çok Satan">Çok Satan</option>
-              <option value="Özel">Özel</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>WhatsApp Numarası</label>
-            <input type="text" id="pWhatsapp" placeholder="Ör: 905xxxxxxxxx">
-          </div>
+          <label>WhatsApp Numarası</label>
+          <input type="text" id="pWhatsapp" placeholder="Ör: 905xxxxxxxxx">
         </div>
         <button class="btn-primary" onclick="addProduct()">Ürün Ekle</button>
       </div>
@@ -1550,6 +1744,16 @@ body {
       <div class="admin-card">
         <h3>Yüklenen Kataloglar</h3>
         <div class="catalog-list-admin" id="adminCatalogList"></div>
+      </div>
+    </div>
+
+    <!-- TAB: Language Management -->
+    <div class="admin-section" id="tabLangMgmt">
+      <div class="admin-card">
+        <h3>🌐 Site Dil Metinleri</h3>
+        <p style="color:var(--text-mid);font-size:13px;margin-bottom:20px;line-height:1.7;">Her alan için Türkçe, İngilizce ve Almanca metinleri kendiniz yazın. Boş bırakılan alanlar otomatik olarak Türkçe metni gösterir.</p>
+        <div id="langMgmtContent"></div>
+        <button class="btn-primary" onclick="saveLangTexts()" style="margin-top:16px">Kaydet</button>
       </div>
     </div>
 
@@ -1665,11 +1869,12 @@ document.getElementById('adminLogin').addEventListener('click', function(e) {
 function switchTab(tab, btn) {
   document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-  const tabMap = { products: 'tabProducts', productList: 'tabProductList', catalogs: 'tabCatalogs', settings: 'tabSettings' };
+  const tabMap = { products: 'tabProducts', productList: 'tabProductList', catalogs: 'tabCatalogs', langMgmt: 'tabLangMgmt', settings: 'tabSettings' };
   document.getElementById(tabMap[tab]).classList.add('active');
   btn.classList.add('active');
   if (tab === 'productList') renderAdminProducts();
   if (tab === 'catalogs') renderAdminCatalogs();
+  if (tab === 'langMgmt') renderLangMgmt();
 }
 
 // ══════════ PRODUCT IMAGE PREVIEW (MULTI) ══════════
@@ -1716,35 +1921,39 @@ function removeProductImg(index) {
 
 // ══════════ ADD PRODUCT ══════════
 function addProduct() {
-  const name = document.getElementById('pName').value.trim();
+  const name_tr = document.getElementById('pName_tr').value.trim();
+  const name_en = document.getElementById('pName_en').value.trim();
+  const name_de = document.getElementById('pName_de').value.trim();
+  const desc_tr = document.getElementById('pDesc_tr').value.trim();
+  const desc_en = document.getElementById('pDesc_en').value.trim();
+  const desc_de = document.getElementById('pDesc_de').value.trim();
   const category = document.getElementById('pCategory').value;
   const price = document.getElementById('pPrice').value.trim();
   const oldPrice = document.getElementById('pOldPrice').value.trim();
-  const desc = document.getElementById('pDesc').value.trim();
   const badge = document.getElementById('pBadge').value;
   const whatsapp = document.getElementById('pWhatsapp').value.trim();
 
-  if (!name || !price) {
-    showToast('Lütfen ürün adı ve fiyat girin!');
+  if (!name_tr || !price) {
+    showToast('Lütfen en az Türkçe ürün adı ve fiyat girin!');
     return;
   }
 
   const products = getData(STORAGE_KEYS.products);
   products.push({
     id: Date.now(),
-    name, category, price, oldPrice, desc, badge, whatsapp,
+    name: name_tr, name_en, name_de,
+    desc: desc_tr, desc_en, desc_de,
+    category, price, oldPrice, badge, whatsapp,
     image: currentProductImgs[0] || null,
     images: currentProductImgs.length > 0 ? [...currentProductImgs] : []
   });
   setData(STORAGE_KEYS.products, products);
 
   // Reset form
-  document.getElementById('pName').value = '';
-  document.getElementById('pPrice').value = '';
-  document.getElementById('pOldPrice').value = '';
-  document.getElementById('pDesc').value = '';
+  ['pName_tr','pName_en','pName_de','pDesc_tr','pDesc_en','pDesc_de','pPrice','pOldPrice','pWhatsapp'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
   document.getElementById('pBadge').value = '';
-  document.getElementById('pWhatsapp').value = '';
   currentProductImgs = [];
   renderImgThumbs();
 
@@ -1772,35 +1981,39 @@ function renderProducts() {
   const filters = document.getElementById('productFilters');
 
   // Build filter buttons
-  const cats = ['Tümü', ...new Set(products.map(p => p.category))];
+  const cats = [t('products.all'), ...new Set(products.map(p => p.category))];
+  const allLabel = t('products.all');
+  if (currentFilter === 'Tümü' || currentFilter === 'All' || currentFilter === 'Alle') currentFilter = allLabel;
   filters.innerHTML = cats.map(c => `<button class="filter-btn${c===currentFilter?' active':''}" onclick="filterProducts('${c}')">${c}</button>`).join('');
 
-  // Filter
-  const filtered = currentFilter === 'Tümü' ? products : products.filter(p => p.category === currentFilter);
+  const isAll = currentFilter === allLabel;
+  const filtered = isAll ? products : products.filter(p => p.category === currentFilter);
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="no-products">Henüz ürün eklenmemiş. Yönetim panelinden ürün ekleyebilirsiniz.</div>';
+    grid.innerHTML = `<div class="no-products">${t('products.empty')}</div>`;
     return;
   }
 
-  grid.innerHTML = filtered.map(p => `
+  grid.innerHTML = filtered.map(p => {
+    const name = (currentLang === 'en' && p.name_en) ? p.name_en : (currentLang === 'de' && p.name_de) ? p.name_de : p.name;
+    return `
     <div class="product-card" onclick="openProductModal(${p.id})">
       ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
       ${p.image 
-        ? `<img class="product-img" src="${p.image}" alt="${p.name}" loading="lazy">`
+        ? `<img class="product-img" src="${p.image}" alt="${name}" loading="lazy">`
         : `<div class="product-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>`
       }
       <div class="product-info">
         <div class="product-category">${p.category}</div>
-        <div class="product-name">${p.name}</div>
+        <div class="product-name">${name}</div>
         <div class="product-price">
           ${p.oldPrice ? `<span class="old-price">${p.oldPrice} ₺</span>` : ''}
           ${p.price} ₺
         </div>
-        <span class="product-detail-btn">Detay →</span>
+        <span class="product-detail-btn">${t('products.detail')}</span>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function filterProducts(cat) {
@@ -1821,6 +2034,9 @@ function openProductModal(id) {
   const settings = getSettings();
   const wa = p.whatsapp || settings.whatsapp || '905000000000';
 
+  const name = (currentLang === 'en' && p.name_en) ? p.name_en : (currentLang === 'de' && p.name_de) ? p.name_de : p.name;
+  const desc = (currentLang === 'en' && p.desc_en) ? p.desc_en : (currentLang === 'de' && p.desc_de) ? p.desc_de : (p.desc || t('modal.no-desc'));
+
   // Build images array (support old single-image products)
   modalGalleryImgs = (p.images && p.images.length > 0) ? p.images : (p.image ? [p.image] : []);
   modalGalleryIdx = 0;
@@ -1828,16 +2044,15 @@ function openProductModal(id) {
   renderModalGallery();
 
   document.getElementById('modalInfo').innerHTML = `
-    <div class="product-category">${p.category}</div>
-    <h2>${p.name}</h2>
-    <div class="product-price" style="font-size:22px;margin-bottom:20px;">
-      ${p.oldPrice ? `<span class="old-price" style="font-size:16px">${p.oldPrice} ₺</span>` : ''}
-      ${p.price} ₺
-    </div>
-    <p>${p.desc || 'Bu ürün hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.'}</p>
-    <a href="https://wa.me/${wa}?text=${encodeURIComponent('Merhaba, ' + p.name + ' hakkında bilgi almak istiyorum.')}" target="_blank" class="product-modal-whatsapp">
+    <div class="modal-label">${p.category}</div>
+    <h2>${name}</h2>
+    <div class="modal-divider"></div>
+    ${p.oldPrice ? `<span class="modal-old-price">${p.oldPrice} ₺</span>` : ''}
+    <div class="modal-price">${p.price} ₺</div>
+    <p class="modal-desc">${desc}</p>
+    <a href="https://wa.me/${wa}?text=${encodeURIComponent('Merhaba, ' + name + ' hakkında bilgi almak istiyorum.')}" target="_blank" class="product-modal-whatsapp">
       <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-      WhatsApp ile Bilgi Al
+      ${t('modal.whatsapp')}
     </a>
   `;
 
@@ -1847,23 +2062,21 @@ function openProductModal(id) {
 function renderModalGallery() {
   const container = document.getElementById('modalImg');
   if (modalGalleryImgs.length === 0) {
-    container.innerHTML = `<div class="modal-gallery"><div style="text-align:center;color:var(--text-mid)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="60" height="60"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div></div>`;
+    container.innerHTML = `<div class="modal-gallery"><div class="modal-gallery-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" width="80" height="80"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div></div>`;
     return;
   }
   const hasMany = modalGalleryImgs.length > 1;
   container.innerHTML = `
-    <div class="modal-gallery" style="flex:1;min-height:240px;">
-      <img src="${modalGalleryImgs[modalGalleryIdx]}" id="modalMainImg" alt="ürün görseli">
+    <div class="modal-gallery">
+      <img class="modal-gallery-img" src="${modalGalleryImgs[0]}" id="modalMainImg" alt="ürün görseli">
       ${hasMany ? `
         <button class="gallery-nav prev" onclick="changeModalImg(-1)">&#8249;</button>
         <button class="gallery-nav next" onclick="changeModalImg(1)">&#8250;</button>
-        <div class="gallery-dots" id="galleryDots">
-          ${modalGalleryImgs.map((_, i) => `<button class="gallery-dot${i===0?' active':''}" onclick="goModalImg(${i})"></button>`).join('')}
-        </div>
+        <div class="gallery-counter" id="galleryCounter">1 / ${modalGalleryImgs.length}</div>
       ` : ''}
     </div>
     ${hasMany ? `
-    <div class="gallery-thumbs" id="galleryThumbs">
+    <div class="gallery-thumbs">
       ${modalGalleryImgs.map((src, i) => `<img class="gallery-thumb-item${i===0?' active':''}" src="${src}" onclick="goModalImg(${i})" alt="thumb ${i+1}">`).join('')}
     </div>` : ''}
   `;
@@ -1879,8 +2092,9 @@ function goModalImg(idx) {
 }
 function updateModalImg() {
   const img = document.getElementById('modalMainImg');
-  if (img) img.src = modalGalleryImgs[modalGalleryIdx];
-  document.querySelectorAll('.gallery-dot').forEach((d, i) => d.classList.toggle('active', i === modalGalleryIdx));
+  if (img) { img.style.opacity = '0'; setTimeout(() => { img.src = modalGalleryImgs[modalGalleryIdx]; img.style.opacity = '1'; }, 150); }
+  const counter = document.getElementById('galleryCounter');
+  if (counter) counter.textContent = (modalGalleryIdx + 1) + ' / ' + modalGalleryImgs.length;
   document.querySelectorAll('.gallery-thumb-item').forEach((t, i) => t.classList.toggle('active', i === modalGalleryIdx));
 }
 function closeProductModal() {
@@ -1979,7 +2193,7 @@ function renderCatalogs() {
   if (catalogs.length === 0) {
     grid.innerHTML = `<div class="catalog-item" style="opacity:0.5">
       <svg viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.5" width="36" height="36"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
-      <h4>Yakında</h4>
+      <h4>${t('catalog.soon')}</h4>
       <p>Kataloglar yükleniyor...</p>
     </div>`;
     return;
@@ -1988,7 +2202,7 @@ function renderCatalogs() {
     <a class="catalog-item" ${c.file ? `href="${c.file}" download="${c.fileName || c.name + '.pdf'}"` : ''}>
       <svg viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.5" width="36" height="36"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
       <h4>${c.name}</h4>
-      <p>${c.file ? 'İndirmek için tıklayın' : c.date}</p>
+      <p>${c.file ? t('catalog.download') : c.date}</p>
     </a>
   `).join('');
 }
@@ -2007,9 +2221,188 @@ function saveSettings() {
   showToast('Ayarlar kaydedildi!');
 }
 
+// ══════════ LANGUAGE SYSTEM ══════════
+let currentLang = localStorage.getItem('vh_lang') || 'tr';
+
+// Default texts (TR is master, en/de can be customized in admin)
+const DEFAULT_TEXTS = {
+  tr: {
+    'nav.home':'Ana Sayfa','nav.categories':'Kategoriler','nav.products':'Ürünler',
+    'nav.catalog':'Katalog','nav.about':'Hakkımızda','nav.contact':'İletişim','nav.admin':'Yönetim',
+    'hero.tagline':'Zarafet ve konforun buluştuğu yer','hero.cta':'Koleksiyonu Keşfet',
+    'products.label':'Ürünlerimiz','products.title':'Öne Çıkanlar',
+    'products.all':'Tümü','products.detail':'Detay →','products.empty':'Henüz ürün eklenmemiş.',
+    'catalog.label':'Dijital Katalog','catalog.title':'Kataloglarımız',
+    'catalog.desc':'Tüm koleksiyonlarımızı dijital kataloglarımız üzerinden inceleyebilirsiniz.',
+    'catalog.download':'İndirmek için tıklayın','catalog.soon':'Yakında',
+    'about.label':'Hakkımızda','about.title':'Evinize Değer Katan Tasarımlar',
+    'about.p1':'Velariva Home olarak, yaşam alanlarınızı estetik ve fonksiyonelliğin mükemmel uyumuyla şekillendiriyoruz. Her ürünümüz, kaliteli malzeme ve usta işçilikle özenle üretilmektedir.',
+    'about.p2':'Modern tasarım anlayışımızla, evinizin her köşesine zarafet ve konfor katıyoruz. Müşteri memnuniyetini ön planda tutarak, size en uygun çözümleri sunuyoruz.',
+    'about.stat1':'Mutlu Müşteri','about.stat2':'Ürün Çeşidi','about.stat3':'Yıllık Tecrübe',
+    'contact.label':'Bize Ulaşın','contact.title':'İletişim',
+    'modal.whatsapp':'WhatsApp ile Bilgi Al','modal.no-desc':'Bu ürün hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.'
+  },
+  en: {
+    'nav.home':'Home','nav.categories':'Collections','nav.products':'Products',
+    'nav.catalog':'Catalog','nav.about':'About Us','nav.contact':'Contact','nav.admin':'Admin',
+    'hero.tagline':'Where elegance meets comfort','hero.cta':'Explore Collection',
+    'products.label':'Our Products','products.title':'Featured',
+    'products.all':'All','products.detail':'Details →','products.empty':'No products added yet.',
+    'catalog.label':'Digital Catalog','catalog.title':'Our Catalogs',
+    'catalog.desc':'Browse all our collections through our digital catalogs.',
+    'catalog.download':'Click to download','catalog.soon':'Coming Soon',
+    'about.label':'About Us','about.title':'Designs That Add Value To Your Home',
+    'about.p1':'At Velariva Home, we shape your living spaces with the perfect harmony of aesthetics and functionality. Each product is carefully crafted with quality materials and expert craftsmanship.',
+    'about.p2':'With our modern design approach, we add elegance and comfort to every corner of your home. We prioritize customer satisfaction and offer you the most suitable solutions.',
+    'about.stat1':'Happy Customers','about.stat2':'Product Varieties','about.stat3':'Years of Experience',
+    'contact.label':'Reach Us','contact.title':'Contact',
+    'modal.whatsapp':'Get Info via WhatsApp','modal.no-desc':'Please contact us for detailed information about this product.'
+  },
+  de: {
+    'nav.home':'Startseite','nav.categories':'Kollektionen','nav.products':'Produkte',
+    'nav.catalog':'Katalog','nav.about':'Über uns','nav.contact':'Kontakt','nav.admin':'Verwaltung',
+    'hero.tagline':'Wo Eleganz auf Komfort trifft','hero.cta':'Kollektion entdecken',
+    'products.label':'Unsere Produkte','products.title':'Highlights',
+    'products.all':'Alle','products.detail':'Details →','products.empty':'Noch keine Produkte hinzugefügt.',
+    'catalog.label':'Digitaler Katalog','catalog.title':'Unsere Kataloge',
+    'catalog.desc':'Entdecken Sie alle unsere Kollektionen in unseren digitalen Katalogen.',
+    'catalog.download':'Zum Herunterladen klicken','catalog.soon':'Demnächst',
+    'about.label':'Über uns','about.title':'Designs, die Ihrem Zuhause Wert verleihen',
+    'about.p1':'Bei Velariva Home gestalten wir Ihre Wohnräume in perfekter Harmonie aus Ästhetik und Funktionalität. Jedes Produkt wird sorgfältig mit hochwertigen Materialien und meisterhafter Handwerkskunst gefertigt.',
+    'about.p2':'Mit unserem modernen Designansatz bringen wir Eleganz und Komfort in jeden Winkel Ihres Hauses. Wir stellen die Kundenzufriedenheit in den Vordergrund und bieten Ihnen die passenden Lösungen.',
+    'about.stat1':'Zufriedene Kunden','about.stat2':'Produktvarianten','about.stat3':'Jahre Erfahrung',
+    'contact.label':'Kontakt aufnehmen','contact.title':'Kontakt',
+    'modal.whatsapp':'Infos per WhatsApp','modal.no-desc':'Bitte kontaktieren Sie uns für detaillierte Informationen zu diesem Produkt.'
+  }
+};
+
+function getLangTexts() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('vh_lang_texts') || '{}');
+    const merged = {};
+    ['tr','en','de'].forEach(lang => {
+      merged[lang] = Object.assign({}, DEFAULT_TEXTS[lang], saved[lang] || {});
+    });
+    return merged;
+  } catch { return DEFAULT_TEXTS; }
+}
+
+function t(key) {
+  const texts = getLangTexts();
+  return (texts[currentLang] && texts[currentLang][key]) || (texts['tr'] && texts['tr'][key]) || key;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('vh_lang', lang);
+  // Update active buttons
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang));
+  applyI18n();
+  renderProducts();
+  renderCatalogs();
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+}
+
+function switchLangTab(lang, btn) {
+  ['tr','en','de'].forEach(l => {
+    const el = document.getElementById('langFields' + l.charAt(0).toUpperCase() + l.slice(1));
+    if(el) el.style.display = l === lang ? '' : 'none';
+  });
+  document.querySelectorAll('.lang-tab-btn').forEach(b => {
+    b.style.borderBottomColor = 'transparent';
+    b.style.color = 'var(--text-mid)';
+    b.classList.remove('active');
+  });
+  btn.style.borderBottomColor = 'var(--gold)';
+  btn.style.color = 'var(--green-deep)';
+  btn.classList.add('active');
+}
+
+// Language Management UI
+const LANG_LABELS = {
+  'hero.tagline': 'Hero — Alt Başlık',
+  'hero.cta': 'Hero — Buton',
+  'products.label': 'Ürünler — Üst Etiket',
+  'products.title': 'Ürünler — Başlık',
+  'products.all': 'Ürünler — "Tümü" Filtresi',
+  'products.detail': 'Ürün Kartı — Detay Butonu',
+  'catalog.label': 'Katalog — Üst Etiket',
+  'catalog.title': 'Katalog — Başlık',
+  'catalog.desc': 'Katalog — Açıklama',
+  'catalog.download': 'Katalog — İndirme Metni',
+  'about.label': 'Hakkımızda — Üst Etiket',
+  'about.title': 'Hakkımızda — Başlık',
+  'about.p1': 'Hakkımızda — 1. Paragraf',
+  'about.p2': 'Hakkımızda — 2. Paragraf',
+  'about.stat1': 'Hakkımızda — İstatistik 1',
+  'about.stat2': 'Hakkımızda — İstatistik 2',
+  'about.stat3': 'Hakkımızda — İstatistik 3',
+  'contact.label': 'İletişim — Üst Etiket',
+  'contact.title': 'İletişim — Başlık',
+  'modal.whatsapp': 'Ürün Modal — WhatsApp Butonu',
+  'modal.no-desc': 'Ürün Modal — Varsayılan Açıklama',
+  'nav.home':'Navbar — Ana Sayfa','nav.categories':'Navbar — Kategoriler','nav.products':'Navbar — Ürünler',
+  'nav.catalog':'Navbar — Katalog','nav.about':'Navbar — Hakkımızda','nav.contact':'Navbar — İletişim'
+};
+
+function renderLangMgmt() {
+  const texts = getLangTexts();
+  const keys = Object.keys(LANG_LABELS);
+  let html = '';
+  keys.forEach(key => {
+    const isLong = ['about.p1','about.p2','catalog.desc','modal.no-desc'].includes(key);
+    const tag = isLong ? 'textarea' : 'input type="text"';
+    const closetag = isLong ? 'textarea' : 'input';
+    html += `<div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid rgba(45,74,46,0.07)">
+      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">${LANG_LABELS[key]}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div><div style="font-size:10px;color:var(--text-mid);margin-bottom:4px;">🇹🇷 TR</div>
+          <${tag} id="lt_tr_${key.replace(/\./g,'_')}" style="width:100%;padding:8px 10px;border:1px solid rgba(45,74,46,0.12);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:13px;outline:none;${isLong?'height:80px;resize:vertical;':''}"></${closetag}></div>
+        <div><div style="font-size:10px;color:var(--text-mid);margin-bottom:4px;">🇬🇧 EN</div>
+          <${tag} id="lt_en_${key.replace(/\./g,'_')}" style="width:100%;padding:8px 10px;border:1px solid rgba(45,74,46,0.12);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:13px;outline:none;${isLong?'height:80px;resize:vertical;':''}"></${closetag}></div>
+        <div><div style="font-size:10px;color:var(--text-mid);margin-bottom:4px;">🇩🇪 DE</div>
+          <${tag} id="lt_de_${key.replace(/\./g,'_')}" style="width:100%;padding:8px 10px;border:1px solid rgba(45,74,46,0.12);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:13px;outline:none;${isLong?'height:80px;resize:vertical;':''}"></${closetag}></div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('langMgmtContent').innerHTML = html;
+  // Fill current values
+  keys.forEach(key => {
+    ['tr','en','de'].forEach(lang => {
+      const el = document.getElementById('lt_' + lang + '_' + key.replace(/\./g,'_'));
+      if (el) el.value = (texts[lang] && texts[lang][key]) || '';
+    });
+  });
+}
+
+function saveLangTexts() {
+  const keys = Object.keys(LANG_LABELS);
+  const saved = { tr: {}, en: {}, de: {} };
+  keys.forEach(key => {
+    ['tr','en','de'].forEach(lang => {
+      const el = document.getElementById('lt_' + lang + '_' + key.replace(/\./g,'_'));
+      if (el && el.value.trim()) saved[lang][key] = el.value.trim();
+    });
+  });
+  localStorage.setItem('vh_lang_texts', JSON.stringify(saved));
+  showToast('Dil metinleri kaydedildi!');
+  applyI18n();
+  renderProducts();
+  renderCatalogs();
+}
+
 // ══════════ INIT ══════════
 renderProducts();
 renderCatalogs();
+applyI18n();
+// Set active lang button on load
+document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === currentLang));
 
 // Smooth scroll fix for anchors
 document.querySelectorAll('a[href^="#"]').forEach(a => {
