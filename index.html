@@ -1882,6 +1882,9 @@ body {
   </div>
 </div>
 
+<!-- ═══ TOAST ═══ -->
+<div id="toast" style="position:fixed;bottom:30px;right:30px;background:var(--green-deep);color:var(--cream);padding:16px 28px;font-size:13px;z-index:9999;transform:translateY(100px);opacity:0;transition:0.4s ease;font-family:'Jost',sans-serif;letter-spacing:1px;pointer-events:none;"></div>
+
 <!-- ═══ LIGHTBOX ═══ -->
 <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox(event)">
   <button class="lightbox-close" onclick="closeLightbox()">×</button>
@@ -2060,10 +2063,17 @@ function toggleMobile() {
 
 // ══════════ TOAST ══════════
 function showToast(msg) {
-  const t = document.getElementById('toast');
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:var(--green-deep);color:var(--cream);padding:16px 28px;font-size:13px;z-index:9999;transform:translateY(100px);opacity:0;transition:0.4s ease;font-family:"Jost",sans-serif;letter-spacing:1px;';
+    document.body.appendChild(t);
+  }
   t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  t.style.transform = 'translateY(0)';
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.transform = 'translateY(100px)'; t.style.opacity = '0'; }, 3000);
 }
 
 // ══════════ ADMIN LOGIN ══════════
