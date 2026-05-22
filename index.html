@@ -1169,16 +1169,24 @@ body {
 
 /* ══════════ PRODUCT MODAL — LARGE CINEMATIC ══════════ */
 .product-modal-overlay {
-  display: none;
   position: fixed; inset: 0;
   background: rgba(10,10,10,0.85);
   z-index: 4000;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  -webkit-overflow-scrolling: touch;
 }
-.product-modal-overlay.open { display: flex; }
+.product-modal-overlay.open {
+  visibility: visible;
+  opacity: 1;
+}
 .product-modal {
   background: var(--white);
   width: 1200px;
@@ -1196,15 +1204,22 @@ body {
 
 /* ══════════ LIGHTBOX (ZOOM) ══════════ */
 .lightbox-overlay {
-  display: none;
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.95);
   z-index: 9000;
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: zoom-out;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  -webkit-overflow-scrolling: touch;
 }
-.lightbox-overlay.open { display: flex; }
+.lightbox-overlay.open {
+  visibility: visible;
+  opacity: 1;
+}
 .lightbox-overlay img {
   max-width: 92vw;
   max-height: 92vh;
@@ -2255,7 +2270,7 @@ function renderProducts() {
   grid.innerHTML = filtered.map(p => {
     const name = (currentLang === 'en' && p.name_en) ? p.name_en : (currentLang === 'de' && p.name_de) ? p.name_de : p.name;
     return `
-    <div class="product-card" onclick="openProductModal(${p.id})">
+    <div class="product-card" onclick="openProductModal(${p.id})" role="button" tabindex="0" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">
       ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
       ${p.image 
         ? `<img class="product-img" src="${p.image}" alt="${name}" loading="lazy">`
@@ -2315,6 +2330,9 @@ function openProductModal(id) {
   `;
 
   document.getElementById('productModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
 }
 
 function renderModalGallery() {
@@ -2405,6 +2423,9 @@ function updateModalImg() {
 }
 function closeProductModal() {
   document.getElementById('productModal').classList.remove('open');
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
 }
 document.getElementById('productModal').addEventListener('click', function(e) {
   if (e.target === this) closeProductModal();
