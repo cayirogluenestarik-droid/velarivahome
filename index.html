@@ -1199,8 +1199,66 @@ body {
   box-shadow: 0 30px 100px rgba(0,0,0,0.4);
   position: relative;
 }
+
+/* ── MOBİL MODAL — tam yeniden tasarım ── */
 @media(max-width:768px) {
-  .product-modal { grid-template-columns: 1fr; max-height: 95vh; overflow-y: auto; }
+  .product-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .product-modal {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    width: 100%;
+    max-width: 100%;
+    max-height: 95vh;
+    height: 95vh;
+    overflow: hidden;
+    border-radius: 18px 18px 0 0;
+    margin: 0;
+  }
+  .product-modal-img {
+    min-height: 260px !important;
+    max-height: 260px !important;
+    height: 260px !important;
+    flex-shrink: 0;
+  }
+  .modal-gallery {
+    min-height: 210px !important;
+    height: 210px !important;
+  }
+  .modal-gallery-img {
+    min-height: 210px !important;
+    height: 210px !important;
+  }
+  .product-modal-info {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex: 1;
+    padding: 24px 20px 40px !important;
+    height: 0; /* flex trick — scroll için gerekli */
+  }
+  .product-modal-close {
+    top: 10px !important;
+    right: 10px !important;
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 18px !important;
+    border-radius: 50%;
+    z-index: 20;
+  }
+  /* Kaydır ipucu çizgisi */
+  .product-modal::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 50%;
+    transform: translateX(-50%);
+    width: 36px; height: 4px;
+    background: rgba(255,255,255,0.35);
+    border-radius: 2px;
+    z-index: 20;
+    pointer-events: none;
+  }
 }
 
 /* ══════════ LIGHTBOX (ZOOM) ══════════ */
@@ -1393,6 +1451,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--white);
 }
 @media(max-width:768px) { .product-modal-info { padding: 30px 24px; } }
