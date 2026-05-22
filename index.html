@@ -733,6 +733,48 @@ body {
   letter-spacing: 1px;
 }
 
+/* ══════════ ADMIN AVATAR BUTTON ══════════ */
+.admin-avatar-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--green-deep);
+  border: 2px solid transparent;
+  color: var(--cream);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.admin-avatar-btn:hover {
+  background: var(--green-mid);
+  border-color: var(--gold);
+}
+
+/* ══════════ MINI LOGIN POPUP ══════════ */
+.admin-mini-popup {
+  position: fixed;
+  top: 90px; right: 20px;
+  width: 260px;
+  background: var(--white);
+  padding: 24px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+  z-index: 2000;
+  border-top: 3px solid var(--gold);
+  display: none;
+  animation: popIn 0.2s ease;
+}
+.admin-mini-popup.open { display: block; }
+@keyframes popIn {
+  from { opacity:0; transform: translateY(-8px) scale(0.97); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+.admin-mini-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  z-index: 1999;
+}
+.admin-mini-overlay.open { display: block; }
+
 /* ══════════ ADMIN PANEL ══════════ */
 .admin-overlay {
   display: none;
@@ -1549,17 +1591,39 @@ body {
     <li><a href="#katalog" data-i18n="nav.catalog">Katalog</a></li>
     <li><a href="#hakkimizda" data-i18n="nav.about">Hakkımızda</a></li>
     <li><a href="#iletisim" data-i18n="nav.contact">İletişim</a></li>
-    <li><a class="nav-admin" onclick="openLogin()" data-i18n="nav.admin">Yönetim</a></li>
   </ul>
-  <div class="lang-switcher">
-    <button class="lang-btn active" onclick="setLang('tr')">TR</button>
-    <button class="lang-btn" onclick="setLang('en')">EN</button>
-    <button class="lang-btn" onclick="setLang('de')">DE</button>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('tr')">TR</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('de')">DE</button>
+    </div>
+    <!-- Avatar / Admin Giriş -->
+    <button class="admin-avatar-btn" onclick="toggleAdminPopup()" id="adminAvatarBtn" title="Yönetim Girişi">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </button>
   </div>
   <div class="hamburger" onclick="toggleMobile()">
     <span></span><span></span><span></span>
   </div>
 </nav>
+
+<!-- ═══ ADMIN MINI LOGIN POPUP ═══ -->
+<div class="admin-mini-popup" id="adminMiniPopup">
+  <div style="font-family:'Playfair Display',serif;font-size:16px;color:var(--green-deep);margin-bottom:4px;">Yönetim Girişi</div>
+  <div style="font-size:11px;color:var(--text-mid);letter-spacing:1px;margin-bottom:16px;">Şifrenizi girin</div>
+  <input type="password" id="miniPassInput" placeholder="Şifre" onkeydown="if(event.key==='Enter')doMiniLogin()"
+    style="width:100%;padding:11px 14px;border:1px solid rgba(45,74,46,0.15);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:14px;outline:none;margin-bottom:10px;">
+  <button onclick="doMiniLogin()"
+    style="width:100%;padding:12px;background:var(--green-deep);color:var(--cream);border:none;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">
+    Giriş Yap
+  </button>
+  <div id="miniLoginError" style="color:#c0392b;font-size:12px;margin-top:8px;display:none;">Hatalı şifre</div>
+</div>
+<div class="admin-mini-overlay" id="adminMiniOverlay" onclick="closeAdminPopup()"></div>
 
 <div class="mobile-overlay" onclick="toggleMobile()"></div>
 <div class="mobile-menu">
@@ -1706,7 +1770,7 @@ body {
           </div>
           <div class="contact-item-text">
             <h4>Adres</h4>
-            <p>Bursa, Türkiye</p>
+            <p id="contactAddress">Bursa, Türkiye</p>
           </div>
         </div>
         <div class="contact-item">
@@ -1715,7 +1779,7 @@ body {
           </div>
           <div class="contact-item-text">
             <h4>Telefon</h4>
-            <p>+90 (xxx) xxx xx xx</p>
+            <p id="contactPhone">+90 (xxx) xxx xx xx</p>
           </div>
         </div>
         <div class="contact-item">
@@ -1724,7 +1788,7 @@ body {
           </div>
           <div class="contact-item-text">
             <h4>E-Posta</h4>
-            <p>info@velarivahome.com</p>
+            <p id="contactEmail">info@velarivahome.com</p>
           </div>
         </div>
         <div class="contact-item">
@@ -1779,18 +1843,6 @@ body {
 </footer>
 
 <!-- ═══ ADMIN LOGIN MODAL ═══ -->
-<div class="admin-overlay" id="adminLogin">
-  <div class="admin-login">
-    <h2>Yönetim Paneli</h2>
-    <p>Giriş yaparak ürün ve katalog yönetimini kullanabilirsiniz.</p>
-    <input type="text" id="adminUser" placeholder="Kullanıcı Adı">
-    <input type="password" id="adminPass" placeholder="Şifre">
-    <button onclick="doLogin()">Giriş Yap</button>
-    <div class="error" id="loginError">Kullanıcı adı veya şifre hatalı!</div>
-    <p style="margin-top:20px; font-size:11px; color:#999;">Varsayılan: admin / velariva2026</p>
-  </div>
-</div>
-
 <!-- ═══ ADMIN PANEL ═══ -->
 <div class="admin-panel" id="adminPanel">
   <div class="admin-topbar">
@@ -2169,32 +2221,46 @@ function showToast(msg) {
   setTimeout(() => { t.style.transform = 'translateY(100px)'; t.style.opacity = '0'; }, 3000);
 }
 
-// ══════════ ADMIN LOGIN ══════════
-function openLogin() {
-  document.getElementById('adminLogin').classList.add('open');
+// ══════════ ADMIN MINI LOGIN ══════════
+function toggleAdminPopup() {
+  const popup = document.getElementById('adminMiniPopup');
+  const overlay = document.getElementById('adminMiniOverlay');
+  const isOpen = popup.classList.contains('open');
+  if (isOpen) {
+    popup.classList.remove('open');
+    overlay.classList.remove('open');
+  } else {
+    popup.classList.add('open');
+    overlay.classList.add('open');
+    setTimeout(() => document.getElementById('miniPassInput').focus(), 50);
+  }
 }
-function doLogin() {
-  const user = document.getElementById('adminUser').value;
-  const pass = document.getElementById('adminPass').value;
+function closeAdminPopup() {
+  document.getElementById('adminMiniPopup').classList.remove('open');
+  document.getElementById('adminMiniOverlay').classList.remove('open');
+  document.getElementById('miniLoginError').style.display = 'none';
+  document.getElementById('miniPassInput').value = '';
+}
+function doMiniLogin() {
+  const pass = document.getElementById('miniPassInput').value;
   const settings = getSettings();
-  if (user === 'admin' && pass === (settings.password || 'velariva2026')) {
-    document.getElementById('adminLogin').classList.remove('open');
+  if (pass === (settings.password || 'velariva2026')) {
+    closeAdminPopup();
     document.getElementById('adminPanel').classList.add('open');
-    document.getElementById('loginError').style.display = 'none';
     renderAdminProducts();
     renderAdminCatalogs();
-    // Fill settings
     document.getElementById('settingsWhatsapp').value = settings.whatsapp || '';
     document.getElementById('settingsPhone').value = settings.phone || '';
     document.getElementById('settingsEmail').value = settings.email || '';
     document.getElementById('settingsAddress').value = settings.address || '';
   } else {
-    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('miniLoginError').style.display = 'block';
+    document.getElementById('miniPassInput').value = '';
+    document.getElementById('miniPassInput').focus();
   }
 }
-document.getElementById('adminLogin').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.remove('open');
-});
+// Eski openLogin — geriye dönük uyumluluk
+function openLogin() { toggleAdminPopup(); }
 
 // ══════════ ADMIN TABS ══════════
 function switchTab(tab, btn) {
@@ -2623,7 +2689,19 @@ function saveSettings() {
   if (newPass) settings.password = newPass;
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(settings));
   document.getElementById('settingsNewPass').value = '';
+  // Sayfadaki iletişim bilgilerini güncelle
+  updateContactDisplay();
   showToast('Ayarlar kaydedildi!');
+}
+
+function updateContactDisplay() {
+  const s = getSettings();
+  const addr = document.getElementById('contactAddress');
+  const phone = document.getElementById('contactPhone');
+  const email = document.getElementById('contactEmail');
+  if (addr && s.address) addr.textContent = s.address;
+  if (phone && s.phone) phone.textContent = s.phone;
+  if (email && s.email) email.textContent = s.email;
 }
 
 // ══════════ LANGUAGE SYSTEM ══════════
@@ -2806,6 +2884,7 @@ function saveLangTexts() {
 renderProducts();
 renderCatalogs();
 applyI18n();
+updateContactDisplay();
 // Set active lang button on load
 document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === currentLang));
 
