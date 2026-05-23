@@ -526,10 +526,6 @@
               <input type="text" id="pOldPrice" placeholder="Ör: 75.000 (eski fiyat)">
             </div>
           </div>
-          <div class="form-group">
-            <label>WhatsApp Numarası</label>
-            <input type="text" id="pWhatsapp" placeholder="Ör: 905xxxxxxxxx">
-          </div>
           <button class="btn-primary" onclick="addProduct()">Ürün Ekle</button>
         </div>
       </div>
@@ -703,10 +699,6 @@
         <label>İndirimli Fiyat (₺) — Opsiyonel</label>
         <input type="text" id="eOldPrice" placeholder="Ör: 75.000 (eski fiyat)">
       </div>
-    </div>
-    <div class="form-group">
-      <label>WhatsApp Numarası</label>
-      <input type="text" id="eWhatsapp" placeholder="Ör: 905xxxxxxxxx">
     </div>
     <button class="btn-primary" onclick="saveEditProduct()">Kaydet</button>
   </div>
@@ -1070,7 +1062,7 @@ async function addProduct() {
     price: document.getElementById('pPrice').value.trim(),
     oldPrice: document.getElementById('pOldPrice').value.trim(),
     badge: document.getElementById('pBadge').value,
-    whatsapp: document.getElementById('pWhatsapp').value.trim(),
+    whatsapp: document.getElementById('settingsWhatsapp')?.value?.trim() || '',
     image: currentProductImgs[0] || null,
     images: [...currentProductImgs]
   };
@@ -1092,7 +1084,7 @@ async function addProduct() {
     renderAdminProducts();
   }
 
-  ['pName_tr','pName_en','pName_de','pDesc_tr','pDesc_en','pDesc_de','pPrice','pOldPrice','pWhatsapp'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  ['pName_tr','pName_en','pName_de','pDesc_tr','pDesc_en','pDesc_de','pPrice','pOldPrice'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
   document.getElementById('pBadge').value = '';
   currentProductImgs = [];
   renderImgThumbs();
@@ -1132,7 +1124,7 @@ function openEditModal(id) {
   document.getElementById('eBadge').value = p.badge || '';
   document.getElementById('ePrice').value = p.price || '';
   document.getElementById('eOldPrice').value = p.oldPrice || '';
-  document.getElementById('eWhatsapp').value = p.whatsapp || '';
+  // eWhatsapp removed - uses global settings
 
   document.getElementById('editLangTr').style.display = '';
   document.getElementById('editLangEn').style.display = 'none';
@@ -1188,7 +1180,6 @@ async function saveEditProduct() {
     desc: document.getElementById('eDesc_tr').value.trim(), desc_en: document.getElementById('eDesc_en').value.trim(), desc_de: document.getElementById('eDesc_de').value.trim(),
     category: document.getElementById('eCategory').value, badge: document.getElementById('eBadge').value,
     price: document.getElementById('ePrice').value.trim(), oldPrice: document.getElementById('eOldPrice').value.trim(),
-    whatsapp: document.getElementById('eWhatsapp').value.trim(),
     images: editProductImgs, image: editProductImgs[0] || null
   };
   if (window.firebaseReady && window.updateProductFirebase) {

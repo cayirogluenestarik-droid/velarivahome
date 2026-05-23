@@ -1764,7 +1764,13 @@ body {
       <button class="lang-btn" onclick="setLang('en')">EN</button>
       <button class="lang-btn" onclick="setLang('de')">DE</button>
     </div>
-
+    <!-- Avatar / Admin Giriş -->
+    <a href="admin.html" class="admin-avatar-btn" id="adminAvatarBtn" title="Yönetim Paneli" style="display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </a>
   </div>
   <div class="hamburger" onclick="toggleMobile()">
     <span></span><span></span><span></span>
@@ -1779,6 +1785,7 @@ body {
   <a href="#katalog" onclick="toggleMobile()" data-i18n="nav.catalog">Katalog</a>
   <a href="#hakkimizda" onclick="toggleMobile()" data-i18n="nav.about">Hakkımızda</a>
   <a href="#iletisim" onclick="toggleMobile()" data-i18n="nav.contact">İletişim</a>
+  <a href="admin.html" data-i18n="nav.admin">Yönetim Paneli</a>
   <div class="mobile-lang">
     <button class="lang-btn active" onclick="setLang('tr')">TR</button>
     <button class="lang-btn" onclick="setLang('en')">EN</button>
@@ -2047,10 +2054,6 @@ body {
         <input type="text" id="eOldPrice" placeholder="Ör: 75.000 (eski fiyat)">
       </div>
     </div>
-    <div class="form-group">
-      <label>WhatsApp Numarası</label>
-      <input type="text" id="eWhatsapp" placeholder="Ör: 905xxxxxxxxx">
-    </div>
     <button class="btn-primary" onclick="saveEditProduct()">Kaydet</button>
   </div>
 </div>
@@ -2177,10 +2180,6 @@ body {
             <label>İndirimli Fiyat (₺) — Opsiyonel</label>
             <input type="text" id="pOldPrice" placeholder="Ör: 75.000 (eski fiyat)">
           </div>
-        </div>
-        <div class="form-group">
-          <label>WhatsApp Numarası</label>
-          <input type="text" id="pWhatsapp" placeholder="Ör: 905xxxxxxxxx">
         </div>
         <button class="btn-primary" onclick="addProduct()">Ürün Ekle</button>
       </div>
@@ -2632,8 +2631,6 @@ async function addProduct() {
   const price = document.getElementById('pPrice').value.trim();
   const oldPrice = document.getElementById('pOldPrice').value.trim();
   const badge = document.getElementById('pBadge').value;
-  const whatsapp = document.getElementById('pWhatsapp').value.trim();
-
   if (!name_tr) {
     showToast('Lütfen en az Türkçe ürün adı girin!');
     return;
@@ -2643,7 +2640,7 @@ async function addProduct() {
     id: Date.now(),
     name: name_tr, name_en, name_de,
     desc: desc_tr, desc_en, desc_de,
-    category, price, oldPrice, badge, whatsapp,
+    category, price, oldPrice, badge,
     image: currentProductImgs[0] || null,
     images: currentProductImgs.length > 0 ? [...currentProductImgs] : []
   };
@@ -2669,7 +2666,7 @@ async function addProduct() {
   }
 
   // Reset form
-  ['pName_tr','pName_en','pName_de','pDesc_tr','pDesc_en','pDesc_de','pPrice','pOldPrice','pWhatsapp'].forEach(id => {
+  ['pName_tr','pName_en','pName_de','pDesc_tr','pDesc_en','pDesc_de','pPrice','pOldPrice'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = '';
   });
   document.getElementById('pBadge').value = '';
@@ -2714,7 +2711,7 @@ function openEditModal(id) {
   document.getElementById('eBadge').value = p.badge || '';
   document.getElementById('ePrice').value = p.price || '';
   document.getElementById('eOldPrice').value = p.oldPrice || '';
-  document.getElementById('eWhatsapp').value = p.whatsapp || '';
+  // eWhatsapp removed - uses global settings
 
   // Dil sekme sıfırla
   document.getElementById('editLangTr').style.display = '';
@@ -2800,7 +2797,6 @@ async function saveEditProduct() {
     badge:    document.getElementById('eBadge').value,
     price:    document.getElementById('ePrice').value.trim(),
     oldPrice: document.getElementById('eOldPrice').value.trim(),
-    whatsapp: document.getElementById('eWhatsapp').value.trim(),
     images:   editProductImgs,
     image:    editProductImgs[0] || null,
   };
@@ -2983,7 +2979,7 @@ function openProductModal(id) {
   if (!p) return;
 
   const settings = getSettings();
-  const wa = p.whatsapp || settings.whatsapp || '905000000000';
+  const wa = settings.whatsapp || '905000000000';
 
   const name = (currentLang === 'en' && p.name_en) ? p.name_en : (currentLang === 'de' && p.name_de) ? p.name_de : p.name;
   const desc = (currentLang === 'en' && p.desc_en) ? p.desc_en : (currentLang === 'de' && p.desc_de) ? p.desc_de : (p.desc || t('modal.no-desc'));
@@ -3002,7 +2998,7 @@ function openProductModal(id) {
     ${p.price ? `<div class="modal-price">${p.price} ₺</div>` : ''}
     <p class="modal-desc">${desc}</p>
     <a href="https://wa.me/${wa}?text=${encodeURIComponent('Merhaba, ' + name + ' hakkında bilgi almak istiyorum.')}" target="_blank" class="product-modal-whatsapp">
-      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M16 2C8.28 2 2 8.28 2 16c0 2.46.66 4.86 1.9 6.97L2 30l7.25-1.87A13.94 13.94 0 0016 30c7.72 0 14-6.28 14-14S23.72 2 16 2zm0 25.5a11.44 11.44 0 01-5.84-1.6l-.42-.25-4.3 1.1 1.13-4.17-.28-.44A11.46 11.46 0 014.5 16C4.5 9.6 9.6 4.5 16 4.5S27.5 9.6 27.5 16 22.4 27.5 16 27.5zm6.27-8.57c-.34-.17-2.02-.99-2.33-1.1-.31-.12-.54-.17-.77.17-.23.34-.88 1.1-1.08 1.33-.2.23-.4.26-.74.09-.34-.18-1.44-.53-2.74-1.69-1.01-.9-1.7-2.01-1.9-2.35-.2-.34-.02-.52.15-.69.15-.15.34-.4.51-.6.17-.2.23-.34.34-.57.12-.23.06-.43-.03-.6-.09-.17-.77-1.85-1.05-2.53-.28-.67-.56-.58-.77-.59l-.65-.01c-.23 0-.6.09-.91.43-.31.34-1.19 1.16-1.19 2.83s1.22 3.28 1.39 3.51c.17.23 2.4 3.66 5.81 5.13.81.35 1.44.56 1.93.72.81.26 1.55.22 2.13.13.65-.1 2.02-.82 2.3-1.62.29-.8.29-1.48.2-1.62-.08-.14-.31-.23-.65-.4z"/></svg>
       ${t('modal.whatsapp')}
     </a>
   `;
