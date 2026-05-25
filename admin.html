@@ -644,37 +644,41 @@
                 <label>Koltuk Takımları</label>
                 <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
                   <input type="text" id="catImg_sofa" placeholder="URL veya görsel yükle" style="flex:1;padding:10px 12px;border:1px solid rgba(45,74,46,0.15);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:12px;outline:none;">
-                  <button onclick="document.getElementById('catFile_sofa').click()" style="padding:10px 12px;background:var(--green-deep);color:var(--cream);border:none;font-size:11px;cursor:pointer;white-space:nowrap;">📁</button>
+                  <button onclick="document.getElementById('catFile_sofa').click()" style="padding:10px 12px;background:var(--green-mid);color:var(--cream);border:none;font-size:11px;cursor:pointer;white-space:nowrap;" title="Görsel seç">📁</button>
                   <input type="file" id="catFile_sofa" accept="image/*" style="display:none" onchange="handleCatImgFile('sofa',this)">
                 </div>
-                <div id="catImgPreview_sofa" style="width:100%;height:70px;background-size:cover;background-position:center;border:1px solid rgba(45,74,46,0.1);"></div>
+                <div id="catImgPreview_sofa" style="width:100%;height:70px;background-size:cover;background-position:center;border:1px solid rgba(45,74,46,0.1);margin-bottom:8px;"></div>
+                <button onclick="saveCatImg('sofa')" style="width:100%;padding:9px;background:var(--green-deep);color:var(--cream);border:none;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">✓ Kaydet</button>
               </div>
               <div class="form-group" style="margin:0">
                 <label>Yatak Odaları</label>
                 <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
                   <input type="text" id="catImg_bedroom" placeholder="URL veya görsel yükle" style="flex:1;padding:10px 12px;border:1px solid rgba(45,74,46,0.15);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:12px;outline:none;">
-                  <button onclick="document.getElementById('catFile_bedroom').click()" style="padding:10px 12px;background:var(--green-deep);color:var(--cream);border:none;font-size:11px;cursor:pointer;white-space:nowrap;">📁</button>
+                  <button onclick="document.getElementById('catFile_bedroom').click()" style="padding:10px 12px;background:var(--green-mid);color:var(--cream);border:none;font-size:11px;cursor:pointer;white-space:nowrap;" title="Görsel seç">📁</button>
                   <input type="file" id="catFile_bedroom" accept="image/*" style="display:none" onchange="handleCatImgFile('bedroom',this)">
                 </div>
-                <div id="catImgPreview_bedroom" style="width:100%;height:70px;background-size:cover;background-position:center;border:1px solid rgba(45,74,46,0.1);"></div>
+                <div id="catImgPreview_bedroom" style="width:100%;height:70px;background-size:cover;background-position:center;border:1px solid rgba(45,74,46,0.1);margin-bottom:8px;"></div>
+                <button onclick="saveCatImg('bedroom')" style="width:100%;padding:9px;background:var(--green-deep);color:var(--cream);border:none;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">✓ Kaydet</button>
               </div>
               <div class="form-group" style="margin:0">
                 <label>Yemek Odaları</label>
                 <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
                   <input type="text" id="catImg_dining" placeholder="URL veya görsel yükle" style="flex:1;padding:10px 12px;border:1px solid rgba(45,74,46,0.15);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:12px;outline:none;">
-                  <button onclick="document.getElementById('catFile_dining').click()" style="padding:10px 12px;background:var(--green-deep);color:var(--cream);border:none;font-size:11px;cursor:pointer;white-space:nowrap;">📁</button>
+                  <button onclick="document.getElementById('catFile_dining').click()" style="padding:10px 12px;background:var(--green-mid);color:var(--cream);border:none;font-size:11px;cursor:pointer;white-space:nowrap;" title="Görsel seç">📁</button>
                   <input type="file" id="catFile_dining" accept="image/*" style="display:none" onchange="handleCatImgFile('dining',this)">
                 </div>
-                <div id="catImgPreview_dining" style="width:100%;height:70px;background-size:cover;background-position:center;border:1px solid rgba(45,74,46,0.1);"></div>
+                <div id="catImgPreview_dining" style="width:100%;height:70px;background-size:cover;background-position:center;border:1px solid rgba(45,74,46,0.1);margin-bottom:8px;"></div>
+                <button onclick="saveCatImg('dining')" style="width:100%;padding:9px;background:var(--green-deep);color:var(--cream);border:none;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">✓ Kaydet</button>
               </div>
               <div class="form-group" style="margin:0">
                 <label>TV Üniteleri</label>
                 <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
                   <input type="text" id="catImg_tv" placeholder="URL veya görsel yükle" style="flex:1;padding:10px 12px;border:1px solid rgba(45,74,46,0.15);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:12px;outline:none;">
-                  <button onclick="document.getElementById('catFile_tv').click()" style="padding:10px 12px;background:var(--green-deep);color:var(--cream);border:none;font-size:11px;cursor:pointer;white-space:nowrap;">📁</button>
+                  <button onclick="document.getElementById('catFile_tv').click()" style="padding:10px 12px;background:var(--green-mid);color:var(--cream);border:none;font-size:11px;cursor:pointer;white-space:nowrap;" title="Görsel seç">📁</button>
                   <input type="file" id="catFile_tv" accept="image/*" style="display:none" onchange="handleCatImgFile('tv',this)">
                 </div>
-                <div id="catImgPreview_tv" style="width:100%;height:70px;background-size:cover;background-position:center;border:1px solid rgba(45,74,46,0.1);"></div>
+                <div id="catImgPreview_tv" style="width:100%;height:70px;background-size:cover;background-position:center;border:1px solid rgba(45,74,46,0.1);margin-bottom:8px;"></div>
+                <button onclick="saveCatImg('tv')" style="width:100%;padding:9px;background:var(--green-deep);color:var(--cream);border:none;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">✓ Kaydet</button>
               </div>
             </div>
           </div>
@@ -1366,6 +1370,18 @@ function handleCatImgFile(key, input) {
   };
   reader.readAsDataURL(input.files[0]);
 }
+
+async function saveCatImg(key) {
+  const url = document.getElementById('catImg_'+key)?.value?.trim();
+  if (!url) { showToast('⚠️ Önce görsel seçin veya URL girin!'); return; }
+  const s = getSettings();
+  s['catImg_'+key] = url;
+  localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(s));
+  if (window.saveSettingsFirebase) await window.saveSettingsFirebase(s);
+  const labels = { sofa: 'Koltuk Takımları', bedroom: 'Yatak Odaları', dining: 'Yemek Odaları', tv: 'TV Üniteleri' };
+  showToast('✅ ' + labels[key] + ' görseli kaydedildi!');
+}
+
 // URL alanı değişince önizlemeyi güncelle
 ['sofa','bedroom','dining','tv'].forEach(k => {
   document.addEventListener('input', e => {
