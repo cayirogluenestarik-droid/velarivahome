@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Velariva Home | Mobilya & Ev Dekorasyon</title>
+<meta name="description" content="Velariva Home — Zarafet ve konforun buluştuğu yer. Koltuk takımları, yatak odaları, yemek odaları ve TV üniteleri ile yaşam alanlarınıza değer katıyoruz.">
+<meta name="keywords" content="Velariva Home, mobilya, ev dekorasyon, koltuk takımı, yatak odası, yemek odası, TV ünitesi, Bursa mobilya">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://velarivahome.com/">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://velarivahome.com/">
+<meta property="og:title" content="Velariva Home | Mobilya & Ev Dekorasyon">
+<meta property="og:description" content="Zarafet ve konforun buluştuğu yer. Koltuk takımları, yatak odaları ve daha fazlası.">
+<meta property="og:site_name" content="Velariva Home">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Velariva Home | Mobilya & Ev Dekorasyon">
+<meta name="twitter:description" content="Zarafet ve konforun buluştuğu yer. Koltuk takımları, yatak odaları ve daha fazlası.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -1818,28 +1832,28 @@ body {
     </div>
     <div class="cat-grid">
       <div class="cat-card" onclick="filterProducts('Koltuk Takımı')">
-        <div class="cat-card-bg" style="background-image:url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80')"></div>
+        <div class="cat-card-bg" id="catBg_sofa" style="background-image:url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80')"></div>
         <div class="cat-card-content">
           <h3 data-i18n="cats.sofa">Koltuk Takımları</h3>
           <p data-i18n="cats.sofa.sub">Konfor ve Şıklık</p>
         </div>
       </div>
       <div class="cat-card" onclick="filterProducts('Yatak Odası')">
-        <div class="cat-card-bg" style="background-image:url('https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80')"></div>
+        <div class="cat-card-bg" id="catBg_bedroom" style="background-image:url('https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80')"></div>
         <div class="cat-card-content">
           <h3 data-i18n="cats.bedroom">Yatak Odaları</h3>
           <p data-i18n="cats.bedroom.sub">Huzurlu Uykular</p>
         </div>
       </div>
       <div class="cat-card" onclick="filterProducts('Yemek Odası')">
-        <div class="cat-card-bg" style="background-image:url('https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80')"></div>
+        <div class="cat-card-bg" id="catBg_dining" style="background-image:url('https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80')"></div>
         <div class="cat-card-content">
           <h3 data-i18n="cats.dining">Yemek Odaları</h3>
           <p data-i18n="cats.dining.sub">Bir Arada Olmak</p>
         </div>
       </div>
       <div class="cat-card" onclick="filterProducts('TV Ünitesi')">
-        <div class="cat-card-bg" style="background-image:url('https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80')"></div>
+        <div class="cat-card-bg" id="catBg_tv" style="background-image:url('https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80')"></div>
         <div class="cat-card-content">
           <h3 data-i18n="cats.tv">TV Üniteleri</h3>
           <p data-i18n="cats.tv.sub">Modern Çizgiler</p>
@@ -3504,6 +3518,21 @@ applyI18n();
 updateContactDisplay();
 // Set active lang button on load
 document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === currentLang));
+
+// Kategori arka plan görsellerini settings'ten uygula
+(function applyCatImages() {
+  const s = settings;
+  const defaults = {
+    sofa: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80',
+    bedroom: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80',
+    dining: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80',
+    tv: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80'
+  };
+  ['sofa','bedroom','dining','tv'].forEach(k => {
+    const el = document.getElementById('catBg_'+k);
+    if (el) el.style.backgroundImage = `url('${s['catImg_'+k] || defaults[k]}')`;
+  });
+})();
 
 // Expose globals for Firebase module
 window.renderProducts = renderProducts;
