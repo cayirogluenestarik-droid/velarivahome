@@ -1358,44 +1358,41 @@ function renderAdminCatalogs() {
 }
 
 // ══ KATEGORİ GÖRSELİ ══
-// base64 görselleri input value'ye değil, ayrı bir objeye sakla
-const catImgData = {};
+const _catImgStore = {}; // base64'leri burada tut, input.value'ye yazma
 
 function handleCatImgFile(key, input) {
   if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
   const reader = new FileReader();
   reader.onload = e => {
     const dataUrl = e.target.result;
-    // base64'ü ayrı objeye sakla, input'a sadece dosya adını yaz
-    catImgData[key] = dataUrl;
+    _catImgStore[key] = dataUrl; // base64'ü JS objesine kaydet
     const inp = document.getElementById('catImg_'+key);
     const prev = document.getElementById('catImgPreview_'+key);
-    if (inp) { inp.value = input.files[0].name; inp.dataset.isFile = 'true'; }
+    if (inp) { inp.value = ''; inp.placeholder = '✓ ' + file.name; } // sadece dosya adını göster
     if (prev) prev.style.backgroundImage = `url('${dataUrl}')`;
   };
-  reader.readAsDataURL(input.files[0]);
+  reader.readAsDataURL(file);
 }
 
 async function saveCatImg(key) {
-  // Dosya yüklendiyse catImgData'dan al, URL girdiyse input'tan al
+  // Dosya yüklendiyse _catImgStore'dan, URL girildiyse input'tan al
   const inp = document.getElementById('catImg_'+key);
-  const isFile = inp?.dataset?.isFile === 'true';
-  const url = isFile ? catImgData[key] : inp?.value?.trim();
-  if (!url) { showToast('⚠️ Önce görsel seçin veya URL girin!'); return; }
+  const dataUrl = _catImgStore[key];
+  const urlVal = inp?.value?.trim();
+  const finalUrl = dataUrl || urlVal;
+  if (!finalUrl) { showToast('⚠️ Önce görsel seçin veya URL girin!'); return; }
   const s = getSettings();
-  s['catImg_'+key] = url;
+  s['catImg_'+key] = finalUrl;
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(s));
-  // Firebase'e sadece URL'leri gönder, base64 çok büyük
+  // Firebase'e sadece URL'leri gönder (base64 çok büyük)
   if (window.saveSettingsFirebase) {
-    const firebaseData = { ...s };
-    ['sofa','bedroom','dining','tv'].forEach(k => {
-      if (firebaseData['catImg_'+k]?.startsWith('data:')) delete firebaseData['catImg_'+k];
-    });
-    await window.saveSettingsFirebase(firebaseData);
+    const fd = { ...s };
+    ['sofa','bedroom','dining','tv'].forEach(k => { if (fd['catImg_'+k]?.startsWith('data:')) delete fd['catImg_'+k]; });
+    await window.saveSettingsFirebase(fd);
   }
-  // Kayıt sonrası input'u sıfırla
-  if (inp) { inp.dataset.isFile = 'false'; }
-  delete catImgData[key];
+  delete _catImgStore[key];
+  if (inp) inp.placeholder = 'URL veya görsel yükle';
   const labels = { sofa: 'Koltuk Takımları', bedroom: 'Yatak Odaları', dining: 'Yemek Odaları', tv: 'TV Üniteleri' };
   showToast('✅ ' + labels[key] + ' görseli kaydedildi!');
 }
