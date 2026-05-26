@@ -865,14 +865,7 @@
     // ── Ayarlar kaydet (Firebase) ──
     window.saveSettingsFirebase = async function(settingsData) {
       try {
-        // base64 görselleri Firebase'e yazma (1MB limiti aşar)
-        const firebaseData = { ...settingsData };
-        ['sofa','bedroom','dining','tv'].forEach(k => {
-          if (firebaseData['catImg_'+k] && firebaseData['catImg_'+k].startsWith('data:')) {
-            delete firebaseData['catImg_'+k];
-          }
-        });
-        await setDoc(doc(db, 'settings', 'site'), firebaseData, { merge: true });
+        await setDoc(doc(db, 'settings', 'site'), settingsData, { merge: true });
         return true;
       } catch(e) { console.warn('Ayar kaydetme hatası:', e); return false; }
     };
@@ -1365,36 +1358,44 @@ function renderAdminCatalogs() {
 }
 
 // ══ KATEGORİ GÖRSELİ ══
+// base64 görselleri input value'ye değil, ayrı bir objeye sakla
+const catImgData = {};
+
 function handleCatImgFile(key, input) {
   if (!input.files || !input.files[0]) return;
   const reader = new FileReader();
   reader.onload = e => {
-    const url = e.target.result;
+    const dataUrl = e.target.result;
+    // base64'ü ayrı objeye sakla, input'a sadece dosya adını yaz
+    catImgData[key] = dataUrl;
     const inp = document.getElementById('catImg_'+key);
     const prev = document.getElementById('catImgPreview_'+key);
-    if (inp) inp.value = url;
-    if (prev) prev.style.backgroundImage = `url('${url}')`;
+    if (inp) { inp.value = input.files[0].name; inp.dataset.isFile = 'true'; }
+    if (prev) prev.style.backgroundImage = `url('${dataUrl}')`;
   };
   reader.readAsDataURL(input.files[0]);
 }
 
 async function saveCatImg(key) {
-  const url = document.getElementById('catImg_'+key)?.value?.trim();
+  // Dosya yüklendiyse catImgData'dan al, URL girdiyse input'tan al
+  const inp = document.getElementById('catImg_'+key);
+  const isFile = inp?.dataset?.isFile === 'true';
+  const url = isFile ? catImgData[key] : inp?.value?.trim();
   if (!url) { showToast('⚠️ Önce görsel seçin veya URL girin!'); return; }
   const s = getSettings();
   s['catImg_'+key] = url;
-  // Her zaman localStorage'a kaydet
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(s));
-  // Firebase'e sadece URL'leri gönder, base64 çok büyük olduğu için gitmiyor
+  // Firebase'e sadece URL'leri gönder, base64 çok büyük
   if (window.saveSettingsFirebase) {
     const firebaseData = { ...s };
     ['sofa','bedroom','dining','tv'].forEach(k => {
-      if (firebaseData['catImg_'+k] && firebaseData['catImg_'+k].startsWith('data:')) {
-        delete firebaseData['catImg_'+k];
-      }
+      if (firebaseData['catImg_'+k]?.startsWith('data:')) delete firebaseData['catImg_'+k];
     });
     await window.saveSettingsFirebase(firebaseData);
   }
+  // Kayıt sonrası input'u sıfırla
+  if (inp) { inp.dataset.isFile = 'false'; }
+  delete catImgData[key];
   const labels = { sofa: 'Koltuk Takımları', bedroom: 'Yatak Odaları', dining: 'Yemek Odaları', tv: 'TV Üniteleri' };
   showToast('✅ ' + labels[key] + ' görseli kaydedildi!');
 }
