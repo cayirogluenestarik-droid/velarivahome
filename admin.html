@@ -865,7 +865,14 @@
     // ── Ayarlar kaydet (Firebase) ──
     window.saveSettingsFirebase = async function(settingsData) {
       try {
-        await setDoc(doc(db, 'settings', 'site'), settingsData, { merge: true });
+        // base64 görselleri Firebase'e yazma (1MB limiti aşar)
+        const firebaseData = { ...settingsData };
+        ['sofa','bedroom','dining','tv'].forEach(k => {
+          if (firebaseData['catImg_'+k] && firebaseData['catImg_'+k].startsWith('data:')) {
+            delete firebaseData['catImg_'+k];
+          }
+        });
+        await setDoc(doc(db, 'settings', 'site'), firebaseData, { merge: true });
         return true;
       } catch(e) { console.warn('Ayar kaydetme hatası:', e); return false; }
     };
@@ -1376,8 +1383,18 @@ async function saveCatImg(key) {
   if (!url) { showToast('⚠️ Önce görsel seçin veya URL girin!'); return; }
   const s = getSettings();
   s['catImg_'+key] = url;
+  // Her zaman localStorage'a kaydet
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(s));
-  if (window.saveSettingsFirebase) await window.saveSettingsFirebase(s);
+  // Firebase'e sadece URL'leri gönder, base64 çok büyük olduğu için gitmiyor
+  if (window.saveSettingsFirebase) {
+    const firebaseData = { ...s };
+    ['sofa','bedroom','dining','tv'].forEach(k => {
+      if (firebaseData['catImg_'+k] && firebaseData['catImg_'+k].startsWith('data:')) {
+        delete firebaseData['catImg_'+k];
+      }
+    });
+    await window.saveSettingsFirebase(firebaseData);
+  }
   const labels = { sofa: 'Koltuk Takımları', bedroom: 'Yatak Odaları', dining: 'Yemek Odaları', tv: 'TV Üniteleri' };
   showToast('✅ ' + labels[key] + ' görseli kaydedildi!');
 }

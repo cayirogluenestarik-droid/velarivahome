@@ -2323,7 +2323,7 @@ body {
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, getDoc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ══════════ FIREBASE YAPILANDIRMASI ══════════
   // BURAYA KENDİ FIREBASE PROJENİZİN BİLGİLERİNİ GİRİN:
@@ -2497,28 +2497,53 @@ body {
     // ── Settings Firebase sync ──
     window.loadSettingsFirebase = async function() {
       try {
-        const snap = await getDocs(collection(db, 'settings'));
-        if (!snap.empty) {
-          const data = snap.docs[0].data();
-          localStorage.setItem('vh_settings', JSON.stringify(data));
-          // Kategori görsellerini güncelle
+        const snap = await getDoc(doc(db, 'settings', 'site'));
+        if (snap.exists()) {
+          const data = snap.data();
+          // base64 görseller Firebase'de olmayabilir, localStorage'dakini koru
+          const local = JSON.parse(localStorage.getItem('vh_settings') || '{}');
+          const merged = { ...local, ...data };
+          // base64 olanları Firebase'den alma, localStorage'dakini kullan
+          ['sofa','bedroom','dining','tv'].forEach(k => {
+            if (local['catImg_'+k] && local['catImg_'+k].startsWith('data:')) {
+              merged['catImg_'+k] = local['catImg_'+k];
+            }
+          });
+          localStorage.setItem('vh_settings', JSON.stringify(merged));
           if (typeof applyCatImages === 'function') applyCatImages();
         }
       } catch(e) { console.warn('Settings yükleme hatası:', e); }
     };
     window.saveSettingsFirebase = async function(settingsData) {
       try {
-        const snap = await getDocs(collection(db, 'settings'));
-        if (!snap.empty) {
-          await updateDoc(doc(db, 'settings', snap.docs[0].id), settingsData);
-        } else {
-          await addDoc(collection(db, 'settings'), settingsData);
-        }
+        // base64 görselleri Firebase'e yazma (çok büyük), sadece URL olanları yaz
+        const firebaseData = { ...settingsData };
+        ['sofa','bedroom','dining','tv'].forEach(k => {
+          if (firebaseData['catImg_'+k] && firebaseData['catImg_'+k].startsWith('data:')) {
+            delete firebaseData['catImg_'+k];
+          }
+        });
+        await setDoc(doc(db, 'settings', 'site'), firebaseData, { merge: true });
       } catch(e) { console.warn('Settings kayıt hatası:', e); }
     };
-    // Sayfa açılınca settings'i de çek
+    // Sayfa açılınca settings çek
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => window.loadSettingsFirebase && window.loadSettingsFirebase(), 600);
+    });
+    // Real-time settings listener
+    onSnapshot(doc(db, 'settings', 'site'), (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        const local = JSON.parse(localStorage.getItem('vh_settings') || '{}');
+        const merged = { ...local, ...data };
+        ['sofa','bedroom','dining','tv'].forEach(k => {
+          if (local['catImg_'+k] && local['catImg_'+k].startsWith('data:')) {
+            merged['catImg_'+k] = local['catImg_'+k];
+          }
+        });
+        localStorage.setItem('vh_settings', JSON.stringify(merged));
+        if (typeof applyCatImages === 'function') applyCatImages();
+      }
     });
 
     // Real-time listener — başka sekme/cihaz eklerse otomatik günceller
