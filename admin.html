@@ -885,6 +885,24 @@
       } catch(e) { console.warn('Ayar kaydetme hatası:', e); return false; }
     };
 
+    // ── Dil metinleri kaydet/yükle (Firebase, 3 dil) ──
+    window.saveLangTextsFirebase = async function(data) {
+      try {
+        await setDoc(doc(db, 'settings', 'texts'), { json: JSON.stringify(data) });
+        return true;
+      } catch(e) { console.warn('Dil metni kaydetme hatası:', e); return false; }
+    };
+    window.loadLangTextsFirebase = async function() {
+      try {
+        const snap = await getDoc(doc(db, 'settings', 'texts'));
+        if (snap.exists() && snap.data().json) {
+          localStorage.setItem('vh_lang_texts', snap.data().json);
+          return JSON.parse(snap.data().json);
+        }
+        return null;
+      } catch(e) { console.warn('Dil metni yükleme hatası:', e); return null; }
+    };
+
     // ── Ayarlar yükle (Firebase) ──
     window.loadSettingsFirebase = async function() {
       try {
@@ -1126,7 +1144,10 @@ function switchTab(tab, btn) {
   if (btn) btn.classList.add('active');
   if (tab === 'productList') renderAdminProducts();
   if (tab === 'catalogs') renderAdminCatalogs();
-  if (tab === 'langMgmt') renderLangMgmt();
+  if (tab === 'langMgmt') {
+    if (window.loadLangTextsFirebase) { window.loadLangTextsFirebase().then(() => renderLangMgmt()); }
+    else renderLangMgmt();
+  }
 }
 
 // ══ LANG TABS (add product form) ══
@@ -1577,6 +1598,7 @@ function saveLangTexts() {
     });
   });
   localStorage.setItem('vh_lang_texts', JSON.stringify(saved));
+  if (window.saveLangTextsFirebase) { window.saveLangTextsFirebase(saved); }
   showToast('✅ Dil metinleri kaydedildi!');
 }
 
