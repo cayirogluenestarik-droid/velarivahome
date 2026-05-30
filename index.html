@@ -2308,6 +2308,8 @@ function getData(key) {
 function setData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
 function getSettings() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.settings)) || {}; }
+  catch { return {}; }
 }
 
 // ══════════ NAVBAR SCROLL ══════════
