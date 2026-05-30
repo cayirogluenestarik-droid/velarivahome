@@ -1989,7 +1989,10 @@ body {
           </div>
           <div class="contact-item-text">
             <h4 data-i18n="contact.social.label">Sosyal Medya</h4>
-            <p>@velarivahome</p>
+            <p><a href="https://www.instagram.com/velarivahome" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;color:inherit;text-decoration:none;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              @velarivahome
+            </a></p>
           </div>
         </div>
       </div>
@@ -2973,6 +2976,14 @@ function applyCatImages() {
       aboutImg.style.display = 'none';
     }
   }
+  // İletişim bilgileri ve istatistikler (site ayarlarından)
+  const setTxt = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
+  setTxt('contactPhone', s.phone);
+  setTxt('contactEmail', s.email);
+  setTxt('contactAddress', s.address);
+  setTxt('statNumber1', s.stat1);
+  setTxt('statNumber2', s.stat2);
+  setTxt('statNumber3', s.stat3);
 }
 applyCatImages();
 
