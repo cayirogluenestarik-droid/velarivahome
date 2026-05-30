@@ -14,25 +14,49 @@
 <meta property="og:title" content="Velariva Home | Mobilya & Ev Dekorasyon">
 <meta property="og:description" content="Zarafet ve konforun buluştuğu yer. Koltuk takımları, yatak odaları ve daha fazlası.">
 <meta property="og:site_name" content="Velariva Home">
+<meta property="og:locale" content="tr_TR">
 <meta property="og:image" content="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&q=80">
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@velarivahome">
 <meta name="twitter:title" content="Velariva Home | Mobilya & Ev Dekorasyon">
 <meta name="twitter:description" content="Zarafet ve konforun buluştuğu yer. Koltuk takımları, yatak odaları ve daha fazlası.">
+<!-- Sitemap hint -->
+<link rel="sitemap" type="application/xml" href="https://velarivahome.com/sitemap.xml">
 <!-- JSON-LD Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FurnitureStore",
   "name": "Velariva Home",
-  "description": "Zarafet ve konforun buluştuğu yer. Mobilya ve ev dekorasyon.",
+  "alternateName": ["Velariva", "Velariva Mobilya", "Velariva Home Mobilya"],
+  "description": "Velariva Home — Zarafet ve konforun buluştuğu yer. Koltuk takımları, yatak odaları, yemek odaları ve TV üniteleri ile yaşam alanlarınıza değer katıyoruz.",
   "url": "https://velarivahome.com",
   "image": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&q=80",
   "priceRange": "₺₺",
+  "telephone": "+90-5000000000",
+  "email": "info@velarivahome.com",
   "address": {
     "@type": "PostalAddress",
+    "addressLocality": "Bursa",
+    "addressRegion": "Bursa",
     "addressCountry": "TR"
-  }
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "40.1885",
+    "longitude": "29.0610"
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+    "opens": "09:00",
+    "closes": "18:00"
+  },
+  "sameAs": [
+    "https://www.instagram.com/velarivahome",
+    "https://www.facebook.com/velarivahome"
+  ]
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2500,15 +2524,9 @@ body {
         const snap = await getDoc(doc(db, 'settings', 'site'));
         if (snap.exists()) {
           const data = snap.data();
-          // base64 görseller Firebase'de olmayabilir, localStorage'dakini koru
           const local = JSON.parse(localStorage.getItem('vh_settings') || '{}');
+          // Firebase'den gelen her şeyi al (artık sıkıştırılmış base64 da Firebase'de)
           const merged = { ...local, ...data };
-          // base64 olanları Firebase'den alma, localStorage'dakini kullan
-          ['sofa','bedroom','dining','tv'].forEach(k => {
-            if (local['catImg_'+k] && local['catImg_'+k].startsWith('data:')) {
-              merged['catImg_'+k] = local['catImg_'+k];
-            }
-          });
           localStorage.setItem('vh_settings', JSON.stringify(merged));
           if (typeof applyCatImages === 'function') applyCatImages();
         }
@@ -2516,13 +2534,21 @@ body {
     };
     window.saveSettingsFirebase = async function(settingsData) {
       try {
-        // base64 görselleri Firebase'e yazma (çok büyük), sadece URL olanları yaz
+        // base64 görselleri sıkıştırarak Firebase'e yaz
         const firebaseData = { ...settingsData };
-        ['sofa','bedroom','dining','tv'].forEach(k => {
-          if (firebaseData['catImg_'+k] && firebaseData['catImg_'+k].startsWith('data:')) {
-            delete firebaseData['catImg_'+k];
+        for (const k of ['sofa','bedroom','dining','tv']) {
+          const val = firebaseData['catImg_'+k];
+          if (val && val.startsWith('data:')) {
+            // Sıkıştır: 600px genişlik, %65 kalite
+            try {
+              const compressed = await window.compressImage(val, 600, 0.65);
+              firebaseData['catImg_'+k] = compressed;
+            } catch(ce) {
+              // Sıkıştırma başarısız olursa Firebase'e yazma
+              delete firebaseData['catImg_'+k];
+            }
           }
-        });
+        }
         await setDoc(doc(db, 'settings', 'site'), firebaseData, { merge: true });
       } catch(e) { console.warn('Settings kayıt hatası:', e); }
     };
@@ -2536,11 +2562,6 @@ body {
         const data = snap.data();
         const local = JSON.parse(localStorage.getItem('vh_settings') || '{}');
         const merged = { ...local, ...data };
-        ['sofa','bedroom','dining','tv'].forEach(k => {
-          if (local['catImg_'+k] && local['catImg_'+k].startsWith('data:')) {
-            merged['catImg_'+k] = local['catImg_'+k];
-          }
-        });
         localStorage.setItem('vh_settings', JSON.stringify(merged));
         if (typeof applyCatImages === 'function') applyCatImages();
       }
@@ -2899,7 +2920,11 @@ function heroSearch(val) {
   const products = getData(STORAGE_KEYS.products);
   const matched = products.filter(p => {
     const name = (p.name || '') + ' ' + (p.name_en || '') + ' ' + (p.name_de || '');
-    return name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q);
+    const catTr = (p.category || '').toLowerCase();
+    const catMap = CAT_TRANSLATIONS[p.category] || {};
+    const catEn = (catMap.en || '').toLowerCase();
+    const catDe = (catMap.de || '').toLowerCase();
+    return name.toLowerCase().includes(q) || catTr.includes(q) || catEn.includes(q) || catDe.includes(q);
   }).slice(0, 6);
 
   if (matched.length === 0) {

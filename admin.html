@@ -1376,24 +1376,22 @@ function handleCatImgFile(key, input) {
 }
 
 async function saveCatImg(key) {
-  // Dosya yüklendiyse _catImgStore'dan, URL girildiyse input'tan al
   const inp = document.getElementById('catImg_'+key);
   const dataUrl = _catImgStore[key];
   const urlVal = inp?.value?.trim();
-  const finalUrl = dataUrl || urlVal;
+  let finalUrl = dataUrl || urlVal;
   if (!finalUrl) { showToast('⚠️ Önce görsel seçin veya URL girin!'); return; }
+  const labels = { sofa: 'Koltuk Takımları', bedroom: 'Yatak Odaları', dining: 'Yemek Odaları', tv: 'TV Üniteleri' };
+  showToast('⏳ ' + labels[key] + ' kaydediliyor...');
+  if (finalUrl.startsWith('data:')) {
+    try { finalUrl = await window.compressImage(finalUrl, 600, 0.65); } catch(e) {}
+  }
   const s = getSettings();
   s['catImg_'+key] = finalUrl;
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(s));
-  // Firebase'e sadece URL'leri gönder (base64 çok büyük)
-  if (window.saveSettingsFirebase) {
-    const fd = { ...s };
-    ['sofa','bedroom','dining','tv'].forEach(k => { if (fd['catImg_'+k]?.startsWith('data:')) delete fd['catImg_'+k]; });
-    await window.saveSettingsFirebase(fd);
-  }
+  if (window.saveSettingsFirebase) { await window.saveSettingsFirebase(s); }
   delete _catImgStore[key];
   if (inp) inp.placeholder = 'URL veya görsel yükle';
-  const labels = { sofa: 'Koltuk Takımları', bedroom: 'Yatak Odaları', dining: 'Yemek Odaları', tv: 'TV Üniteleri' };
   showToast('✅ ' + labels[key] + ' görseli kaydedildi!');
 }
 
