@@ -684,6 +684,21 @@
           </div>
 
           <div style="margin:24px 0 8px;padding-top:20px;border-top:1px solid rgba(45,74,46,0.1);">
+            <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Hakkımızda Görseli</div>
+            <p style="color:var(--text-mid);font-size:12px;margin-bottom:14px;">Sol taraftaki yeşil kutuya görsel ekleyin.</p>
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">
+              <input type="text" id="aboutImg_url" placeholder="URL girin veya görsel yükleyin" style="flex:1;padding:10px 12px;border:1px solid rgba(45,74,46,0.15);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:12px;outline:none;">
+              <button onclick="document.getElementById('aboutImgFile').click()" style="padding:10px 12px;background:var(--green-mid);color:var(--cream);border:none;font-size:11px;cursor:pointer;white-space:nowrap;" title="Görsel seç">📁</button>
+              <input type="file" id="aboutImgFile" accept="image/*" style="display:none" onchange="handleAboutImgFile(this)">
+            </div>
+            <div id="aboutImgPreview" style="width:100%;height:100px;background-size:cover;background-position:center;border:1px solid rgba(45,74,46,0.1);margin-bottom:8px;"></div>
+            <div style="display:flex;gap:8px;">
+              <button onclick="saveAboutImg()" style="flex:1;padding:9px;background:var(--green-deep);color:var(--cream);border:none;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">✓ Görseli Kaydet</button>
+              <button onclick="removeAboutImg()" style="padding:9px 14px;background:transparent;color:var(--text-mid);border:1px solid rgba(45,74,46,0.2);font-family:'Jost',sans-serif;font-size:11px;cursor:pointer;">✕ Kaldır</button>
+            </div>
+          </div>
+
+          <div style="margin:24px 0 8px;padding-top:20px;border-top:1px solid rgba(45,74,46,0.1);">
             <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Hakkımızda — İstatistik Sayıları</div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
               <div class="form-group" style="margin:0"><label>Müşteri Sayısı</label><input type="text" id="settingsStat1" placeholder="500+"></div>
@@ -1087,6 +1102,13 @@ async function loadSettingsIntoForm() {
     if (inp && url) inp.value = url;
     if (prev && url) prev.style.backgroundImage = `url('${url}')`;
   });
+  // Hakkımızda görseli
+  if (s.aboutImg) {
+    const prev = document.getElementById('aboutImgPreview');
+    const urlInp = document.getElementById('aboutImg_url');
+    if (prev) prev.style.backgroundImage = `url('${s.aboutImg}')`;
+    if (urlInp && !s.aboutImg.startsWith('data:')) urlInp.value = s.aboutImg;
+  }
 }
 
 // Enter ile giriş
@@ -1359,6 +1381,52 @@ function renderAdminCatalogs() {
 
 // ══ KATEGORİ GÖRSELİ ══
 const _catImgStore = {}; // base64'leri burada tut, input.value'ye yazma
+let _aboutImgStore = null; // Hakkımızda görseli için geçici store
+
+function handleAboutImgFile(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const reader = new FileReader();
+  reader.onload = e => {
+    _aboutImgStore = e.target.result;
+    const prev = document.getElementById('aboutImgPreview');
+    const urlInp = document.getElementById('aboutImg_url');
+    if (prev) prev.style.backgroundImage = `url('${_aboutImgStore}')`;
+    if (urlInp) { urlInp.value = ''; urlInp.placeholder = '✓ ' + file.name; }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveAboutImg() {
+  const urlInp = document.getElementById('aboutImg_url');
+  const urlVal = urlInp?.value?.trim();
+  let finalUrl = _aboutImgStore || urlVal;
+  if (!finalUrl) { showToast('⚠️ Önce görsel seçin veya URL girin!'); return; }
+  showToast('⏳ Hakkımızda görseli kaydediliyor...');
+  if (finalUrl.startsWith('data:')) {
+    try { finalUrl = await window.compressImage(finalUrl, 800, 0.72); } catch(e) {}
+  }
+  const s = getSettings();
+  s.aboutImg = finalUrl;
+  localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(s));
+  if (window.saveSettingsFirebase) { await window.saveSettingsFirebase(s); }
+  _aboutImgStore = null;
+  if (urlInp) { urlInp.value = ''; urlInp.placeholder = 'URL girin veya görsel yükleyin'; }
+  showToast('✅ Hakkımızda görseli kaydedildi!');
+}
+
+async function removeAboutImg() {
+  const s = getSettings();
+  delete s.aboutImg;
+  localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(s));
+  if (window.saveSettingsFirebase) { await window.saveSettingsFirebase(s); }
+  const prev = document.getElementById('aboutImgPreview');
+  const urlInp = document.getElementById('aboutImg_url');
+  if (prev) prev.style.backgroundImage = '';
+  if (urlInp) { urlInp.value = ''; urlInp.placeholder = 'URL girin veya görsel yükleyin'; }
+  _aboutImgStore = null;
+  showToast('Hakkımızda görseli kaldırıldı.');
+}
 
 function handleCatImgFile(key, input) {
   if (!input.files || !input.files[0]) return;

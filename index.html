@@ -744,6 +744,13 @@ body {
   position: relative;
   overflow: hidden;
 }
+.about-visual-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+  transition: opacity 0.4s ease;
+}
 .about-visual::after {
   content: '';
   position: absolute; inset: 0;
@@ -1936,7 +1943,8 @@ body {
 <section class="about" id="hakkimizda">
   <div class="container">
     <div class="about-grid">
-      <div class="about-visual">
+      <div class="about-visual" id="aboutVisualBox">
+        <img class="about-visual-img" id="aboutVisualImg" src="" alt="Hakkımızda" style="display:none;">
         <div class="about-visual-text">VH</div>
       </div>
       <div class="about-content">
@@ -3626,6 +3634,16 @@ function applyCatImages() {
     const el = document.getElementById('catBg_'+k);
     if (el) el.style.backgroundImage = `url('${s['catImg_'+k] || defaults[k]}')`;
   });
+  // Hakkımızda görseli
+  const aboutImg = document.getElementById('aboutVisualImg');
+  if (aboutImg) {
+    if (s.aboutImg) {
+      aboutImg.src = s.aboutImg;
+      aboutImg.style.display = 'block';
+    } else {
+      aboutImg.style.display = 'none';
+    }
+  }
 }
 applyCatImages();
 
