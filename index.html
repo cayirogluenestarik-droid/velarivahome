@@ -2052,9 +2052,10 @@ body {
 <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox(event)">
   <button class="lightbox-close" onclick="closeLightbox()">×</button>
   <button class="lightbox-nav prev" id="lbPrev" onclick.stop onclick="event.stopPropagation();changeLightboxImg(-1)">&#8249;</button>
-  <img id="lightboxImg" src="" alt="zoom">
+  <img id="lightboxImg" src="" alt="zoom" onclick="lbToggleZoom(event)" style="cursor:zoom-in; transition: transform 0.3s ease;">
   <button class="lightbox-nav next" id="lbNext" onclick="event.stopPropagation();changeLightboxImg(1)">&#8250;</button>
   <div class="lightbox-counter" id="lightboxCounter"></div>
+  <div id="lbZoomHint" style="position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.5);color:rgba(255,255,255,0.6);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;pointer-events:none;backdrop-filter:blur(4px);font-family:'Jost',sans-serif;transition:opacity 0.4s ease;">🔍 BÜYÜTMEK İÇİN TIKLAYIN</div>
 </div>
 
 <!-- Firebase SDK -->
@@ -2129,7 +2130,8 @@ body {
     };
 
     // ── Ürün ekle (Firestore, Storage YOK — base64 sıkıştırılmış) ──
-          try {
+    window.addProductFirebase = async function(productData) {
+      try {
         showToast('Görseller sıkıştırılıyor...');
         // Görselleri sıkıştır
         const compressedImages = [];
@@ -2165,7 +2167,8 @@ body {
     };
 
     // ── Ürün sil (Firebase) ──
-          try {
+    window.deleteProductFirebase = async function(id) {
+      try {
         const products = JSON.parse(localStorage.getItem('vh_products') || '[]');
         const product = products.find(p => p.id === id);
         if (product && product._docId) {
@@ -2185,7 +2188,8 @@ body {
     };
 
     // ── Ürün güncelle (Firebase) ──
-          try {
+    window.updateProductFirebase = async function(productData) {
+      try {
         showToast('Güncelleniyor...');
         const compressedImages = [];
         for (const imgData of (productData.images || [])) {
@@ -2220,9 +2224,15 @@ body {
     };
 
     // Sayfa yüklenince Firebase'den verileri çek
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => window.loadProductsFromFirebase(), 500);
-    });
+    // type=module zaten defer gibi çalışır, DOM hazır demektir
+    setTimeout(() => {
+      window.loadProductsFromFirebase && window.loadProductsFromFirebase();
+    }, 600);
+
+    // Expose globals
+    window.addProductFirebase = window.addProductFirebase;
+    window.deleteProductFirebase = window.deleteProductFirebase;
+    window.updateProductFirebase = window.updateProductFirebase;
 
     // ── Settings Firebase sync ──
     window.loadSettingsFirebase = async function() {
@@ -2685,6 +2695,10 @@ function renderModalGallery() {
 }
 
 // ══════════ LIGHTBOX (ZOOM) ══════════
+// ── Lightbox zoom state ──
+let lbZoomed = false;
+let lbZoomOrigin = { x: 50, y: 50 };
+
 function openLightbox(startIdx) {
   const overlay = document.getElementById('lightboxOverlay');
   overlay.classList.add('open');
@@ -2696,15 +2710,92 @@ function openLightbox(startIdx) {
   const hasMany = modalGalleryImgs.length > 1;
   document.getElementById('lbPrev').style.display = hasMany ? 'flex' : 'none';
   document.getElementById('lbNext').style.display = hasMany ? 'flex' : 'none';
+  lbResetZoom();
 }
+
+function lbResetZoom() {
+  lbZoomed = false;
+  const lbImg = document.getElementById('lightboxImg');
+  const overlay = document.getElementById('lightboxOverlay');
+  const hint = document.getElementById('lbZoomHint');
+  lbImg.style.transform = 'scale(1)';
+  lbImg.style.transformOrigin = '50% 50%';
+  lbImg.style.cursor = 'zoom-in';
+  overlay.style.cursor = 'zoom-out';
+  lbImg.style.transition = 'transform 0.3s ease';
+  if (hint) hint.style.opacity = '1';
+}
+
+function lbToggleZoom(e) {
+  e.stopPropagation();
+  const lbImg = document.getElementById('lightboxImg');
+  const overlay = document.getElementById('lightboxOverlay');
+  if (lbZoomed) {
+    lbResetZoom();
+  } else {
+    // Tıklanan noktayı merkez al
+    const rect = lbImg.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    lbImg.style.transformOrigin = x + '% ' + y + '%';
+    lbImg.style.transform = 'scale(2.5)';
+    lbImg.style.cursor = 'zoom-out';
+    lbImg.style.transition = 'transform 0.3s ease';
+    overlay.style.cursor = 'default';
+    lbZoomed = true;
+    const hint = document.getElementById('lbZoomHint');
+    if (hint) hint.style.opacity = '0';
+  }
+}
+
+// Zoom sıfırla - görsel değişince
+function lbChangeImg() {
+  lbResetZoom();
+}
+
+// Touch pinch-to-zoom
+(function() {
+  let startDist = 0;
+  let startScale = 1;
+  document.addEventListener('touchstart', function(e) {
+    if (!document.getElementById('lightboxOverlay').classList.contains('open')) return;
+    if (e.touches.length === 2) {
+      startDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const lbImg = document.getElementById('lightboxImg');
+      const m = lbImg.style.transform.match(/scale\(([^)]+)\)/);
+      startScale = m ? parseFloat(m[1]) : 1;
+    }
+  }, { passive: true });
+  document.addEventListener('touchmove', function(e) {
+    if (!document.getElementById('lightboxOverlay').classList.contains('open')) return;
+    if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scale = Math.min(Math.max(startScale * (dist / startDist), 1), 4);
+      const lbImg = document.getElementById('lightboxImg');
+      lbImg.style.transition = 'none';
+      lbImg.style.transform = 'scale(' + scale + ')';
+      lbImg.style.transformOrigin = '50% 50%';
+      lbZoomed = scale > 1.1;
+      lbImg.style.cursor = lbZoomed ? 'zoom-out' : 'zoom-in';
+    }
+  }, { passive: true });
+})();
 
 function closeLightbox(e) {
   if (!e || e.target === document.getElementById('lightboxOverlay') || e.currentTarget === document.querySelector('.lightbox-close')) {
     document.getElementById('lightboxOverlay').classList.remove('open');
+    lbResetZoom();
   }
 }
 
 function changeLightboxImg(dir) {
+  lbResetZoom();
   modalGalleryIdx = (modalGalleryIdx + dir + modalGalleryImgs.length) % modalGalleryImgs.length;
   const lbImg = document.getElementById('lightboxImg');
   lbImg.style.opacity = '0';
@@ -2868,7 +2959,21 @@ applyCatImages();
 
 // Expose globals for Firebase module
 window.renderProducts = renderProducts;
+window.renderCatalogs = renderCatalogs;
 window.showToast = showToast;
+
+// Firebase bağlandıktan sonra ürünleri yükle (fallback)
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    if (window.loadProductsFromFirebase) {
+      window.loadProductsFromFirebase();
+    } else {
+      // Firebase bağlanmadıysa localStorage'dan göster
+      renderProducts();
+      renderCatalogs();
+    }
+  }, 1000);
+});
 
 // Smooth scroll fix for anchors
 document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -2886,5 +2991,63 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 </script>
+<!-- ═══ WHATSAPP FLOATING BUTTON ═══ -->
+<a id="waFloatBtn" href="#" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp ile iletişime geçin" style="
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 58px;
+  height: 58px;
+  background: #25d366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.45);
+  z-index: 9000;
+  transition: transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.3s ease;
+  text-decoration: none;
+">
+  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:32px;">
+    <path fill="white" d="M16 2C8.28 2 2 8.28 2 16c0 2.46.66 4.86 1.9 6.97L2 30l7.25-1.87A13.94 13.94 0 0016 30c7.72 0 14-6.28 14-14S23.72 2 16 2zm0 25.5a11.44 11.44 0 01-5.84-1.6l-.42-.25-4.3 1.1 1.13-4.17-.28-.44A11.46 11.46 0 014.5 16C4.5 9.6 9.6 4.5 16 4.5S27.5 9.6 27.5 16 22.4 27.5 16 27.5zm6.27-8.57c-.34-.17-2.02-.99-2.33-1.1-.31-.12-.54-.17-.77.17-.23.34-.88 1.1-1.08 1.33-.2.23-.4.26-.74.09-.34-.18-1.44-.53-2.74-1.69-1.01-.9-1.7-2.01-1.9-2.35-.2-.34-.02-.52.15-.69.15-.15.34-.4.51-.6.17-.2.23-.34.34-.57.12-.23.06-.43-.03-.6-.09-.17-.77-1.85-1.05-2.53-.28-.67-.56-.58-.77-.59l-.65-.01c-.23 0-.6.09-.91.43-.31.34-1.19 1.16-1.19 2.83s1.22 3.28 1.39 3.51c.17.23 2.4 3.66 5.81 5.13.81.35 1.44.56 1.93.72.81.26 1.55.22 2.13.13.65-.1 2.02-.82 2.3-1.62.29-.8.29-1.48.2-1.62-.08-.14-.31-.23-.65-.4z"/>
+  </svg>
+</a>
+
+<style>
+  #waFloatBtn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 28px rgba(37,211,102,0.6);
+  }
+  @media (max-width: 768px) {
+    #waFloatBtn {
+      bottom: 20px;
+      right: 20px;
+      width: 52px;
+      height: 52px;
+    }
+    #waFloatBtn svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    function initWaBtn() {
+      const btn = document.getElementById('waFloatBtn');
+      if (!btn) return;
+      const s = JSON.parse(localStorage.getItem('vh_settings') || '{}');
+      const wa = s.whatsapp || '905000000000';
+      btn.href = 'https://wa.me/' + wa.replace(/\D/g, '') + '?text=' + encodeURIComponent('Merhaba, Velariva Home hakkında bilgi almak istiyorum.');
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initWaBtn);
+    } else {
+      initWaBtn();
+    }
+  })();
+</script>
+
 </body>
 </html>
