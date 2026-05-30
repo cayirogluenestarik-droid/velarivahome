@@ -2248,7 +2248,10 @@ body {
         }
       } catch(e) { console.warn('Settings yükleme hatası:', e); }
     };
-          try {
+
+    // ── Ayarları Firebase'e kaydet ──
+    window.saveSettingsFirebase = async function(settingsData) {
+      try {
         // base64 görselleri sıkıştırarak Firebase'e yaz
         const firebaseData = { ...settingsData };
         for (const k of ['sofa','bedroom','dining','tv']) {
@@ -2340,14 +2343,14 @@ function showToast(msg) {
 
 // ══════════ ADMIN MINI LOGIN ══════════
 
-
-
+function switchTab(tab, btn) {
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
   const tabMap = { products: 'tabProducts', productList: 'tabProductList', catalogs: 'tabCatalogs', langMgmt: 'tabLangMgmt', settings: 'tabSettings' };
-  document.getElementById(tabMap[tab]).classList.add('active');
-  btn.classList.add('active');
-  if (tab === 'productList')
-  if (tab === 'catalogs')
+  const el = document.getElementById(tabMap[tab]);
+  if (el) el.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (tab === 'productList' && typeof renderAdminProducts === 'function') renderAdminProducts();
+  if (tab === 'catalogs' && typeof renderAdminCatalogs === 'function') renderAdminCatalogs();
 }
 
 // ══════════ PRODUCT IMAGE PREVIEW (MULTI) ══════════
@@ -2419,8 +2422,10 @@ async function addProduct() {
   };
 
   // Firebase varsa Firebase'e kaydet, yoksa localStorage
-  if (window.firebaseReady &&     showToast('Görseller yükleniyor...');
-    const result = await     if (!result) {
+  if (window.firebaseReady && window.addProductFirebase) {
+    showToast('Görseller yükleniyor...');
+    const result = await window.addProductFirebase(productData);
+    if (!result) {
       // Firebase başarısız olduysa localStorage'a kaydet
       const products = getData(STORAGE_KEYS.products);
       products.push(productData);
@@ -2448,7 +2453,9 @@ async function addProduct() {
 // ══════════ DELETE PRODUCT ══════════
 async function deleteProduct(id) {
   if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
-  if (window.firebaseReady &&     await   } else {
+  if (window.firebaseReady && window.deleteProductFirebase) {
+    await window.deleteProductFirebase(id);
+  } else {
     let products = getData(STORAGE_KEYS.products);
     products = products.filter(p => p.id !== id);
     setData(STORAGE_KEYS.products, products);
@@ -2466,6 +2473,7 @@ function switchEditLangTab(lang, btn) {
     const el = document.getElementById('editLang' + l);
     if (el) el.style.display = l.toLowerCase() === lang ? '' : 'none';
   });
+  document.querySelectorAll('#editModalOverlay .lang-tab-btn').forEach(b => {
     b.style.borderBottomColor = 'transparent';
     b.style.color = 'var(--text-mid)';
   });
