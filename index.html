@@ -930,56 +930,12 @@ body {
 }
 
 /* ══════════ ADMIN AVATAR BUTTON ══════════ */
-.admin-avatar-btn {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--green-deep);
-  border: 2px solid transparent;
-  color: var(--cream);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: var(--transition);
-  flex-shrink: 0;
-}
-.admin-avatar-btn:hover {
-  background: var(--green-mid);
-  border-color: var(--gold);
-}
 
 /* ══════════ MINI LOGIN POPUP ══════════ */
-.admin-mini-popup {
-  position: fixed;
-  top: 90px; right: 20px;
-  width: 260px;
-  background: var(--white);
-  padding: 24px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-  z-index: 2000;
-  border-top: 3px solid var(--gold);
-  display: none;
-  animation: popIn 0.2s ease;
-}
-.admin-mini-popup.open { display: block; }
 @keyframes popIn {
   from { opacity:0; transform: translateY(-8px) scale(0.97); }
   to   { opacity:1; transform: translateY(0) scale(1); }
 }
-.admin-mini-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  z-index: 1999;
-}
-.admin-mini-overlay.open { display: block; }
-
-/* ══════════ ADMIN PANEL ══════════ */
-.admin-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 2000;
-  backdrop-filter: blur(4px);
-}
-.admin-overlay.open { display: flex; align-items: center; justify-content: center; }
 
 /* ══════════ EDIT MODAL ══════════ */
 .edit-modal-overlay {
@@ -2028,15 +1984,13 @@ body {
           </div>
         </div>
         <div class="contact-item">
-          <a href="https://www.instagram.com/velarivahome" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:16px;text-decoration:none;color:inherit;">
           <div class="contact-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
           </div>
           <div class="contact-item-text">
             <h4 data-i18n="contact.social.label">Sosyal Medya</h4>
             <p>@velarivahome</p>
           </div>
-          </a>
         </div>
       </div>
       <div class="contact-form">
@@ -2051,88 +2005,6 @@ body {
   </div>
 </section>
 
-<!-- ═══ EDIT PRODUCT MODAL ═══ -->
-<div class="edit-modal-overlay" id="editModalOverlay" onclick="if(event.target===this)closeEditModal()">
-  <div class="edit-modal">
-    <button class="edit-modal-close" onclick="closeEditModal()">×</button>
-    <h3>Ürünü Düzenle</h3>
-
-    <!-- Görseller -->
-    <div class="form-group">
-      <label>Görseller <span style="color:var(--gold);font-size:10px;letter-spacing:1px;">(İLK GÖRSEL KAPAK)</span></label>
-      <div class="img-preview-grid" id="editImgPreviewGrid">
-        <div class="img-upload-add-btn" onclick="document.getElementById('editImgInput').click()" id="editImgAddBtn">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>
-          <span>Görsel Ekle</span>
-        </div>
-      </div>
-      <input type="file" id="editImgInput" accept="image/*" multiple style="display:none" onchange="previewEditImgs(this)">
-    </div>
-
-    <!-- Dil sekmeleri -->
-    <div style="margin-bottom:20px;">
-      <div style="display:flex;gap:0;border-bottom:2px solid rgba(45,74,46,0.1);margin-bottom:16px;">
-        <button class="lang-tab-btn active" onclick="switchEditLangTab('tr',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid var(--gold);margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--green-deep);">🇹🇷 Türkçe</button>
-        <button class="lang-tab-btn" onclick="switchEditLangTab('en',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--text-mid);">🇬🇧 English</button>
-        <button class="lang-tab-btn" onclick="switchEditLangTab('de',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--text-mid);">🇩🇪 Deutsch</button>
-      </div>
-      <div id="editLangTr">
-        <div class="form-row">
-          <div class="form-group"><label>Ürün Adı (TR)</label><input type="text" id="eName_tr" placeholder="Ör: Alaska Koltuk Takımı"></div>
-          <div class="form-group"><label>Açıklama (TR)</label><textarea id="eDesc_tr" placeholder="Türkçe açıklama..."></textarea></div>
-        </div>
-      </div>
-      <div id="editLangEn" style="display:none">
-        <div class="form-row">
-          <div class="form-group"><label>Product Name (EN)</label><input type="text" id="eName_en" placeholder="e.g. Alaska Sofa Set"></div>
-          <div class="form-group"><label>Description (EN)</label><textarea id="eDesc_en" placeholder="English description..."></textarea></div>
-        </div>
-      </div>
-      <div id="editLangDe" style="display:none">
-        <div class="form-row">
-          <div class="form-group"><label>Produktname (DE)</label><input type="text" id="eName_de" placeholder="z.B. Alaska Sofagarnitur"></div>
-          <div class="form-group"><label>Beschreibung (DE)</label><textarea id="eDesc_de" placeholder="Deutsche Beschreibung..."></textarea></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Kategori</label>
-        <select id="eCategory">
-          <option value="Koltuk Takımı">Koltuk Takımı</option>
-          <option value="Yatak Odası">Yatak Odası</option>
-          <option value="Yemek Odası">Yemek Odası</option>
-          <option value="TV Ünitesi">TV Ünitesi</option>
-          <option value="Köşe Takımı">Köşe Takımı</option>
-          <option value="Genç Odası">Genç Odası</option>
-          <option value="Aksesuar">Aksesuar</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Etiket</label>
-        <select id="eBadge">
-          <option value="">Etiket Yok</option>
-          <option value="Yeni">Yeni</option>
-          <option value="İndirim">İndirim</option>
-          <option value="Çok Satan">Çok Satan</option>
-          <option value="Özel">Özel</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Fiyat (₺) — <span style="color:var(--gold);font-size:10px;">Boş bırakılabilir</span></label>
-        <input type="text" id="ePrice" placeholder="Boş bırakırsanız fiyat gösterilmez">
-      </div>
-      <div class="form-group">
-        <label>İndirimli Fiyat (₺) — Opsiyonel</label>
-        <input type="text" id="eOldPrice" placeholder="Ör: 75.000 (eski fiyat)">
-      </div>
-    </div>
-    <button class="btn-primary" onclick="saveEditProduct()">Kaydet</button>
-  </div>
-</div>
 
 <!-- ═══ FOOTER ═══ -->
 <footer class="footer">
@@ -2163,194 +2035,6 @@ body {
   </div>
 </footer>
 
-<!-- ═══ ADMIN LOGIN MODAL ═══ -->
-<!-- ═══ ADMIN PANEL ═══ -->
-<div class="admin-panel" id="adminPanel">
-  <div class="admin-topbar">
-    <h2>Velariva Home — Yönetim <span id="firebaseStatus" style="display:inline-block;font-size:11px;font-family:'Jost',sans-serif;font-weight:400;letter-spacing:1.5px;padding:3px 10px;margin-left:12px;background:rgba(201,169,110,0.15);color:var(--gold);border:1px solid rgba(201,169,110,0.3);vertical-align:middle;">⏳ Firebase...</span></h2>
-    <div class="admin-topbar-actions">
-      <button onclick="window.location.hash=''; document.getElementById('adminPanel').classList.remove('open');" class="btn-close-admin">Siteye Dön</button>
-    </div>
-  </div>
-  <div class="admin-body">
-    <div class="admin-tabs">
-      <button class="admin-tab active" onclick="switchTab('products', this)">Ürün Ekle</button>
-      <button class="admin-tab" onclick="switchTab('productList', this)">Ürün Listesi</button>
-      <button class="admin-tab" onclick="switchTab('catalogs', this)">Katalog</button>
-      <button class="admin-tab" onclick="switchTab('langMgmt', this)">🌐 Dil Metinleri</button>
-      <button class="admin-tab" onclick="switchTab('settings', this)">Ayarlar</button>
-    </div>
-
-    <!-- TAB: Add Product -->
-    <div class="admin-section active" id="tabProducts">
-      <div class="admin-card">
-        <h3>Yeni Ürün Ekle</h3>
-        <div class="form-group">
-          <label>Ürün Görselleri <span style="color:var(--gold);font-size:10px;letter-spacing:1px;">(İLK GÖRSEL KAPAK OLUR)</span></label>
-          <div class="img-preview-grid" id="imgPreviewGrid">
-            <div class="img-upload-add-btn" onclick="document.getElementById('productImgInput').click()" id="imgAddBtn">
-              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>
-              <span>Görsel Ekle</span>
-            </div>
-          </div>
-          <input type="file" id="productImgInput" accept="image/*" multiple style="display:none" onchange="previewProductImgs(this)">
-        </div>
-
-        <!-- Dil Sekmeleri -->
-        <div style="margin-bottom:20px;">
-          <div style="display:flex;gap:0;border-bottom:2px solid rgba(45,74,46,0.1);margin-bottom:16px;">
-            <button class="lang-tab-btn active" onclick="switchLangTab('tr',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid var(--gold);margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--green-deep);">🇹🇷 Türkçe</button>
-            <button class="lang-tab-btn" onclick="switchLangTab('en',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--text-mid);">🇬🇧 English</button>
-            <button class="lang-tab-btn" onclick="switchLangTab('de',this)" style="padding:8px 20px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;color:var(--text-mid);">🇩🇪 Deutsch</button>
-          </div>
-          <div id="langFieldsTr">
-            <div class="form-row">
-              <div class="form-group"><label>Ürün Adı (TR)</label><input type="text" id="pName_tr" placeholder="Ör: Alaska Koltuk Takımı"></div>
-              <div class="form-group"><label>Açıklama (TR)</label><textarea id="pDesc_tr" placeholder="Türkçe açıklama..."></textarea></div>
-            </div>
-          </div>
-          <div id="langFieldsEn" style="display:none">
-            <div class="form-row">
-              <div class="form-group"><label>Product Name (EN)</label><input type="text" id="pName_en" placeholder="e.g. Alaska Sofa Set"></div>
-              <div class="form-group"><label>Description (EN)</label><textarea id="pDesc_en" placeholder="English description..."></textarea></div>
-            </div>
-          </div>
-          <div id="langFieldsDe" style="display:none">
-            <div class="form-row">
-              <div class="form-group"><label>Produktname (DE)</label><input type="text" id="pName_de" placeholder="z.B. Alaska Sofagarnitur"></div>
-              <div class="form-group"><label>Beschreibung (DE)</label><textarea id="pDesc_de" placeholder="Deutsche Beschreibung..."></textarea></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Kategori</label>
-            <select id="pCategory">
-              <option value="Koltuk Takımı">Koltuk Takımı</option>
-              <option value="Yatak Odası">Yatak Odası</option>
-              <option value="Yemek Odası">Yemek Odası</option>
-              <option value="TV Ünitesi">TV Ünitesi</option>
-              <option value="Köşe Takımı">Köşe Takımı</option>
-              <option value="Genç Odası">Genç Odası</option>
-              <option value="Aksesuar">Aksesuar</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Etiket (Opsiyonel)</label>
-            <select id="pBadge">
-              <option value="">Etiket Yok</option>
-              <option value="Yeni">Yeni</option>
-              <option value="İndirim">İndirim</option>
-              <option value="Çok Satan">Çok Satan</option>
-              <option value="Özel">Özel</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Fiyat (₺) — <span style="color:var(--gold);font-size:10px;letter-spacing:1px;">Boş bırakılabilir</span></label>
-            <input type="text" id="pPrice" placeholder="Boş bırakırsanız fiyat gösterilmez">
-          </div>
-          <div class="form-group">
-            <label>İndirimli Fiyat (₺) — Opsiyonel</label>
-            <input type="text" id="pOldPrice" placeholder="Ör: 75.000 (eski fiyat)">
-          </div>
-        </div>
-        <button class="btn-primary" onclick="addProduct()">Ürün Ekle</button>
-      </div>
-    </div>
-
-    <!-- TAB: Product List -->
-    <div class="admin-section" id="tabProductList">
-      <div class="admin-card">
-        <h3>Kayıtlı Ürünler</h3>
-        <div class="admin-product-list" id="adminProductList"></div>
-      </div>
-    </div>
-
-    <!-- TAB: Catalogs -->
-    <div class="admin-section" id="tabCatalogs">
-      <div class="admin-card">
-        <h3>Katalog Yükle</h3>
-        <div class="form-group">
-          <label>Katalog Adı</label>
-          <input type="text" id="catName" placeholder="Ör: 2026 Yaz Koleksiyonu">
-        </div>
-        <div class="catalog-upload-area" onclick="document.getElementById('catFileInput').click()">
-          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" fill="none" stroke-width="1.5"/><path d="M17 8l-5-5-5 5M12 3v12" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>
-          <p id="catFileName">PDF dosyası yüklemek için tıklayın</p>
-        </div>
-        <input type="file" id="catFileInput" accept=".pdf" style="display:none" onchange="handleCatalogFile(this)">
-        <button class="btn-primary" onclick="addCatalog()">Katalog Ekle</button>
-      </div>
-      <div class="admin-card">
-        <h3>Yüklenen Kataloglar</h3>
-        <div class="catalog-list-admin" id="adminCatalogList"></div>
-      </div>
-    </div>
-
-    <!-- TAB: Language Management -->
-    <div class="admin-section" id="tabLangMgmt">
-      <div class="admin-card">
-        <h3>🌐 Site Dil Metinleri</h3>
-        <p style="color:var(--text-mid);font-size:13px;margin-bottom:20px;line-height:1.7;">Her alan için Türkçe, İngilizce ve Almanca metinleri kendiniz yazın. Boş bırakılan alanlar otomatik olarak Türkçe metni gösterir.</p>
-        <div id="langMgmtContent"></div>
-        <button class="btn-primary" onclick="saveLangTexts()" style="margin-top:16px">Kaydet</button>
-      </div>
-    </div>
-
-    <!-- TAB: Settings -->
-    <div class="admin-section" id="tabSettings">
-      <div class="admin-card">
-        <h3>Site Ayarları</h3>
-        <div class="form-group">
-          <label>WhatsApp Numarası (Genel)</label>
-          <input type="text" id="settingsWhatsapp" placeholder="905xxxxxxxxx">
-        </div>
-        <div class="form-group">
-          <label>Telefon</label>
-          <input type="text" id="settingsPhone" placeholder="+90 (xxx) xxx xx xx">
-        </div>
-        <div class="form-group">
-          <label>E-Posta</label>
-          <input type="text" id="settingsEmail" placeholder="info@velarivahome.com">
-        </div>
-        <div class="form-group">
-          <label>Adres</label>
-          <input type="text" id="settingsAddress" placeholder="Bursa, Türkiye">
-        </div>
-        <div style="margin:24px 0 8px;padding-top:20px;border-top:1px solid rgba(45,74,46,0.1);">
-          <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Hakkımızda — İstatistik Sayıları</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-            <div class="form-group" style="margin:0">
-              <label>Müşteri Sayısı</label>
-              <input type="text" id="settingsStat1" placeholder="500+">
-            </div>
-            <div class="form-group" style="margin:0">
-              <label>Ürün Çeşidi</label>
-              <input type="text" id="settingsStat2" placeholder="200+">
-            </div>
-            <div class="form-group" style="margin:0">
-              <label>Yıllık Tecrübe</label>
-              <input type="text" id="settingsStat3" placeholder="10+">
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Şifre Değiştir (Yeni Şifre)</label>
-          <input type="password" id="settingsNewPass" placeholder="Yeni şifre">
-        </div>
-        <button class="btn-primary" onclick="saveSettings()">Kaydet</button>
-      </div>
-      <div class="admin-card">
-        <h3>Verileri Sıfırla</h3>
-        <p style="color:var(--text-mid); font-size:13px; margin-bottom:16px;">Tüm ürün ve katalog verilerini sıfırlamak için aşağıdaki butona tıklayın.</p>
-        <button class="btn-danger" onclick="if(confirm('Tüm veriler silinecek. Emin misiniz?')){localStorage.removeItem('vh_products');localStorage.removeItem('vh_catalogs');location.reload();}">Tüm Verileri Sil</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ═══ PRODUCT MODAL ═══ -->
 <div class="product-modal-overlay" id="productModal">
@@ -2437,7 +2121,6 @@ body {
         const products = snap.docs.map(d => ({ ...d.data(), _docId: d.id }));
         localStorage.setItem('vh_products', JSON.stringify(products));
         window.renderProducts();
-        window.renderAdminProducts && window.renderAdminProducts();
         return products;
       } catch(e) {
         console.warn('Firebase ürün yükleme hatası:', e);
@@ -2446,8 +2129,7 @@ body {
     };
 
     // ── Ürün ekle (Firestore, Storage YOK — base64 sıkıştırılmış) ──
-    window.addProductFirebase = async function(productData) {
-      try {
+          try {
         showToast('Görseller sıkıştırılıyor...');
         // Görselleri sıkıştır
         const compressedImages = [];
@@ -2474,7 +2156,6 @@ body {
 
         showToast('✅ Ürün Firebase\'e kaydedildi!');
         window.renderProducts();
-        window.renderAdminProducts && window.renderAdminProducts();
         return finalProduct;
       } catch(e) {
         console.warn('Firebase kayıt hatası:', e);
@@ -2484,8 +2165,7 @@ body {
     };
 
     // ── Ürün sil (Firebase) ──
-    window.deleteProductFirebase = async function(id) {
-      try {
+          try {
         const products = JSON.parse(localStorage.getItem('vh_products') || '[]');
         const product = products.find(p => p.id === id);
         if (product && product._docId) {
@@ -2498,7 +2178,6 @@ body {
         const updated = products.filter(p => p.id !== id);
         localStorage.setItem('vh_products', JSON.stringify(updated));
         window.renderProducts && window.renderProducts();
-        window.renderAdminProducts && window.renderAdminProducts();
       } catch(e) {
         console.warn('Firebase silme hatası:', e);
         showToast('Silme hatası: ' + e.message);
@@ -2506,8 +2185,7 @@ body {
     };
 
     // ── Ürün güncelle (Firebase) ──
-    window.updateProductFirebase = async function(productData) {
-      try {
+          try {
         showToast('Güncelleniyor...');
         const compressedImages = [];
         for (const imgData of (productData.images || [])) {
@@ -2533,7 +2211,6 @@ body {
         localStorage.setItem('vh_products', JSON.stringify(products));
         showToast('✅ Ürün güncellendi!');
         window.renderProducts && window.renderProducts();
-        window.renderAdminProducts && window.renderAdminProducts();
         return finalProduct;
       } catch(e) {
         console.warn('Firebase güncelleme hatası:', e);
@@ -2561,8 +2238,7 @@ body {
         }
       } catch(e) { console.warn('Settings yükleme hatası:', e); }
     };
-    window.saveSettingsFirebase = async function(settingsData) {
-      try {
+          try {
         // base64 görselleri sıkıştırarak Firebase'e yaz
         const firebaseData = { ...settingsData };
         for (const k of ['sofa','bedroom','dining','tv']) {
@@ -2601,7 +2277,6 @@ body {
       const products = snap.docs.map(d => ({ ...d.data(), _docId: d.id }));
       localStorage.setItem('vh_products', JSON.stringify(products));
       window.renderProducts && window.renderProducts();
-      window.renderAdminProducts && window.renderAdminProducts();
     });
   }
 
@@ -2610,8 +2285,12 @@ body {
 
 <script>
 // ══════════ DATA STORE (localStorage) ══════════
-const STORAGE_KEYS = { products: 'vh_products', catalogs: 'vh_catalogs', settings: 'vh_settings' };
 
+const STORAGE_KEYS = {
+  products: 'vh_products',
+  catalogs: 'vh_catalogs',
+  settings: 'vh_settings'
+};
 function getData(key) {
   try { return JSON.parse(localStorage.getItem(key)) || []; }
   catch { return []; }
@@ -2619,8 +2298,6 @@ function getData(key) {
 function setData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
 function getSettings() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.settings)) || { password: 'velariva2026', whatsapp: '905000000000', phone: '+90 (xxx) xxx xx xx', email: 'info@velarivahome.com', address: 'Bursa, Türkiye' }; }
-  catch { return { password: 'velariva2026' }; }
 }
 
 // ══════════ NAVBAR SCROLL ══════════
@@ -2650,56 +2327,15 @@ function showToast(msg) {
 }
 
 // ══════════ ADMIN MINI LOGIN ══════════
-function toggleAdminPopup() {
-  const popup = document.getElementById('adminMiniPopup');
-  const overlay = document.getElementById('adminMiniOverlay');
-  const isOpen = popup.classList.contains('open');
-  if (isOpen) {
-    popup.classList.remove('open');
-    overlay.classList.remove('open');
-  } else {
-    popup.classList.add('open');
-    overlay.classList.add('open');
-    setTimeout(() => document.getElementById('miniPassInput').focus(), 50);
-  }
-}
-function closeAdminPopup() {
-  document.getElementById('adminMiniPopup').classList.remove('open');
-  document.getElementById('adminMiniOverlay').classList.remove('open');
-  document.getElementById('miniLoginError').style.display = 'none';
-  document.getElementById('miniPassInput').value = '';
-}
-function doMiniLogin() {
-  const pass = document.getElementById('miniPassInput').value;
-  const settings = getSettings();
-  if (pass === (settings.password || 'velariva2026')) {
-    closeAdminPopup();
-    document.getElementById('adminPanel').classList.add('open');
-    renderAdminProducts();
-    renderAdminCatalogs();
-    document.getElementById('settingsWhatsapp').value = settings.whatsapp || '';
-    document.getElementById('settingsPhone').value = settings.phone || '';
-    document.getElementById('settingsEmail').value = settings.email || '';
-    document.getElementById('settingsAddress').value = settings.address || '';
-  } else {
-    document.getElementById('miniLoginError').style.display = 'block';
-    document.getElementById('miniPassInput').value = '';
-    document.getElementById('miniPassInput').focus();
-  }
-}
-// Eski openLogin — geriye dönük uyumluluk
-function openLogin() { toggleAdminPopup(); }
 
-// ══════════ ADMIN TABS ══════════
-function switchTab(tab, btn) {
-  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+
+
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
   const tabMap = { products: 'tabProducts', productList: 'tabProductList', catalogs: 'tabCatalogs', langMgmt: 'tabLangMgmt', settings: 'tabSettings' };
   document.getElementById(tabMap[tab]).classList.add('active');
   btn.classList.add('active');
-  if (tab === 'productList') renderAdminProducts();
-  if (tab === 'catalogs') renderAdminCatalogs();
-  if (tab === 'langMgmt') renderLangMgmt();
+  if (tab === 'productList')
+  if (tab === 'catalogs')
 }
 
 // ══════════ PRODUCT IMAGE PREVIEW (MULTI) ══════════
@@ -2771,10 +2407,8 @@ async function addProduct() {
   };
 
   // Firebase varsa Firebase'e kaydet, yoksa localStorage
-  if (window.firebaseReady && window.addProductFirebase) {
-    showToast('Görseller yükleniyor...');
-    const result = await window.addProductFirebase(productData);
-    if (!result) {
+  if (window.firebaseReady &&     showToast('Görseller yükleniyor...');
+    const result = await     if (!result) {
       // Firebase başarısız olduysa localStorage'a kaydet
       const products = getData(STORAGE_KEYS.products);
       products.push(productData);
@@ -2797,74 +2431,29 @@ async function addProduct() {
   document.getElementById('pBadge').value = '';
   currentProductImgs = [];
   renderImgThumbs();
-  renderAdminProducts();
 }
 
 // ══════════ DELETE PRODUCT ══════════
 async function deleteProduct(id) {
   if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
-  if (window.firebaseReady && window.deleteProductFirebase) {
-    await window.deleteProductFirebase(id);
-  } else {
+  if (window.firebaseReady &&     await   } else {
     let products = getData(STORAGE_KEYS.products);
     products = products.filter(p => p.id !== id);
     setData(STORAGE_KEYS.products, products);
     showToast('Ürün silindi.');
-    renderAdminProducts();
     renderProducts();
   }
 }
 
 // ══════════ EDIT PRODUCT ══════════
-let editProductId = null;
-let editProductImgs = [];
 
-function openEditModal(id) {
-  const products = getData(STORAGE_KEYS.products);
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  editProductId = id;
-  editProductImgs = p.images && p.images.length > 0 ? [...p.images] : (p.image ? [p.image] : []);
 
-  document.getElementById('eName_tr').value = p.name || '';
-  document.getElementById('eName_en').value = p.name_en || '';
-  document.getElementById('eName_de').value = p.name_de || '';
-  document.getElementById('eDesc_tr').value = p.desc || '';
-  document.getElementById('eDesc_en').value = p.desc_en || '';
-  document.getElementById('eDesc_de').value = p.desc_de || '';
-  document.getElementById('eCategory').value = p.category || 'Koltuk Takımı';
-  document.getElementById('eBadge').value = p.badge || '';
-  document.getElementById('ePrice').value = p.price || '';
-  document.getElementById('eOldPrice').value = p.oldPrice || '';
-  // eWhatsapp removed - uses global settings
-
-  // Dil sekme sıfırla
-  document.getElementById('editLangTr').style.display = '';
-  document.getElementById('editLangEn').style.display = 'none';
-  document.getElementById('editLangDe').style.display = 'none';
-  document.querySelectorAll('#editModalOverlay .lang-tab-btn').forEach((b, i) => {
-    b.style.borderBottomColor = i === 0 ? 'var(--gold)' : 'transparent';
-    b.style.color = i === 0 ? 'var(--green-deep)' : 'var(--text-mid)';
-  });
-
-  renderEditImgThumbs();
-  document.getElementById('editModalOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeEditModal() {
-  document.getElementById('editModalOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-  editProductId = null;
-  editProductImgs = [];
-}
 
 function switchEditLangTab(lang, btn) {
   ['Tr','En','De'].forEach(l => {
     const el = document.getElementById('editLang' + l);
     if (el) el.style.display = l.toLowerCase() === lang ? '' : 'none';
   });
-  document.querySelectorAll('#editModalOverlay .lang-tab-btn').forEach(b => {
     b.style.borderBottomColor = 'transparent';
     b.style.color = 'var(--text-mid)';
   });
@@ -2872,75 +2461,8 @@ function switchEditLangTab(lang, btn) {
   btn.style.color = 'var(--green-deep)';
 }
 
-function previewEditImgs(input) {
-  const files = Array.from(input.files);
-  let loaded = 0;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      editProductImgs.push(e.target.result);
-      loaded++;
-      if (loaded === files.length) renderEditImgThumbs();
-    };
-    reader.readAsDataURL(file);
-  });
-  input.value = '';
-}
-
-function renderEditImgThumbs() {
-  const grid = document.getElementById('editImgPreviewGrid');
-  const thumbs = editProductImgs.map((src, i) => `
-    <div style="position:relative;display:inline-block;">
-      <img src="${src}" style="width:80px;height:80px;object-fit:cover;border:2px solid var(--cream);">
-      <button onclick="editProductImgs.splice(${i},1);renderEditImgThumbs()" style="position:absolute;top:2px;right:2px;background:#c0392b;color:#fff;border:none;width:18px;height:18px;font-size:12px;cursor:pointer;line-height:1;padding:0;">×</button>
-    </div>`).join('');
-  grid.innerHTML = thumbs + `
-    <div class="img-upload-add-btn" onclick="document.getElementById('editImgInput').click()" id="editImgAddBtn">
-      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" fill="none" stroke-width="1.5"/></svg>
-      <span>Görsel Ekle</span>
-    </div>`;
-}
-
-async function saveEditProduct() {
-  if (!editProductId) return;
-  const name_tr = document.getElementById('eName_tr').value.trim();
-  if (!name_tr) { showToast('Türkçe ürün adı zorunlu!'); return; }
-
-  const products = getData(STORAGE_KEYS.products);
-  const existing = products.find(p => p.id === editProductId);
-  if (!existing) return;
-
-  const updated = {
-    ...existing,
-    name:     name_tr,
-    name_en:  document.getElementById('eName_en').value.trim(),
-    name_de:  document.getElementById('eName_de').value.trim(),
-    desc:     document.getElementById('eDesc_tr').value.trim(),
-    desc_en:  document.getElementById('eDesc_en').value.trim(),
-    desc_de:  document.getElementById('eDesc_de').value.trim(),
-    category: document.getElementById('eCategory').value,
-    badge:    document.getElementById('eBadge').value,
-    price:    document.getElementById('ePrice').value.trim(),
-    oldPrice: document.getElementById('eOldPrice').value.trim(),
-    images:   editProductImgs,
-    image:    editProductImgs[0] || null,
-  };
-
-  if (window.firebaseReady && window.updateProductFirebase) {
-    await window.updateProductFirebase(updated);
-  } else {
-    const idx = products.findIndex(p => p.id === editProductId);
-    if (idx !== -1) products[idx] = updated;
-    setData(STORAGE_KEYS.products, products);
-    showToast('Ürün güncellendi!');
-    renderProducts();
-    renderAdminProducts();
-  }
-  closeEditModal();
-}
 
 
-// ══════════ HERO SEARCH ══════════
 function heroSearch(val) {
   const results = document.getElementById('heroSearchResults');
   const q = val.trim().toLowerCase();
@@ -3235,25 +2757,6 @@ document.getElementById('productModal').addEventListener('click', function(e) {
 });
 
 // ══════════ ADMIN PRODUCT LIST ══════════
-function renderAdminProducts() {
-  const products = getData(STORAGE_KEYS.products);
-  const list = document.getElementById('adminProductList');
-  if (products.length === 0) {
-    list.innerHTML = '<p style="color:var(--text-mid);font-style:italic;grid-column:1/-1">Henüz ürün eklenmemiş.</p>';
-    return;
-  }
-  list.innerHTML = products.map(p => `
-    <div class="admin-product-item">
-      ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div style="height:160px;background:var(--cream);display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--text-mid);font-size:12px;">Görsel Yok</div>`}
-      <h4>${p.name}</h4>
-      <div class="admin-prod-price">${translateCat(p.category)} — ${p.price ? p.price + ' ₺' : 'Fiyat Belirtilmedi'}</div>
-      <div class="admin-prod-actions">
-        <button class="btn-primary" onclick="openEditModal(${p.id})" style="margin-right:8px;padding:8px 16px;font-size:11px;">Düzenle</button>
-        <button class="btn-danger" onclick="deleteProduct(${p.id})">Sil</button>
-      </div>
-    </div>
-  `).join('');
-}
 
 // ══════════ CATALOG MANAGEMENT ══════════
 let currentCatalogFile = null;
@@ -3267,56 +2770,7 @@ function handleCatalogFile(input) {
   }
 }
 
-function addCatalog() {
-  const name = document.getElementById('catName').value.trim();
-  if (!name) { showToast('Katalog adı girin!'); return; }
 
-  const catalogs = getData(STORAGE_KEYS.catalogs);
-  catalogs.push({
-    id: Date.now(),
-    name,
-    file: currentCatalogFile ? currentCatalogFile.data : null,
-    fileName: currentCatalogFile ? currentCatalogFile.name : null,
-    date: new Date().toLocaleDateString('tr-TR')
-  });
-  setData(STORAGE_KEYS.catalogs, catalogs);
-
-  document.getElementById('catName').value = '';
-  document.getElementById('catFileName').textContent = 'PDF dosyası yüklemek için tıklayın';
-  currentCatalogFile = null;
-  document.getElementById('catFileInput').value = '';
-
-  showToast('Katalog eklendi!');
-  renderAdminCatalogs();
-  renderCatalogs();
-}
-
-function deleteCatalog(id) {
-  if (!confirm('Katalogu silmek istediğinize emin misiniz?')) return;
-  let catalogs = getData(STORAGE_KEYS.catalogs);
-  catalogs = catalogs.filter(c => c.id !== id);
-  setData(STORAGE_KEYS.catalogs, catalogs);
-  renderAdminCatalogs();
-  renderCatalogs();
-  showToast('Katalog silindi.');
-}
-
-function renderAdminCatalogs() {
-  const catalogs = getData(STORAGE_KEYS.catalogs);
-  const list = document.getElementById('adminCatalogList');
-  if (catalogs.length === 0) {
-    list.innerHTML = '<p style="color:var(--text-mid);font-style:italic;grid-column:1/-1">Henüz katalog yüklenmemiş.</p>';
-    return;
-  }
-  list.innerHTML = catalogs.map(c => `
-    <div class="catalog-admin-item">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-      <h4>${c.name}</h4>
-      <p>${c.date}</p>
-      <button class="btn-danger" onclick="deleteCatalog(${c.id})" style="margin-top:8px">Sil</button>
-    </div>
-  `).join('');
-}
 
 function renderCatalogs() {
   const catalogs = getData(STORAGE_KEYS.catalogs);
@@ -3339,161 +2793,7 @@ function renderCatalogs() {
 }
 
 // ══════════ SETTINGS ══════════
-function saveSettings() {
-  const settings = getSettings();
-  const newPass = document.getElementById('settingsNewPass').value.trim();
-  settings.whatsapp = document.getElementById('settingsWhatsapp').value.trim();
-  settings.phone = document.getElementById('settingsPhone').value.trim();
-  settings.email = document.getElementById('settingsEmail').value.trim();
-  settings.address = document.getElementById('settingsAddress').value.trim();
-  const s1 = document.getElementById('settingsStat1').value.trim();
-  const s2 = document.getElementById('settingsStat2').value.trim();
-  const s3 = document.getElementById('settingsStat3').value.trim();
-  if (s1) settings.stat1 = s1;
-  if (s2) settings.stat2 = s2;
-  if (s3) settings.stat3 = s3;
-  if (newPass) settings.password = newPass;
-  localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(settings));
-  document.getElementById('settingsNewPass').value = '';
-  // Sayfadaki iletişim bilgilerini güncelle
-  updateContactDisplay();
-  showToast('Ayarlar kaydedildi!');
-}
 
-function updateContactDisplay() {
-  const s = getSettings();
-  const addr = document.getElementById('contactAddress');
-  const phone = document.getElementById('contactPhone');
-  const email = document.getElementById('contactEmail');
-  if (addr && s.address) addr.textContent = s.address;
-  if (phone && s.phone) phone.textContent = s.phone;
-  if (email && s.email) email.textContent = s.email;
-  // İstatistik sayılarını güncelle
-  const stat1El = document.getElementById('statNumber1');
-  const stat2El = document.getElementById('statNumber2');
-  const stat3El = document.getElementById('statNumber3');
-  if (stat1El && s.stat1) stat1El.textContent = s.stat1;
-  if (stat2El && s.stat2) stat2El.textContent = s.stat2;
-  if (stat3El && s.stat3) stat3El.textContent = s.stat3;
-  // Ayarlar panelindeki alanları doldur
-  const sw = document.getElementById('settingsWhatsapp');
-  const sp = document.getElementById('settingsPhone');
-  const se = document.getElementById('settingsEmail');
-  const sa = document.getElementById('settingsAddress');
-  const ss1 = document.getElementById('settingsStat1');
-  const ss2 = document.getElementById('settingsStat2');
-  const ss3 = document.getElementById('settingsStat3');
-  if (sw && s.whatsapp) sw.value = s.whatsapp;
-  if (sp && s.phone) sp.value = s.phone;
-  if (se && s.email) se.value = s.email;
-  if (sa && s.address) sa.value = s.address;
-  if (ss1 && s.stat1) ss1.value = s.stat1;
-  if (ss2 && s.stat2) ss2.value = s.stat2;
-  if (ss3 && s.stat3) ss3.value = s.stat3;
-}
-
-// ══════════ LANGUAGE SYSTEM ══════════
-let currentLang = localStorage.getItem('vh_lang') || 'tr';
-
-// Default texts (TR is master, en/de can be customized in admin)
-const DEFAULT_TEXTS = {
-  tr: {
-    'nav.home':'Ana Sayfa','nav.categories':'Kategoriler','nav.products':'Ürünler',
-    'nav.catalog':'Katalog','nav.about':'Hakkımızda','nav.contact':'İletişim','nav.admin':'Yönetim',
-    'hero.tagline':'Zarafet ve konforun buluştuğu yer','hero.cta':'Koleksiyonu Keşfet',
-    'products.label':'Ürünlerimiz','products.title':'Öne Çıkanlar',
-    'products.all':'Tümü','products.detail':'Detay →','products.empty':'Henüz ürün eklenmemiş.',
-    'catalog.label':'Dijital Katalog','catalog.title':'Kataloglarımız',
-    'catalog.desc':'Tüm koleksiyonlarımızı dijital kataloglarımız üzerinden inceleyebilirsiniz.',
-    'catalog.download':'İndirmek için tıklayın','catalog.soon':'Yakında',
-    'about.label':'Hakkımızda','about.title':'Evinize Değer Katan Tasarımlar',
-    'about.p1':'Velariva Home olarak, yaşam alanlarınızı estetik ve fonksiyonelliğin mükemmel uyumuyla şekillendiriyoruz. Her ürünümüz, kaliteli malzeme ve usta işçilikle özenle üretilmektedir.',
-    'about.p2':'Modern tasarım anlayışımızla, evinizin her köşesine zarafet ve konfor katıyoruz. Müşteri memnuniyetini ön planda tutarak, size en uygun çözümleri sunuyoruz.',
-    'about.stat1':'Mutlu Müşteri','about.stat2':'Ürün Çeşidi','about.stat3':'Yıllık Tecrübe',
-    'contact.label':'Bize Ulaşın','contact.title':'İletişim',
-    'modal.whatsapp':'WhatsApp ile Bilgi Al','modal.no-desc':'Bu ürün hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.',
-    'cats.label':'Koleksiyonlar','cats.title':'Kategoriler',
-    'cats.sofa':'Koltuk Takımları','cats.sofa.sub':'Konfor ve Şıklık',
-    'cats.bedroom':'Yatak Odaları','cats.bedroom.sub':'Huzurlu Uykular',
-    'cats.dining':'Yemek Odaları','cats.dining.sub':'Bir Arada Olmak',
-    'cats.tv':'TV Üniteleri','cats.tv.sub':'Modern Çizgiler',
-    'contact.info.title':'İletişim Bilgileri',
-    'contact.address.label':'Adres','contact.phone.label':'Telefon',
-    'contact.email.label':'E-Posta','contact.social.label':'Sosyal Medya',
-    'contact.form.title':'Mesaj Gönderin','contact.form.send':'Gönder',
-    'contact.form.sent':'Mesajınız gönderildi!',
-    'contact.form.name':'Adınız Soyadınız','contact.form.email':'E-Posta Adresiniz',
-    'contact.form.phone':'Telefon Numaranız','contact.form.message':'Mesajınız...',
-    'footer.brand.desc':'Zarafet ve konforun buluştuğu yer. Yaşam alanlarınıza değer katıyoruz.',
-    'footer.quicklinks':'Hızlı Erişim','footer.categories':'Kategoriler',
-    'footer.copyright':'© 2026 Velariva Home — Tüm Hakları Saklıdır.',
-    'search.placeholder':'Ürün adı veya kategori ara...','search.no-result':'Sonuç bulunamadı.'
-  },
-  en: {
-    'nav.home':'Home','nav.categories':'Collections','nav.products':'Products',
-    'nav.catalog':'Catalog','nav.about':'About Us','nav.contact':'Contact','nav.admin':'Admin',
-    'hero.tagline':'Where elegance meets comfort','hero.cta':'Explore Collection',
-    'products.label':'Our Products','products.title':'Featured',
-    'products.all':'All','products.detail':'Details →','products.empty':'No products added yet.',
-    'catalog.label':'Digital Catalog','catalog.title':'Our Catalogs',
-    'catalog.desc':'Browse all our collections through our digital catalogs.',
-    'catalog.download':'Click to download','catalog.soon':'Coming Soon',
-    'about.label':'About Us','about.title':'Designs That Add Value To Your Home',
-    'about.p1':'At Velariva Home, we shape your living spaces with the perfect harmony of aesthetics and functionality. Each product is carefully crafted with quality materials and expert craftsmanship.',
-    'about.p2':'With our modern design approach, we add elegance and comfort to every corner of your home. We prioritize customer satisfaction and offer you the most suitable solutions.',
-    'about.stat1':'Happy Customers','about.stat2':'Product Varieties','about.stat3':'Years of Experience',
-    'contact.label':'Reach Us','contact.title':'Contact',
-    'modal.whatsapp':'Get Info via WhatsApp','modal.no-desc':'Please contact us for detailed information about this product.',
-    'cats.label':'Collections','cats.title':'Categories',
-    'cats.sofa':'Sofa Sets','cats.sofa.sub':'Comfort & Style',
-    'cats.bedroom':'Bedrooms','cats.bedroom.sub':'Peaceful Nights',
-    'cats.dining':'Dining Rooms','cats.dining.sub':'Together at the Table',
-    'cats.tv':'TV Units','cats.tv.sub':'Modern Lines',
-    'contact.info.title':'Contact Information',
-    'contact.address.label':'Address','contact.phone.label':'Phone',
-    'contact.email.label':'E-Mail','contact.social.label':'Social Media',
-    'contact.form.title':'Send a Message','contact.form.send':'Send',
-    'contact.form.sent':'Your message has been sent!',
-    'contact.form.name':'Your Full Name','contact.form.email':'Your E-Mail Address',
-    'contact.form.phone':'Your Phone Number','contact.form.message':'Your message...',
-    'footer.brand.desc':'Where elegance meets comfort. We add value to your living spaces.',
-    'footer.quicklinks':'Quick Links','footer.categories':'Categories',
-    'footer.copyright':'© 2026 Velariva Home — All Rights Reserved.',
-    'search.placeholder':'Search by product name or category...','search.no-result':'No results found.'
-  },
-  de: {
-    'nav.home':'Startseite','nav.categories':'Kollektionen','nav.products':'Produkte',
-    'nav.catalog':'Katalog','nav.about':'Über uns','nav.contact':'Kontakt','nav.admin':'Verwaltung',
-    'hero.tagline':'Wo Eleganz auf Komfort trifft','hero.cta':'Kollektion entdecken',
-    'products.label':'Unsere Produkte','products.title':'Highlights',
-    'products.all':'Alle','products.detail':'Details →','products.empty':'Noch keine Produkte hinzugefügt.',
-    'catalog.label':'Digitaler Katalog','catalog.title':'Unsere Kataloge',
-    'catalog.desc':'Entdecken Sie alle unsere Kollektionen in unseren digitalen Katalogen.',
-    'catalog.download':'Zum Herunterladen klicken','catalog.soon':'Demnächst',
-    'about.label':'Über uns','about.title':'Designs, die Ihrem Zuhause Wert verleihen',
-    'about.p1':'Bei Velariva Home gestalten wir Ihre Wohnräume in perfekter Harmonie aus Ästhetik und Funktionalität. Jedes Produkt wird sorgfältig mit hochwertigen Materialien und meisterhafter Handwerkskunst gefertigt.',
-    'about.p2':'Mit unserem modernen Designansatz bringen wir Eleganz und Komfort in jeden Winkel Ihres Hauses. Wir stellen die Kundenzufriedenheit in den Vordergrund und bieten Ihnen die passenden Lösungen.',
-    'about.stat1':'Zufriedene Kunden','about.stat2':'Produktvarianten','about.stat3':'Jahre Erfahrung',
-    'contact.label':'Kontakt aufnehmen','contact.title':'Kontakt',
-    'modal.whatsapp':'Infos per WhatsApp','modal.no-desc':'Bitte kontaktieren Sie uns für detaillierte Informationen zu diesem Produkt.',
-    'cats.label':'Kollektionen','cats.title':'Kategorien',
-    'cats.sofa':'Sofagarnituren','cats.sofa.sub':'Komfort & Stil',
-    'cats.bedroom':'Schlafzimmer','cats.bedroom.sub':'Erholsamer Schlaf',
-    'cats.dining':'Esszimmer','cats.dining.sub':'Gemeinsam am Tisch',
-    'cats.tv':'TV-Einheiten','cats.tv.sub':'Moderne Linien',
-    'contact.info.title':'Kontaktinformationen',
-    'contact.address.label':'Adresse','contact.phone.label':'Telefon',
-    'contact.email.label':'E-Mail','contact.social.label':'Soziale Medien',
-    'contact.form.title':'Nachricht senden','contact.form.send':'Senden',
-    'contact.form.sent':'Ihre Nachricht wurde gesendet!',
-    'contact.form.name':'Ihr vollständiger Name','contact.form.email':'Ihre E-Mail-Adresse',
-    'contact.form.phone':'Ihre Telefonnummer','contact.form.message':'Ihre Nachricht...',
-    'footer.brand.desc':'Wo Eleganz auf Komfort trifft. Wir verleihen Ihren Wohnräumen Wert.',
-    'footer.quicklinks':'Schnellzugriff','footer.categories':'Kategorien',
-    'footer.copyright':'© 2026 Velariva Home — Alle Rechte vorbehalten.',
-    'search.placeholder':'Nach Produkt oder Kategorie suchen...','search.no-result':'Keine Ergebnisse gefunden.'
-  }
-};
 
 function getLangTexts() {
   try {
@@ -3532,113 +2832,11 @@ function applyI18n() {
   });
 }
 
-function switchLangTab(lang, btn) {
-  ['tr','en','de'].forEach(l => {
-    const el = document.getElementById('langFields' + l.charAt(0).toUpperCase() + l.slice(1));
-    if(el) el.style.display = l === lang ? '' : 'none';
-  });
-  document.querySelectorAll('.lang-tab-btn').forEach(b => {
-    b.style.borderBottomColor = 'transparent';
-    b.style.color = 'var(--text-mid)';
-    b.classList.remove('active');
-  });
-  btn.style.borderBottomColor = 'var(--gold)';
-  btn.style.color = 'var(--green-deep)';
-  btn.classList.add('active');
-}
-
-// Language Management UI
-const LANG_LABELS = {
-  'hero.tagline': 'Hero — Alt Başlık',
-  'hero.cta': 'Hero — Buton',
-  'products.label': 'Ürünler — Üst Etiket',
-  'products.title': 'Ürünler — Başlık',
-  'products.all': 'Ürünler — "Tümü" Filtresi',
-  'products.detail': 'Ürün Kartı — Detay Butonu',
-  'catalog.label': 'Katalog — Üst Etiket',
-  'catalog.title': 'Katalog — Başlık',
-  'catalog.desc': 'Katalog — Açıklama',
-  'catalog.download': 'Katalog — İndirme Metni',
-  'about.label': 'Hakkımızda — Üst Etiket',
-  'about.title': 'Hakkımızda — Başlık',
-  'about.p1': 'Hakkımızda — 1. Paragraf',
-  'about.p2': 'Hakkımızda — 2. Paragraf',
-  'about.stat1': 'Hakkımızda — İstatistik 1',
-  'about.stat2': 'Hakkımızda — İstatistik 2',
-  'about.stat3': 'Hakkımızda — İstatistik 3',
-  'contact.label': 'İletişim — Üst Etiket',
-  'contact.title': 'İletişim — Başlık',
-  'modal.whatsapp': 'Ürün Modal — WhatsApp Butonu',
-  'modal.no-desc': 'Ürün Modal — Varsayılan Açıklama',
-  'nav.home':'Navbar — Ana Sayfa','nav.categories':'Navbar — Kategoriler','nav.products':'Navbar — Ürünler',
-  'nav.catalog':'Navbar — Katalog','nav.about':'Navbar — Hakkımızda','nav.contact':'Navbar — İletişim',
-  'cats.label':'Kategoriler — Üst Etiket','cats.title':'Kategoriler — Başlık',
-  'cats.sofa':'Kategori — Koltuk Takımları','cats.sofa.sub':'Koltuk — Alt Başlık',
-  'cats.bedroom':'Kategori — Yatak Odaları','cats.bedroom.sub':'Yatak Odası — Alt Başlık',
-  'cats.dining':'Kategori — Yemek Odaları','cats.dining.sub':'Yemek Odası — Alt Başlık',
-  'cats.tv':'Kategori — TV Üniteleri','cats.tv.sub':'TV Ünitesi — Alt Başlık',
-  'contact.info.title':'İletişim — Bilgiler Başlığı',
-  'contact.address.label':'İletişim — Adres Etiketi','contact.phone.label':'İletişim — Telefon Etiketi',
-  'contact.email.label':'İletişim — E-Posta Etiketi','contact.social.label':'İletişim — Sosyal Medya Etiketi',
-  'contact.form.title':'İletişim Formu — Başlık','contact.form.send':'İletişim Formu — Gönder Butonu',
-  'contact.form.name':'İletişim Formu — Ad Placeholder','contact.form.email':'İletişim Formu — E-Posta Placeholder',
-  'contact.form.phone':'İletişim Formu — Telefon Placeholder','contact.form.message':'İletişim Formu — Mesaj Placeholder',
-  'footer.brand.desc':'Footer — Marka Açıklaması','footer.quicklinks':'Footer — Hızlı Erişim Başlığı',
-  'footer.categories':'Footer — Kategoriler Başlığı','footer.copyright':'Footer — Telif Hakkı',
-  'search.placeholder':'Arama — Placeholder','search.no-result':'Arama — Sonuç Bulunamadı'
-};
-
-function renderLangMgmt() {
-  const texts = getLangTexts();
-  const keys = Object.keys(LANG_LABELS);
-  let html = '';
-  keys.forEach(key => {
-    const isLong = ['about.p1','about.p2','catalog.desc','modal.no-desc'].includes(key);
-    const tag = isLong ? 'textarea' : 'input type="text"';
-    const closetag = isLong ? 'textarea' : 'input';
-    html += `<div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid rgba(45,74,46,0.07)">
-      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">${LANG_LABELS[key]}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
-        <div><div style="font-size:10px;color:var(--text-mid);margin-bottom:4px;">🇹🇷 TR</div>
-          <${tag} id="lt_tr_${key.replace(/\./g,'_')}" style="width:100%;padding:8px 10px;border:1px solid rgba(45,74,46,0.12);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:13px;outline:none;${isLong?'height:80px;resize:vertical;':''}"></${closetag}></div>
-        <div><div style="font-size:10px;color:var(--text-mid);margin-bottom:4px;">🇬🇧 EN</div>
-          <${tag} id="lt_en_${key.replace(/\./g,'_')}" style="width:100%;padding:8px 10px;border:1px solid rgba(45,74,46,0.12);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:13px;outline:none;${isLong?'height:80px;resize:vertical;':''}"></${closetag}></div>
-        <div><div style="font-size:10px;color:var(--text-mid);margin-bottom:4px;">🇩🇪 DE</div>
-          <${tag} id="lt_de_${key.replace(/\./g,'_')}" style="width:100%;padding:8px 10px;border:1px solid rgba(45,74,46,0.12);background:var(--cream-pale);font-family:'Jost',sans-serif;font-size:13px;outline:none;${isLong?'height:80px;resize:vertical;':''}"></${closetag}></div>
-      </div>
-    </div>`;
-  });
-  document.getElementById('langMgmtContent').innerHTML = html;
-  // Fill current values
-  keys.forEach(key => {
-    ['tr','en','de'].forEach(lang => {
-      const el = document.getElementById('lt_' + lang + '_' + key.replace(/\./g,'_'));
-      if (el) el.value = (texts[lang] && texts[lang][key]) || '';
-    });
-  });
-}
-
-function saveLangTexts() {
-  const keys = Object.keys(LANG_LABELS);
-  const saved = { tr: {}, en: {}, de: {} };
-  keys.forEach(key => {
-    ['tr','en','de'].forEach(lang => {
-      const el = document.getElementById('lt_' + lang + '_' + key.replace(/\./g,'_'));
-      if (el && el.value.trim()) saved[lang][key] = el.value.trim();
-    });
-  });
-  localStorage.setItem('vh_lang_texts', JSON.stringify(saved));
-  showToast('Dil metinleri kaydedildi!');
-  applyI18n();
-  renderProducts();
-  renderCatalogs();
-}
 
 // ══════════ INIT ══════════
 renderProducts();
 renderCatalogs();
 applyI18n();
-updateContactDisplay();
 // Set active lang button on load
 document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === currentLang));
 
@@ -3670,7 +2868,6 @@ applyCatImages();
 
 // Expose globals for Firebase module
 window.renderProducts = renderProducts;
-window.renderAdminProducts = renderAdminProducts;
 window.showToast = showToast;
 
 // Smooth scroll fix for anchors
