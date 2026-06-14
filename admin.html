@@ -919,13 +919,18 @@
     // ── Ürün ekle ──
     window.addProductFirebase = async function(productData) {
       try {
-        showToast('Görseller sıkıştırılıyor...');
-        const compressedImages = [];
-        for (const imgData of (productData.images || [])) {
-          const compressed = await window.compressImage(imgData, 900, 0.72);
-          compressedImages.push(compressed);
+        // Görseller artık Supabase'de — sadece URL kaydedilir.
+        // Eski üründen kalma base64 varsa Supabase'e taşı.
+        const imgUrls = [];
+        for (const img of (productData.images || [])) {
+          if (typeof img === 'string' && img.startsWith('data:')) {
+            showToast('⏳ Görsel taşınıyor...');
+            imgUrls.push(await window.uploadImageToSupabase(img, 'products'));
+          } else if (img) {
+            imgUrls.push(img);
+          }
         }
-        const finalProduct = { ...productData, images: compressedImages, image: compressedImages[0] || null, _storedAt: new Date().toISOString() };
+        const finalProduct = { ...productData, images: imgUrls, image: imgUrls[0] || null, _storedAt: new Date().toISOString() };
         delete finalProduct._docId;
         const docRef = await addDoc(collection(db, 'products'), finalProduct);
         finalProduct._docId = docRef.id;
@@ -962,12 +967,17 @@
     window.updateProductFirebase = async function(productData) {
       try {
         showToast('Güncelleniyor...');
-        const compressedImages = [];
-        for (const imgData of (productData.images || [])) {
-          const compressed = imgData.startsWith('data:image') ? await window.compressImage(imgData, 900, 0.72) : imgData;
-          compressedImages.push(compressed);
+        // Görseller artık Supabase'de — URL'ler doğrudan kaydedilir.
+        // Eski üründen kalma base64 varsa Supabase'e taşı.
+        const imgUrls = [];
+        for (const img of (productData.images || [])) {
+          if (typeof img === 'string' && img.startsWith('data:')) {
+            imgUrls.push(await window.uploadImageToSupabase(img, 'products'));
+          } else if (img) {
+            imgUrls.push(img);
+          }
         }
-        const finalProduct = { ...productData, images: compressedImages, image: compressedImages[0] || null, _updatedAt: new Date().toISOString() };
+        const finalProduct = { ...productData, images: imgUrls, image: imgUrls[0] || null, _updatedAt: new Date().toISOString() };
         if (finalProduct._docId) {
           const docId = finalProduct._docId;
           delete finalProduct._docId;
@@ -1018,6 +1028,64 @@
   }
 
   window.firebaseReady = firebaseReady;
+</script>
+
+<!-- ══ SUPABASE STORAGE ══ -->
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  // ┌─────────────────────────────────────────────────────────────┐
+  // │  BURAYI DOLDUR — Supabase panelinden alacaksın               │
+  // │  Settings → API → Project URL  ve  Project API keys → anon   │
+  // └─────────────────────────────────────────────────────────────┘
+  const SUPABASE_URL      = "https://utemzjriobzggtleggqa.supabase.co";  // Project URL
+  const SUPABASE_ANON_KEY = "sb_publishable_5OrNHSKs3F3iFU28g2iH-Q_Rx7Yflle";  // publishable key
+  const BUCKET            = "velariva-gorseller";       // oluşturacağın public bucket adı
+
+  let supa = null;
+  try {
+    if (!SUPABASE_URL.startsWith("BURAYA") && !SUPABASE_ANON_KEY.startsWith("BURAYA")) {
+      supa = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      window.supabaseClient = supa;
+      window.SUPABASE_BUCKET = BUCKET;
+      console.log("✅ Supabase Storage bağlandı");
+    } else {
+      console.warn("⚠️ Supabase URL/anon key girilmemiş — görsel yükleme çalışmaz.");
+    }
+  } catch(e) { console.warn("Supabase bağlantı hatası:", e.message); }
+
+  // dataURL veya File → Supabase'e yükle → public URL döndür
+  // (önce canvas ile sıkıştırılır; doküman limiti olmadığı için kalite yüksek tutulur)
+  window.uploadImageToSupabase = async function(input, folder) {
+    if (!window.supabaseClient) throw new Error("Supabase bağlı değil (URL/anahtar girilmemiş)");
+    folder = folder || "products";
+
+    // input bir File ise önce dataURL'e çevir
+    let dataUrl;
+    if (typeof input === "string") {
+      dataUrl = input;
+    } else {
+      dataUrl = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.onerror = () => rej(new Error("Dosya okunamadı"));
+        r.readAsDataURL(input);
+      });
+    }
+
+    // sıkıştır (web için optimize: en fazla 1600px, kalite 0.82) → JPEG blob
+    const compressed = await window.compressImage(dataUrl, 1600, 0.82);
+    const blob = await (await fetch(compressed)).blob();
+
+    const path = `${folder}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`;
+    const { error } = await window.supabaseClient
+      .storage.from(window.SUPABASE_BUCKET)
+      .upload(path, blob, { contentType: "image/jpeg", upsert: false });
+    if (error) throw error;
+
+    const { data } = window.supabaseClient.storage.from(window.SUPABASE_BUCKET).getPublicUrl(path);
+    return data.publicUrl;
+  };
 </script>
 
 <script>
@@ -1165,16 +1233,21 @@ function switchLangTab(lang, btn) {
 // ══ IMAGE PREVIEW ══
 let currentProductImgs = [];
 
-function previewProductImgs(input) {
+async function previewProductImgs(input) {
   if (!input.files || !input.files.length) return;
   const files = Array.from(input.files);
-  let loaded = 0;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = e => { currentProductImgs.push(e.target.result); loaded++; if (loaded === files.length) renderImgThumbs(); };
-    reader.readAsDataURL(file);
-  });
   input.value = '';
+  showToast('⏳ Görsel(ler) yükleniyor...');
+  for (const file of files) {
+    try {
+      const url = await window.uploadImageToSupabase(file, 'products');
+      currentProductImgs.push(url);
+      renderImgThumbs();
+    } catch(e) {
+      showToast('⚠️ Yükleme hatası: ' + (e.message || e));
+    }
+  }
+  showToast('✅ Görsel(ler) yüklendi.');
 }
 
 function renderImgThumbs() {
@@ -1292,13 +1365,21 @@ function switchEditLangTab(lang, btn) {
   document.querySelectorAll('#editModalOverlay .lang-tab-btn').forEach(b => { b.style.borderBottomColor='transparent'; b.style.color='var(--text-mid)'; });
   btn.style.borderBottomColor='var(--gold)'; btn.style.color='var(--green-deep)';
 }
-function previewEditImgs(input) {
-  Array.from(input.files).forEach(file => {
-    const r = new FileReader();
-    r.onload = e => { editProductImgs.push(e.target.result); renderEditImgThumbs(); };
-    r.readAsDataURL(file);
-  });
+async function previewEditImgs(input) {
+  if (!input.files || !input.files.length) return;
+  const files = Array.from(input.files);
   input.value = '';
+  showToast('⏳ Görsel(ler) yükleniyor...');
+  for (const file of files) {
+    try {
+      const url = await window.uploadImageToSupabase(file, 'products');
+      editProductImgs.push(url);
+      renderEditImgThumbs();
+    } catch(e) {
+      showToast('⚠️ Yükleme hatası: ' + (e.message || e));
+    }
+  }
+  showToast('✅ Görsel(ler) yüklendi.');
 }
 function renderEditImgThumbs() {
   const grid = document.getElementById('editImgPreviewGrid');
@@ -1425,7 +1506,8 @@ async function saveAboutImg() {
   if (!finalUrl) { showToast('⚠️ Önce görsel seçin veya URL girin!'); return; }
   showToast('⏳ Hakkımızda görseli kaydediliyor...');
   if (finalUrl.startsWith('data:')) {
-    try { finalUrl = await window.compressImage(finalUrl, 800, 0.72); } catch(e) {}
+    try { finalUrl = await window.uploadImageToSupabase(finalUrl, 'about'); }
+    catch(e) { showToast('⚠️ Yükleme hatası: ' + (e.message || e)); return; }
   }
   const s = getSettings();
   s.aboutImg = finalUrl;
@@ -1473,7 +1555,8 @@ async function saveCatImg(key) {
   const labels = { sofa: 'Koltuk Takımları', bedroom: 'Yatak Odaları', dining: 'Yemek Odaları', tv: 'TV Üniteleri' };
   showToast('⏳ ' + labels[key] + ' kaydediliyor...');
   if (finalUrl.startsWith('data:')) {
-    try { finalUrl = await window.compressImage(finalUrl, 600, 0.65); } catch(e) {}
+    try { finalUrl = await window.uploadImageToSupabase(finalUrl, 'categories'); }
+    catch(e) { showToast('⚠️ Yükleme hatası: ' + (e.message || e)); return; }
   }
   const s = getSettings();
   s['catImg_'+key] = finalUrl;
