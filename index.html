@@ -1853,36 +1853,7 @@ body {
       <div class="section-label" data-i18n="cats.label">Koleksiyonlar</div>
       <h2 class="section-title" data-i18n="cats.title">Kategoriler</h2>
     </div>
-    <div class="cat-grid">
-      <div class="cat-card" onclick="filterProducts('Koltuk Takımı')">
-        <div class="cat-card-bg" id="catBg_sofa" style="background-image:url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80')"></div>
-        <div class="cat-card-content">
-          <h3 data-i18n="cats.sofa">Koltuk Takımları</h3>
-          <p data-i18n="cats.sofa.sub">Konfor ve Şıklık</p>
-        </div>
-      </div>
-      <div class="cat-card" onclick="filterProducts('Yatak Odası')">
-        <div class="cat-card-bg" id="catBg_bedroom" style="background-image:url('https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80')"></div>
-        <div class="cat-card-content">
-          <h3 data-i18n="cats.bedroom">Yatak Odaları</h3>
-          <p data-i18n="cats.bedroom.sub">Huzurlu Uykular</p>
-        </div>
-      </div>
-      <div class="cat-card" onclick="filterProducts('Yemek Odası')">
-        <div class="cat-card-bg" id="catBg_dining" style="background-image:url('https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80')"></div>
-        <div class="cat-card-content">
-          <h3 data-i18n="cats.dining">Yemek Odaları</h3>
-          <p data-i18n="cats.dining.sub">Bir Arada Olmak</p>
-        </div>
-      </div>
-      <div class="cat-card" onclick="filterProducts('TV Ünitesi')">
-        <div class="cat-card-bg" id="catBg_tv" style="background-image:url('https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80')"></div>
-        <div class="cat-card-content">
-          <h3 data-i18n="cats.tv">TV Üniteleri</h3>
-          <p data-i18n="cats.tv.sub">Modern Çizgiler</p>
-        </div>
-      </div>
-    </div>
+    <div class="cat-grid" id="catGrid"></div>
   </div>
 </section>
 
@@ -2594,6 +2565,9 @@ function renderProducts() {
   const grid = document.getElementById('productGrid');
   const filters = document.getElementById('productFilters');
 
+  // Kategori kartlarını da güncel tut (ürünü olan kategoriler)
+  renderCategories();
+
   // Build filter buttons — Türkçe key'i sakla, çevrilmiş label göster
   const catKeys = [...new Set(products.map(p => p.category))]; // Türkçe değerler
   const allLabel = t('products.all');
@@ -2653,6 +2627,71 @@ function filterProducts(cat) {
   renderProducts();
   document.getElementById('urunler').scrollIntoView({ behavior: 'smooth' });
 }
+
+// ══════════ DİNAMİK KATEGORİ KARTLARI ══════════
+// Sadece içinde ürün olan kategoriler kart olarak gösterilir.
+function renderCategories() {
+  const grid = document.getElementById('catGrid');
+  if (!grid) return;
+  const section = document.getElementById('kategoriler');
+  const products = getData(STORAGE_KEYS.products);
+  const s = getSettings();
+
+  // Bilinen kategorilerin sıralaması + görsel/alt başlık eşlemesi
+  const CAT_ORDER = ['Koltuk Takımı','Köşe Takımı','Yatak Odası','Yemek Odası','TV Ünitesi','Genç Odası','Aksesuar'];
+  const META = {
+    'Koltuk Takımı': { imgKey:'sofa',    subKey:'cats.sofa.sub' },
+    'Yatak Odası':   { imgKey:'bedroom', subKey:'cats.bedroom.sub' },
+    'Yemek Odası':   { imgKey:'dining',  subKey:'cats.dining.sub' },
+    'TV Ünitesi':    { imgKey:'tv',      subKey:'cats.tv.sub' },
+    'Köşe Takımı':   { imgKey:'kose' },
+    'Genç Odası':    { imgKey:'genc' },
+    'Aksesuar':      { imgKey:'aksesuar' }
+  };
+  const DEFAULT_BG = {
+    sofa:    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80',
+    bedroom: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80',
+    dining:  'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80',
+    tv:      'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80'
+  };
+
+  // Ürünü olan kategorileri topla
+  const present = {};
+  products.forEach(p => { if (p.category) { (present[p.category] = present[p.category] || []).push(p); } });
+
+  // Önce bilinen sıraya göre, sonra listede olmayan ekstra kategoriler
+  const ordered = CAT_ORDER.filter(c => present[c]);
+  Object.keys(present).forEach(c => { if (!ordered.includes(c)) ordered.push(c); });
+
+  // Hiç ürün yoksa kategori bölümünü tamamen gizle
+  if (ordered.length === 0) { if (section) section.style.display = 'none'; grid.innerHTML = ''; return; }
+  if (section) section.style.display = '';
+
+  const countWord = currentLang === 'en' ? 'products' : currentLang === 'de' ? 'Produkte' : 'ürün';
+
+  grid.innerHTML = ordered.map(cat => {
+    const items = present[cat];
+    const meta = META[cat];
+    // Arka plan: ayarlardaki kategori görseli → kategorideki ilk ürün görseli → varsayılan
+    let bg = '';
+    if (meta && s['catImg_' + meta.imgKey]) bg = s['catImg_' + meta.imgKey];
+    if (!bg) { const withImg = items.find(p => p.image); if (withImg) bg = withImg.image; }
+    if (!bg && meta && DEFAULT_BG[meta.imgKey]) bg = DEFAULT_BG[meta.imgKey];
+    if (!bg) bg = DEFAULT_BG.sofa;
+    const name = translateCat(cat);
+    const sub = (meta && meta.subKey) ? t(meta.subKey) : `${items.length} ${countWord}`;
+    const safeCat = cat.replace(/'/g, "\\'");
+    return `
+      <div class="cat-card" onclick="filterProducts('${safeCat}')">
+        <div class="cat-card-bg" style="background-image:url('${bg}')"></div>
+        <div class="cat-card-content">
+          <h3>${name}</h3>
+          <p>${sub}</p>
+        </div>
+      </div>`;
+  }).join('');
+}
+window.renderCategories = renderCategories;
 
 // ══════════ PRODUCT MODAL ══════════
 let modalGalleryImgs = [];
@@ -2995,6 +3034,8 @@ function applyCatImages() {
   setTxt('statNumber1', s.stat1);
   setTxt('statNumber2', s.stat2);
   setTxt('statNumber3', s.stat3);
+  // Kategori görselleri değişmiş olabilir — kartları yeniden çiz
+  if (typeof renderCategories === 'function') renderCategories();
 }
 applyCatImages();
 
