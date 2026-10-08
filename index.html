@@ -222,9 +222,7 @@ body {
 .mobile-lang {
   display: flex;
   gap: 8px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(232,213,181,0.1);
+  margin-top: 28px;
 }
 .mobile-lang .lang-btn {
   border-color: rgba(232,213,181,0.3);
@@ -292,8 +290,8 @@ body {
   text-align: center;
   background: var(--green-deep);
   position: relative;
-  overflow: hidden;
 }
+@supports (height: 100svh) { .hero { height: 100svh; } }
 .hero::before {
   content: '';
   position: absolute; inset: 0;
@@ -486,6 +484,7 @@ body {
 @media(max-width:600px) {
   .hero-search { max-width: 100%; padding: 0 4px; margin-top: 28px; }
 }
+.hero-scroll {
   position: absolute;
   bottom: 40px; left: 50%;
   transform: translateX(-50%);
@@ -1772,6 +1771,85 @@ body {
 }
 .product-modal-whatsapp:hover { background: #1da851; }
 .product-modal-whatsapp svg { width: 20px; height: 20px; fill: white; flex-shrink: 0; }
+
+/* ══════════ DÜZELTMELER & İYİLEŞTİRMELER ══════════ */
+section[id] { scroll-margin-top: 80px; }
+body.modal-open { position: fixed; left: 0; right: 0; width: 100%; overflow: hidden; }
+body.menu-open { overflow: hidden; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.product-card:focus-visible, .cat-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.cat-card .cat-card-bg { background-color: var(--green-mid); }
+
+/* Hamburger → X */
+.hamburger { background: none; border: 0; padding: 8px; margin-right: -8px; }
+.hamburger span { transition: transform .35s ease, opacity .25s ease, background .3s ease; }
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* Ürün iskeleti (yüklenirken) */
+.product-card.skeleton { pointer-events: none; }
+.product-card.skeleton:hover { transform: none; box-shadow: none; }
+.sk-img, .sk-line { background: linear-gradient(90deg, rgba(45,74,46,.06) 25%, rgba(201,169,110,.14) 50%, rgba(45,74,46,.06) 75%); background-size: 200% 100%; animation: skShimmer 1.4s ease-in-out infinite; }
+.sk-img { height: 320px; }
+.sk-line { height: 12px; margin-bottom: 12px; width: 80%; }
+.sk-line.short { width: 35%; height: 9px; }
+.sk-line.mid { width: 50%; }
+@keyframes skShimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* Arama sonucu çubuğu */
+.product-search-info { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin: -20px 0 30px; font-size: 14px; color: var(--text-mid); }
+.product-search-info:empty { display: none; }
+.search-clear { background: none; border: 1px solid rgba(45,74,46,.2); padding: 6px 14px; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--green-deep); cursor: pointer; transition: var(--transition); }
+.search-clear:hover { background: var(--green-deep); color: var(--cream); }
+.hero-search-result-item.active { background: rgba(201,169,110,0.16); }
+.product-price .old-price { margin-left: 8px; }
+
+/* Katalog boş durumu */
+.catalog-item.is-empty { opacity: .55; cursor: default; }
+.catalog-item.is-empty:hover { border-color: rgba(232,213,181,0.15); background: none; }
+
+/* İletişim formu */
+.contact-form input.invalid, .contact-form textarea.invalid { border-color: #c0392b; }
+.contact-error { display: none; color: #c0392b; font-size: 13px; margin: -4px 0 14px; }
+.contact-note { font-size: 12px; color: var(--text-mid); margin-top: 14px; letter-spacing: .3px; }
+.contact-item-text a { color: inherit; text-decoration: none; transition: color .3s ease; }
+.contact-item-text a:hover { color: var(--green-deep); }
+
+/* Toast — alt ortada, WhatsApp butonuyla çakışmaz */
+.toast { position: fixed; left: 50%; bottom: 30px; right: auto; transform: translate(-50%, 120px); opacity: 0; background: var(--green-deep); color: var(--cream); padding: 14px 26px; font-size: 13px; letter-spacing: .5px; font-family: 'Jost', sans-serif; z-index: 9999; transition: transform .4s ease, opacity .4s ease; pointer-events: none; max-width: calc(100vw - 32px); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+/* Ürün penceresi — kısa ekranlarda taşmasın */
+.product-modal-img { min-height: min(600px, 92vh); }
+.modal-gallery { min-height: min(480px, 70vh); }
+.modal-gallery-img { min-height: 0; height: 100%; max-height: 92vh; user-select: none; -webkit-user-drag: none; }
+.modal-gallery.no-img { cursor: default; }
+.modal-gallery.no-img:hover .modal-gallery-img { transform: none; }
+.product-modal-whatsapp svg { width: 20px; height: 20px; }
+@media (hover: none) { .zoom-hint { display: none; } }
+
+/* Lightbox */
+#lightboxImg { cursor: zoom-in; transition: transform .3s ease, opacity .2s ease; user-select: none; -webkit-user-drag: none; touch-action: none; }
+#lightboxImg.zoomed { cursor: zoom-out; }
+.lb-zoom-hint { position: fixed; bottom: 64px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.5); color: rgba(255,255,255,.65); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 14px; pointer-events: none; backdrop-filter: blur(4px); font-family: 'Jost', sans-serif; transition: opacity .4s ease; white-space: nowrap; }
+@media (hover: none) { .lb-zoom-hint { display: none; } }
+@media (max-width: 600px) {
+  .lightbox-nav { width: 42px; height: 42px; font-size: 24px; }
+  .lightbox-nav.prev { left: 8px; } .lightbox-nav.next { right: 8px; }
+  .lightbox-close { top: 12px; right: 12px; }
+}
+
+/* WhatsApp yüzen buton */
+#waFloatBtn { position: fixed; bottom: 28px; right: 28px; width: 58px; height: 58px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37,211,102,0.45); z-index: 3500; transition: transform .3s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow .3s ease, opacity .3s ease; text-decoration: none; }
+#waFloatBtn svg { width: 32px; height: 32px; }
+#waFloatBtn:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(37,211,102,0.6); }
+body.modal-open #waFloatBtn, body.menu-open #waFloatBtn { opacity: 0; pointer-events: none; transform: scale(.6); }
+@media (max-width: 768px) { #waFloatBtn { bottom: 20px; right: 20px; width: 52px; height: 52px; } #waFloatBtn svg { width: 28px; height: 28px; } .toast { bottom: 84px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
 </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H1NL6JC2Z3"></script>
@@ -1786,7 +1864,7 @@ body {
 
 <!-- ═══ NAVBAR ═══ -->
 <nav class="navbar" id="navbar">
-  <a href="#" class="nav-logo">VELARIVA<span>— HOME —</span></a>
+  <a href="#anasayfa" class="nav-logo" aria-label="Velariva Home">VELARIVA<span>— HOME —</span></a>
   <ul class="nav-links">
     <li><a href="#anasayfa" data-i18n="nav.home">Ana Sayfa</a></li>
     <li><a href="#kategoriler" data-i18n="nav.categories">Kategoriler</a></li>
@@ -1797,28 +1875,28 @@ body {
   </ul>
   <div style="display:flex;align-items:center;gap:10px;">
     <div class="lang-switcher">
-      <button class="lang-btn active" onclick="setLang('tr')">TR</button>
-      <button class="lang-btn" onclick="setLang('en')">EN</button>
-      <button class="lang-btn" onclick="setLang('de')">DE</button>
+      <button type="button" class="lang-btn active" data-lang="tr">TR</button>
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="de">DE</button>
     </div>
   </div>
-  <div class="hamburger" onclick="toggleMobile()">
+  <button type="button" class="hamburger" aria-label="Menü" aria-expanded="false">
     <span></span><span></span><span></span>
-  </div>
+  </button>
 </nav>
 
-<div class="mobile-overlay" onclick="toggleMobile()"></div>
+<div class="mobile-overlay"></div>
 <div class="mobile-menu">
-  <a href="#anasayfa" onclick="toggleMobile()" data-i18n="nav.home">Ana Sayfa</a>
-  <a href="#kategoriler" onclick="toggleMobile()" data-i18n="nav.categories">Kategoriler</a>
-  <a href="#urunler" onclick="toggleMobile()" data-i18n="nav.products">Ürünler</a>
-  <a href="#katalog" onclick="toggleMobile()" data-i18n="nav.catalog">Katalog</a>
-  <a href="#hakkimizda" onclick="toggleMobile()" data-i18n="nav.about">Hakkımızda</a>
-  <a href="#iletisim" onclick="toggleMobile()" data-i18n="nav.contact">İletişim</a>
+  <a href="#anasayfa" data-i18n="nav.home">Ana Sayfa</a>
+  <a href="#kategoriler" data-i18n="nav.categories">Kategoriler</a>
+  <a href="#urunler" data-i18n="nav.products">Ürünler</a>
+  <a href="#katalog" data-i18n="nav.catalog">Katalog</a>
+  <a href="#hakkimizda" data-i18n="nav.about">Hakkımızda</a>
+  <a href="#iletisim" data-i18n="nav.contact">İletişim</a>
   <div class="mobile-lang">
-    <button class="lang-btn active" onclick="setLang('tr')">TR</button>
-    <button class="lang-btn" onclick="setLang('en')">EN</button>
-    <button class="lang-btn" onclick="setLang('de')">DE</button>
+    <button type="button" class="lang-btn active" data-lang="tr">TR</button>
+    <button type="button" class="lang-btn" data-lang="en">EN</button>
+    <button type="button" class="lang-btn" data-lang="de">DE</button>
   </div>
 </div>
 
@@ -1831,19 +1909,16 @@ body {
     <p class="hero-tagline" data-i18n="hero.tagline">Zarafet ve konforun buluştuğu yer</p>
     <a href="#urunler" class="hero-cta" data-i18n="hero.cta">Koleksiyonu Keşfet</a>
     <div class="hero-search">
-      <input class="hero-search-input" id="heroSearchInput" type="text" data-i18n-placeholder="search.placeholder" placeholder="Ürün adı veya kategori ara..." autocomplete="off"
-        oninput="heroSearch(this.value)"
-        onkeydown="if(event.key==='Enter'){heroSearchGo();}"
-        onfocus="if(this.value.trim()) heroSearch(this.value)">
-      <button class="hero-search-btn" onclick="heroSearchGo()" aria-label="Ara">
+      <input class="hero-search-input" id="heroSearchInput" type="search" enterkeyhint="search" data-i18n-placeholder="search.placeholder" data-i18n-aria="search.aria" placeholder="Ürün adı veya kategori ara..." autocomplete="off" role="combobox" aria-controls="heroSearchResults" aria-expanded="false">
+      <button type="button" class="hero-search-btn" id="heroSearchBtn" data-i18n-aria="search.aria" aria-label="Ara">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
       </button>
-      <div class="hero-search-results" id="heroSearchResults"></div>
+      <div class="hero-search-results" id="heroSearchResults" role="listbox"></div>
     </div>
   </div>
-  <div class="hero-scroll">
+  <a href="#kategoriler" class="hero-scroll" aria-label="Aşağı kaydır">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-  </div>
+  </a>
 </section>
 
 <!-- ═══ CATEGORIES ═══ -->
@@ -1865,6 +1940,7 @@ body {
       <h2 class="section-title" data-i18n="products.title">Öne Çıkanlar</h2>
     </div>
     <div class="product-filters" id="productFilters"></div>
+    <div class="product-search-info" id="productSearchInfo" aria-live="polite"></div>
     <div class="product-grid" id="productGrid"></div>
   </div>
 </section>
@@ -1875,13 +1951,7 @@ body {
     <div class="section-label" data-i18n="catalog.label">Dijital Katalog</div>
     <h2 class="section-title" data-i18n="catalog.title">Kataloglarımız</h2>
     <p data-i18n="catalog.desc">Tüm koleksiyonlarımızı dijital kataloglarımız üzerinden inceleyebilirsiniz.</p>
-    <div class="catalog-grid" id="catalogGrid">
-      <div class="catalog-item" style="opacity:0.5">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.5" width="36" height="36"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
-        <h4>Yakında</h4>
-        <p>Kataloglar yükleniyor...</p>
-      </div>
-    </div>
+    <div class="catalog-grid" id="catalogGrid"></div>
   </div>
 </section>
 
@@ -1890,7 +1960,7 @@ body {
   <div class="container">
     <div class="about-grid">
       <div class="about-visual" id="aboutVisualBox">
-        <img class="about-visual-img" id="aboutVisualImg" src="" alt="Hakkımızda" style="display:none;">
+        <img class="about-visual-img" id="aboutVisualImg" alt="Velariva Home" loading="lazy" style="display:none;">
         <div class="about-visual-text">VH</div>
       </div>
       <div class="about-content">
@@ -1942,7 +2012,7 @@ body {
           </div>
           <div class="contact-item-text">
             <h4 data-i18n="contact.phone.label">Telefon</h4>
-            <p id="contactPhone">+90 (xxx) xxx xx xx</p>
+            <p><a id="contactPhone" href="#iletisim">+90 (xxx) xxx xx xx</a></p>
           </div>
         </div>
         <div class="contact-item">
@@ -1951,7 +2021,7 @@ body {
           </div>
           <div class="contact-item-text">
             <h4 data-i18n="contact.email.label">E-Posta</h4>
-            <p id="contactEmail">info@velarivahome.com</p>
+            <p><a id="contactEmail" href="mailto:info@velarivahome.com">info@velarivahome.com</a></p>
           </div>
         </div>
         <div class="contact-item">
@@ -1964,14 +2034,16 @@ body {
           </div>
         </div>
       </div>
-      <div class="contact-form">
+      <form class="contact-form" id="contactForm" novalidate>
         <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--green-deep); margin-bottom:24px;" data-i18n="contact.form.title">Mesaj Gönderin</h3>
-        <input type="text" data-i18n-placeholder="contact.form.name" placeholder="Adınız Soyadınız">
-        <input type="email" data-i18n-placeholder="contact.form.email" placeholder="E-Posta Adresiniz">
-        <input type="tel" data-i18n-placeholder="contact.form.phone" placeholder="Telefon Numaranız">
-        <textarea data-i18n-placeholder="contact.form.message" placeholder="Mesajınız..."></textarea>
-        <button type="button" data-i18n="contact.form.send" onclick="showToast(t('contact.form.sent'))">Gönder</button>
-      </div>
+        <input type="text" name="name" autocomplete="name" maxlength="80" data-i18n-placeholder="contact.form.name" placeholder="Adınız Soyadınız">
+        <input type="email" name="email" autocomplete="email" maxlength="120" data-i18n-placeholder="contact.form.email" placeholder="E-Posta Adresiniz">
+        <input type="tel" name="phone" autocomplete="tel" maxlength="30" data-i18n-placeholder="contact.form.phone" placeholder="Telefon Numaranız">
+        <textarea name="message" maxlength="1500" data-i18n-placeholder="contact.form.message" placeholder="Mesajınız..."></textarea>
+        <div class="contact-error" id="contactError" role="alert"></div>
+        <button type="submit" data-i18n="contact.form.send">Gönder</button>
+        <p class="contact-note" data-i18n="contact.form.note">Mesajınız WhatsApp üzerinden doğrudan bize iletilir.</p>
+      </form>
     </div>
   </div>
 </section>
@@ -1982,7 +2054,7 @@ body {
   <div class="container">
     <div class="footer-top">
       <div class="footer-brand">
-        <a href="#" class="nav-logo">VELARIVA<span>— HOME —</span></a>
+        <a href="#anasayfa" class="nav-logo" aria-label="Velariva Home">VELARIVA<span>— HOME —</span></a>
         <p data-i18n="footer.brand.desc">Zarafet ve konforun buluştuğu yer. Yaşam alanlarınıza değer katıyoruz.</p>
       </div>
       <div class="footer-links">
@@ -1992,12 +2064,9 @@ body {
         <a href="#katalog" data-i18n="nav.catalog">Katalog</a>
         <a href="#iletisim" data-i18n="nav.contact">İletişim</a>
       </div>
-      <div class="footer-links">
+      <div class="footer-links" id="footerCatsCol">
         <h4 data-i18n="footer.categories">Kategoriler</h4>
-        <a href="#" onclick="filterProducts('Koltuk Takımı')" data-i18n="cats.sofa">Koltuk Takımları</a>
-        <a href="#" onclick="filterProducts('Yatak Odası')" data-i18n="cats.bedroom">Yatak Odaları</a>
-        <a href="#" onclick="filterProducts('Yemek Odası')" data-i18n="cats.dining">Yemek Odaları</a>
-        <a href="#" onclick="filterProducts('TV Ünitesi')" data-i18n="cats.tv">TV Üniteleri</a>
+        <div id="footerCats"></div>
       </div>
     </div>
     <div class="footer-bottom" data-i18n="footer.copyright">
@@ -2008,34 +2077,37 @@ body {
 
 
 <!-- ═══ PRODUCT MODAL ═══ -->
-<div class="product-modal-overlay" id="productModal">
-  <div class="product-modal" style="position:relative; grid-template-columns:1fr 1fr; display:grid;">
-    <button class="product-modal-close" onclick="closeProductModal()">×</button>
-    <div class="product-modal-img" id="modalImg" style="flex-direction:column;padding:0;"></div>
+<div class="product-modal-overlay" id="productModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="product-modal">
+    <button class="product-modal-close" id="productModalClose" type="button" aria-label="Kapat">×</button>
+    <div class="product-modal-img" id="modalImg"></div>
     <div class="product-modal-info" id="modalInfo"></div>
   </div>
 </div>
 
 <!-- ═══ TOAST ═══ -->
-<div id="toast" style="position:fixed;bottom:30px;right:30px;background:var(--green-deep);color:var(--cream);padding:16px 28px;font-size:13px;z-index:9999;transform:translateY(100px);opacity:0;transition:0.4s ease;font-family:'Jost',sans-serif;letter-spacing:1px;pointer-events:none;"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <!-- ═══ LIGHTBOX ═══ -->
-<div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox(event)">
-  <button class="lightbox-close" onclick="closeLightbox()">×</button>
-  <button class="lightbox-nav prev" id="lbPrev" onclick.stop onclick="event.stopPropagation();changeLightboxImg(-1)">&#8249;</button>
-  <img id="lightboxImg" src="" alt="zoom" onclick="lbToggleZoom(event)" style="cursor:zoom-in; transition: transform 0.3s ease;">
-  <button class="lightbox-nav next" id="lbNext" onclick="event.stopPropagation();changeLightboxImg(1)">&#8250;</button>
+<div class="lightbox-overlay" id="lightboxOverlay" aria-hidden="true">
+  <button class="lightbox-close" id="lbClose" type="button" aria-label="Kapat">×</button>
+  <button class="lightbox-nav prev" id="lbPrev" type="button" aria-label="Önceki">&#8249;</button>
+  <img id="lightboxImg" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="">
+  <button class="lightbox-nav next" id="lbNext" type="button" aria-label="Sonraki">&#8250;</button>
   <div class="lightbox-counter" id="lightboxCounter"></div>
-  <div id="lbZoomHint" style="position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.5);color:rgba(255,255,255,0.6);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;pointer-events:none;backdrop-filter:blur(4px);font-family:'Jost',sans-serif;transition:opacity 0.4s ease;">🔍 BÜYÜTMEK İÇİN TIKLAYIN</div>
+  <div id="lbZoomHint" class="lb-zoom-hint"></div>
 </div>
 
-<!-- Firebase SDK -->
+<!-- ═══ WHATSAPP FLOATING BUTTON ═══ -->
+<a id="waFloatBtn" href="https://wa.me/" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><use href="#waIconPath"/></svg>
+</a>
+
+<!-- ═══ FIREBASE (yalnızca okuma — canlı veri) ═══ -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, getDoc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ══════════ FIREBASE YAPILANDIRMASI ══════════
-  // BURAYA KENDİ FIREBASE PROJENİZİN BİLGİLERİNİ GİRİN:
   const firebaseConfig = {
     apiKey: "AIzaSyAOAOnNWmEinTBn1aQPTczEoBX5iXRJWqc",
     authDomain: "velarivahome-7c9cd.firebaseapp.com",
@@ -2045,1091 +2117,968 @@ body {
     appId: "1:882286954062:web:7ee75e038ab751fe18651f"
   };
 
-  // Firebase başlatma
-  let app, db;
-  let firebaseReady = false;
-
   try {
-    app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    firebaseReady = true;
-    window._firebaseDB = db;
-    console.log('✅ Firebase bağlantısı başarılı');
-    // Update status badge
-    setTimeout(() => {
-      const badge = document.getElementById('firebaseStatus');
-      if (badge) { badge.textContent = '🟢 Firebase Bağlı'; badge.style.background = 'rgba(37,211,102,0.12)'; badge.style.color = '#25d366'; badge.style.borderColor = 'rgba(37,211,102,0.3)'; }
-    }, 800);
-  } catch(e) {
-    console.warn('⚠️ Firebase bağlantısı kurulamadı, localStorage kullanılıyor:', e.message);
-    setTimeout(() => {
-      const badge = document.getElementById('firebaseStatus');
-      if (badge) { badge.textContent = '🔴 Firebase Bağlı Değil (Yerel)'; badge.style.background = 'rgba(192,57,43,0.1)'; badge.style.color = '#e74c3c'; badge.style.borderColor = 'rgba(192,57,43,0.3)'; }
-    }, 800);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const VH = window.VH;
+
+    // Ürünler — canlı dinleme (ilk açılışta da veriyi bu getirir)
+    onSnapshot(collection(db, 'products'),
+      snap => VH.setProducts(snap.docs.map(d => ({ ...d.data(), _docId: d.id }))),
+      err  => { console.warn('Ürünler okunamadı:', err); VH.dataFailed(); });
+
+    // Site ayarları (iletişim, WhatsApp, görseller, istatistikler)
+    onSnapshot(doc(db, 'settings', 'site'),
+      snap => { if (snap.exists()) VH.setSettings(snap.data()); },
+      err  => console.warn('Ayarlar okunamadı:', err));
+
+    // Dil metinleri
+    onSnapshot(doc(db, 'settings', 'texts'),
+      snap => { const d = snap.exists() ? snap.data() : null; if (d && d.json) VH.setLangTexts(d.json); },
+      err  => console.warn('Dil metinleri okunamadı:', err));
+
+    // Kataloglar (koleksiyon yoksa sessizce geçer)
+    onSnapshot(collection(db, 'catalogs'),
+      snap => { if (!snap.empty) VH.setCatalogs(snap.docs.map(d => ({ ...d.data(), _docId: d.id }))); },
+      () => {});
+  } catch (e) {
+    console.warn('Firebase başlatılamadı:', e);
+    window.VH && window.VH.dataFailed();
   }
-
-  // ── Görseli sıkıştır (canvas) ──
-  window.compressImage = function(base64, maxWidth = 800, quality = 0.75) {
-    return new Promise((resolve) => {
-      if (!base64 || !base64.startsWith('data:')) { resolve(base64); return; }
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let w = img.width, h = img.height;
-        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.onerror = () => resolve(base64);
-      img.src = base64;
-    });
-  };
-    // Firebase hazır olunca global fonksiyonları override et
-  if (firebaseReady) {
-    window.loadProductsFromFirebase = async function() {
-      try {
-        const snap = await getDocs(collection(db, 'products'));
-        const products = snap.docs.map(d => ({ ...d.data(), _docId: d.id }));
-        localStorage.setItem('vh_products', JSON.stringify(products));
-        window.renderProducts();
-        return products;
-      } catch(e) {
-        console.warn('Firebase ürün yükleme hatası:', e);
-        return null;
-      }
-    };
-
-    // ── Ürün ekle (Firestore, Storage YOK — base64 sıkıştırılmış) ──
-    window.addProductFirebase = async function(productData) {
-      try {
-        showToast('Görseller sıkıştırılıyor...');
-        // Görselleri sıkıştır
-        const compressedImages = [];
-        for (const imgData of (productData.images || [])) {
-          const compressed = await window.compressImage(imgData, 900, 0.72);
-          compressedImages.push(compressed);
-        }
-
-        const finalProduct = {
-          ...productData,
-          images: compressedImages,
-          image: compressedImages[0] || null,
-          _storedAt: new Date().toISOString()
-        };
-        delete finalProduct._docId;
-
-        const docRef = await addDoc(collection(db, 'products'), finalProduct);
-        finalProduct._docId = docRef.id;
-
-        // localStorage güncelle
-        const products = JSON.parse(localStorage.getItem('vh_products') || '[]');
-        products.push(finalProduct);
-        localStorage.setItem('vh_products', JSON.stringify(products));
-
-        showToast('✅ Ürün Firebase\'e kaydedildi!');
-        window.renderProducts();
-        return finalProduct;
-      } catch(e) {
-        console.warn('Firebase kayıt hatası:', e);
-        showToast('⚠️ Firebase hatası, yerel kaydedildi: ' + e.message);
-        return null;
-      }
-    };
-
-    // ── Ürün sil (Firebase) ──
-    window.deleteProductFirebase = async function(id) {
-      try {
-        const products = JSON.parse(localStorage.getItem('vh_products') || '[]');
-        const product = products.find(p => p.id === id);
-        if (product && product._docId) {
-          await deleteDoc(doc(db, 'products', product._docId));
-          showToast('Ürün silindi.');
-        } else {
-          showToast('Ürün silindi (yerel).');
-        }
-        // localStorage'ı güncelle (listener geç gelirse diye)
-        const updated = products.filter(p => p.id !== id);
-        localStorage.setItem('vh_products', JSON.stringify(updated));
-        window.renderProducts && window.renderProducts();
-      } catch(e) {
-        console.warn('Firebase silme hatası:', e);
-        showToast('Silme hatası: ' + e.message);
-      }
-    };
-
-    // ── Ürün güncelle (Firebase) ──
-    window.updateProductFirebase = async function(productData) {
-      try {
-        showToast('Güncelleniyor...');
-        const compressedImages = [];
-        for (const imgData of (productData.images || [])) {
-          const compressed = imgData.startsWith('data:') ? await window.compressImage(imgData, 900, 0.72) : imgData;
-          compressedImages.push(compressed);
-        }
-        const finalProduct = {
-          ...productData,
-          images: compressedImages,
-          image: compressedImages[0] || null,
-          _updatedAt: new Date().toISOString()
-        };
-        if (finalProduct._docId) {
-          const docId = finalProduct._docId;
-          delete finalProduct._docId;
-          await updateDoc(doc(db, 'products', docId), finalProduct);
-          finalProduct._docId = docId;
-        }
-        // localStorage güncelle
-        const products = JSON.parse(localStorage.getItem('vh_products') || '[]');
-        const idx = products.findIndex(p => p.id === finalProduct.id);
-        if (idx !== -1) products[idx] = finalProduct;
-        localStorage.setItem('vh_products', JSON.stringify(products));
-        showToast('✅ Ürün güncellendi!');
-        window.renderProducts && window.renderProducts();
-        return finalProduct;
-      } catch(e) {
-        console.warn('Firebase güncelleme hatası:', e);
-        showToast('⚠️ Güncelleme hatası: ' + e.message);
-        return null;
-      }
-    };
-
-    // Sayfa yüklenince Firebase'den verileri çek
-    // type=module zaten defer gibi çalışır, DOM hazır demektir
-    setTimeout(() => {
-      window.loadProductsFromFirebase && window.loadProductsFromFirebase();
-    }, 600);
-
-    // Expose globals
-    window.addProductFirebase = window.addProductFirebase;
-    window.deleteProductFirebase = window.deleteProductFirebase;
-    window.updateProductFirebase = window.updateProductFirebase;
-
-    // ── Settings Firebase sync ──
-    window.loadSettingsFirebase = async function() {
-      try {
-        const snap = await getDoc(doc(db, 'settings', 'site'));
-        if (snap.exists()) {
-          const data = snap.data();
-          const local = JSON.parse(localStorage.getItem('vh_settings') || '{}');
-          // Firebase'den gelen her şeyi al (artık sıkıştırılmış base64 da Firebase'de)
-          const merged = { ...local, ...data };
-          localStorage.setItem('vh_settings', JSON.stringify(merged));
-          if (typeof applyCatImages === 'function') applyCatImages();
-        }
-      } catch(e) { console.warn('Settings yükleme hatası:', e); }
-    };
-
-    // ── Ayarları Firebase'e kaydet ──
-    window.saveSettingsFirebase = async function(settingsData) {
-      try {
-        // base64 görselleri sıkıştırarak Firebase'e yaz
-        const firebaseData = { ...settingsData };
-        for (const k of ['sofa','bedroom','dining','tv']) {
-          const val = firebaseData['catImg_'+k];
-          if (val && val.startsWith('data:')) {
-            // Sıkıştır: 600px genişlik, %65 kalite
-            try {
-              const compressed = await window.compressImage(val, 600, 0.65);
-              firebaseData['catImg_'+k] = compressed;
-            } catch(ce) {
-              // Sıkıştırma başarısız olursa Firebase'e yazma
-              delete firebaseData['catImg_'+k];
-            }
-          }
-        }
-        await setDoc(doc(db, 'settings', 'site'), firebaseData, { merge: true });
-      } catch(e) { console.warn('Settings kayıt hatası:', e); }
-    };
-    // Sayfa açılınca settings çek
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => window.loadSettingsFirebase && window.loadSettingsFirebase(), 600);
-    });
-    // Real-time settings listener
-    onSnapshot(doc(db, 'settings', 'site'), (snap) => {
-      if (snap.exists()) {
-        const data = snap.data();
-        const local = JSON.parse(localStorage.getItem('vh_settings') || '{}');
-        const merged = { ...local, ...data };
-        localStorage.setItem('vh_settings', JSON.stringify(merged));
-        if (typeof applyCatImages === 'function') applyCatImages();
-      }
-    });
-
-    // ── Dil metinleri (3 dil) — Firebase'den çek ve canlı dinle ──
-    function applyLangTexts(snap) {
-      if (snap.exists()) {
-        const d = snap.data();
-        if (d && d.json) {
-          localStorage.setItem('vh_lang_texts', d.json);
-          if (typeof applyI18n === 'function') applyI18n();
-          window.renderProducts && window.renderProducts();
-        }
-      }
-    }
-    getDoc(doc(db, 'settings', 'texts')).then(applyLangTexts).catch(() => {});
-    onSnapshot(doc(db, 'settings', 'texts'), applyLangTexts);
-
-    // Real-time listener — başka sekme/cihaz eklerse otomatik günceller
-    onSnapshot(collection(db, 'products'), (snap) => {
-      const products = snap.docs.map(d => ({ ...d.data(), _docId: d.id }));
-      localStorage.setItem('vh_products', JSON.stringify(products));
-      window.renderProducts && window.renderProducts();
-    });
-  }
-
-  window.firebaseReady = firebaseReady;
 </script>
 
 <script>
-// ══════════ DATA STORE (localStorage) ══════════
+(function () {
+'use strict';
 
-const STORAGE_KEYS = {
-  products: 'vh_products',
-  catalogs: 'vh_catalogs',
-  settings: 'vh_settings'
-};
-function getData(key) {
-  try { return JSON.parse(localStorage.getItem(key)) || []; }
-  catch { return []; }
-}
-function setData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+// ══════════ YARDIMCILAR ══════════
+const $ = id => document.getElementById(id);
+const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ESC_MAP[c]);
 
-function getSettings() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.settings)) || {}; }
-  catch { return {}; }
-}
-
-// ══════════ NAVBAR SCROLL ══════════
-window.addEventListener('scroll', () => {
-  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
-});
-
-// ══════════ MOBILE MENU ══════════
-function toggleMobile() {
-  document.querySelector('.mobile-menu').classList.toggle('open');
-  document.querySelector('.mobile-overlay').classList.toggle('open');
-}
-
-// ══════════ TOAST ══════════
-function showToast(msg) {
-  let t = document.getElementById('toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'toast';
-    t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:var(--green-deep);color:var(--cream);padding:16px 28px;font-size:13px;z-index:9999;transform:translateY(100px);opacity:0;transition:0.4s ease;font-family:"Jost",sans-serif;letter-spacing:1px;';
-    document.body.appendChild(t);
+// Görsel adresi güvenli mi? (javascript: vb. engellenir)
+function safeUrl(u) {
+  if (!u || typeof u !== 'string') return '';
+  u = u.trim();
+  if (/^data:image\//i.test(u) || /^https?:\/\//i.test(u) || /^blob:/i.test(u) || !/^[a-z][a-z0-9+.-]*:/i.test(u)) {
+    return u.replace(/["'()\\\s<>]/g, c => encodeURIComponent(c));
   }
-  t.textContent = msg;
-  t.style.transform = 'translateY(0)';
-  t.style.opacity = '1';
-  setTimeout(() => { t.style.transform = 'translateY(100px)'; t.style.opacity = '0'; }, 3000);
+  return '';
 }
 
-// ══════════ ADMIN MINI LOGIN ══════════
-
-function switchTab(tab, btn) {
-  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-  const tabMap = { products: 'tabProducts', productList: 'tabProductList', catalogs: 'tabCatalogs', langMgmt: 'tabLangMgmt', settings: 'tabSettings' };
-  const el = document.getElementById(tabMap[tab]);
-  if (el) el.classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (tab === 'productList' && typeof renderAdminProducts === 'function') renderAdminProducts();
-  if (tab === 'catalogs' && typeof renderAdminCatalogs === 'function') renderAdminCatalogs();
+// Arama için Türkçe karakterlere duyarsız normalizasyon
+function norm(s) {
+  return String(s || '')
+    .replace(/İ/g, 'i').replace(/I/g, 'ı')
+    .toLocaleLowerCase('tr')
+    .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u').replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .trim();
 }
 
-// ══════════ PRODUCT IMAGE PREVIEW (MULTI) ══════════
-let currentProductImgs = [];
-
-function previewProductImgs(input) {
-  if (!input.files || !input.files.length) return;
-  const files = Array.from(input.files);
-  let loaded = 0;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      currentProductImgs.push(e.target.result);
-      loaded++;
-      if (loaded === files.length) renderImgThumbs();
-    };
-    reader.readAsDataURL(file);
-  });
-  input.value = '';
+function readLS(key, fallback) {
+  try { const v = JSON.parse(localStorage.getItem(key)); return v == null ? fallback : v; }
+  catch (e) { return fallback; }
+}
+// Tarayıcı hafızası dolarsa site çökmesin — veri bellekte kalır
+function writeLS(key, val) {
+  try { localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val)); }
+  catch (e) { try { localStorage.removeItem(key); } catch (e2) {} }
 }
 
-function renderImgThumbs() {
-  const grid = document.getElementById('imgPreviewGrid');
-  // Remove existing thumbs
-  grid.querySelectorAll('.img-preview-thumb').forEach(t => t.remove());
-  // Insert thumbs before add button
-  const addBtn = document.getElementById('imgAddBtn');
-  currentProductImgs.forEach((src, i) => {
-    const thumb = document.createElement('div');
-    thumb.className = 'img-preview-thumb';
-    thumb.innerHTML = `
-      <img src="${src}" alt="görsel ${i+1}">
-      ${i === 0 ? '<span class="thumb-main-badge">Kapak</span>' : ''}
-      <button class="thumb-remove" onclick="removeProductImg(${i})" title="Kaldır">×</button>
-    `;
-    grid.insertBefore(thumb, addBtn);
-  });
+function navOffset() {
+  const nav = $('navbar');
+  return (nav ? nav.offsetHeight : 70) + 10;
+}
+function scrollToEl(el, smooth) {
+  if (!el) return;
+  const y = el.getBoundingClientRect().top + window.pageYOffset - navOffset();
+  instantOr(smooth, () => window.scrollTo({ top: Math.max(0, y), behavior: smooth ? 'smooth' : 'auto' }));
+}
+// html{scroll-behavior:smooth} varken anlık kaydırma için
+function instantOr(smooth, fn) {
+  if (smooth) { fn(); return; }
+  const html = document.documentElement, prev = html.style.scrollBehavior;
+  html.style.scrollBehavior = 'auto';
+  fn();
+  html.style.scrollBehavior = prev;
 }
 
-function removeProductImg(index) {
-  currentProductImgs.splice(index, 1);
-  renderImgThumbs();
-}
-
-// ══════════ ADD PRODUCT ══════════
-async function addProduct() {
-  const name_tr = document.getElementById('pName_tr').value.trim();
-  const name_en = document.getElementById('pName_en').value.trim();
-  const name_de = document.getElementById('pName_de').value.trim();
-  const desc_tr = document.getElementById('pDesc_tr').value.trim();
-  const desc_en = document.getElementById('pDesc_en').value.trim();
-  const desc_de = document.getElementById('pDesc_de').value.trim();
-  const category = document.getElementById('pCategory').value;
-  const price = document.getElementById('pPrice').value.trim();
-  const oldPrice = document.getElementById('pOldPrice').value.trim();
-  const badge = document.getElementById('pBadge').value;
-  if (!name_tr) {
-    showToast('Lütfen en az Türkçe ürün adı girin!');
-    return;
-  }
-
-  const productData = {
-    id: Date.now(),
-    name: name_tr, name_en, name_de,
-    desc: desc_tr, desc_en, desc_de,
-    category, price, oldPrice, badge,
-    image: currentProductImgs[0] || null,
-    images: currentProductImgs.length > 0 ? [...currentProductImgs] : []
-  };
-
-  // Firebase varsa Firebase'e kaydet, yoksa localStorage
-  if (window.firebaseReady && window.addProductFirebase) {
-    showToast('Görseller yükleniyor...');
-    const result = await window.addProductFirebase(productData);
-    if (!result) {
-      // Firebase başarısız olduysa localStorage'a kaydet
-      const products = getData(STORAGE_KEYS.products);
-      products.push(productData);
-      setData(STORAGE_KEYS.products, products);
-      showToast('Ürün eklendi (yerel kayıt).');
-      renderProducts();
-    }
-  } else {
-    const products = getData(STORAGE_KEYS.products);
-    products.push(productData);
-    setData(STORAGE_KEYS.products, products);
-    showToast('Ürün başarıyla eklendi!');
-    renderProducts();
-  }
-
-  // Reset form
-  ['pName_tr','pName_en','pName_de','pDesc_tr','pDesc_en','pDesc_de','pPrice','pOldPrice'].forEach(id => {
-    const el = document.getElementById(id); if(el) el.value = '';
-  });
-  document.getElementById('pBadge').value = '';
-  currentProductImgs = [];
-  renderImgThumbs();
-}
-
-// ══════════ DELETE PRODUCT ══════════
-async function deleteProduct(id) {
-  if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
-  if (window.firebaseReady && window.deleteProductFirebase) {
-    await window.deleteProductFirebase(id);
-  } else {
-    let products = getData(STORAGE_KEYS.products);
-    products = products.filter(p => p.id !== id);
-    setData(STORAGE_KEYS.products, products);
-    showToast('Ürün silindi.');
-    renderProducts();
-  }
-}
-
-// ══════════ EDIT PRODUCT ══════════
-
-
-
-function switchEditLangTab(lang, btn) {
-  ['Tr','En','De'].forEach(l => {
-    const el = document.getElementById('editLang' + l);
-    if (el) el.style.display = l.toLowerCase() === lang ? '' : 'none';
-  });
-  document.querySelectorAll('#editModalOverlay .lang-tab-btn').forEach(b => {
-    b.style.borderBottomColor = 'transparent';
-    b.style.color = 'var(--text-mid)';
-  });
-  btn.style.borderBottomColor = 'var(--gold)';
-  btn.style.color = 'var(--green-deep)';
-}
-
-
-
-function heroSearch(val) {
-  const results = document.getElementById('heroSearchResults');
-  const q = val.trim().toLowerCase();
-  if (!q) { results.classList.remove('open'); return; }
-
-  const products = getData(STORAGE_KEYS.products);
-  const matched = products.filter(p => {
-    const name = (p.name || '') + ' ' + (p.name_en || '') + ' ' + (p.name_de || '');
-    const catTr = (p.category || '').toLowerCase();
-    const catMap = CAT_TRANSLATIONS[p.category] || {};
-    const catEn = (catMap.en || '').toLowerCase();
-    const catDe = (catMap.de || '').toLowerCase();
-    return name.toLowerCase().includes(q) || catTr.includes(q) || catEn.includes(q) || catDe.includes(q);
-  }).slice(0, 6);
-
-  if (matched.length === 0) {
-    results.innerHTML = `<div class="hero-search-no-result">${t('search.no-result')}</div>`;
-  } else {
-    results.innerHTML = matched.map(p => {
-      const name = (currentLang === 'en' && p.name_en) ? p.name_en : (currentLang === 'de' && p.name_de) ? p.name_de : p.name;
-      return `<div class="hero-search-result-item" onclick="heroSearchSelect(${p.id})">
-        ${p.image
-          ? `<img class="hero-search-result-img" src="${p.image}" alt="${name}">`
-          : `<div class="hero-search-result-img-placeholder"><svg viewBox="0 0 24 24" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>`
-        }
-        <div>
-          <div class="hero-search-result-name">${name}</div>
-          <div class="hero-search-result-cat">${translateCat(p.category)}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  results.classList.add('open');
-}
-
-function heroSearchSelect(id) {
-  document.getElementById('heroSearchResults').classList.remove('open');
-  document.getElementById('heroSearchInput').value = '';
-  const section = document.getElementById('urunler');
-  const offset = 80;
-  const y = section.getBoundingClientRect().top + window.pageYOffset - offset;
-  window.scrollTo({ top: y, behavior: 'smooth' });
-  setTimeout(() => openProductModal(id), 400);
-}
-
-function heroSearchGo() {
-  const q = document.getElementById('heroSearchInput').value.trim().toLowerCase();
-  if (!q) return;
-  document.getElementById('heroSearchResults').classList.remove('open');
-  document.getElementById('heroSearchInput').value = '';
-  const section = document.getElementById('urunler');
-  const offset = 80;
-  const y = section.getBoundingClientRect().top + window.pageYOffset - offset;
-  window.scrollTo({ top: y, behavior: 'smooth' });
-  // Ürünleri filtrele ve ara
-  setTimeout(() => {
-    currentFilter = 'Tümü';
-    currentSearchQuery = q;
-    renderProducts();
-  }, 300);
-}
-
-let currentSearchQuery = '';
-
-// Dışarı tıklayınca arama sonuçlarını kapat
-document.addEventListener('click', function(e) {
-  const box = document.getElementById('heroSearchResults');
-  const input = document.getElementById('heroSearchInput');
-  if (box && input && !box.contains(e.target) && e.target !== input) {
-    box.classList.remove('open');
-  }
-});
-
-// Kategori çeviri haritası — TR değeri anahtar, dile göre çevrisi gösterilir
-const CAT_TRANSLATIONS = {
-  'Koltuk Takımı': { tr: 'Koltuk Takımı', en: 'Sofa Set', de: 'Sofagarnitur' },
-  'Yatak Odası':   { tr: 'Yatak Odası',   en: 'Bedroom',  de: 'Schlafzimmer' },
-  'Yemek Odası':   { tr: 'Yemek Odası',   en: 'Dining Room', de: 'Esszimmer' },
-  'TV Ünitesi':    { tr: 'TV Ünitesi',    en: 'TV Unit',  de: 'TV-Einheit' },
-  'Köşe Takımı':   { tr: 'Köşe Takımı',   en: 'Corner Sofa', de: 'Ecksofa' },
-  'Genç Odası':    { tr: 'Genç Odası',    en: "Youth Room", de: 'Jugendzimmer' },
-  'Aksesuar':      { tr: 'Aksesuar',      en: 'Accessory', de: 'Zubehör' },
+// ══════════ VERİ ══════════
+const DEFAULT_WA = '905000000000';
+const State = {
+  products: null,          // null = henüz yüklenmedi
+  settings: readLS('vh_settings', {}),
+  catalogs: readLS('vh_catalogs', []),
+  langTexts: null,
+  loaded: false
 };
 
-function translateCat(trKey) {
-  const map = CAT_TRANSLATIONS[trKey];
-  if (!map) return trKey;
-  return map[currentLang] || map['tr'] || trKey;
-}
-
-let currentFilter = 'Tümü';
-
-function renderProducts() {
-  const products = getData(STORAGE_KEYS.products);
-  const grid = document.getElementById('productGrid');
-  const filters = document.getElementById('productFilters');
-
-  // Kategori kartlarını da güncel tut (ürünü olan kategoriler)
-  renderCategories();
-
-  // Build filter buttons — Türkçe key'i sakla, çevrilmiş label göster
-  const catKeys = [...new Set(products.map(p => p.category))]; // Türkçe değerler
-  const allLabel = t('products.all');
-  if (currentFilter === 'Tümü' || currentFilter === 'All' || currentFilter === 'Alle') currentFilter = allLabel;
-  const allBtn = `<button class="filter-btn${currentFilter===allLabel?' active':''}" onclick="filterProducts('${allLabel}')">${allLabel}</button>`;
-  const catBtns = catKeys.map(k => {
-    const label = translateCat(k);
-    const isActive = currentFilter === k || currentFilter === label;
-    return `<button class="filter-btn${isActive?' active':''}" onclick="filterProducts('${k}')">${label}</button>`;
-  }).join('');
-  filters.innerHTML = allBtn + catBtns;
-
-  const isAll = currentFilter === allLabel;
-  let filtered = isAll ? products : products.filter(p => p.category === currentFilter || translateCat(p.category) === currentFilter);
-
-  // Arama sorgusu varsa isim/kategori üzerinden filtrele
-  if (currentSearchQuery) {
-    const q = currentSearchQuery;
-    filtered = filtered.filter(p => {
-      const name = (p.name || '') + ' ' + (p.name_en || '') + ' ' + (p.name_de || '');
-      return name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q);
-    });
-  }
-
-  if (filtered.length === 0) {
-    grid.innerHTML = `<div class="no-products">${t('products.empty')}</div>`;
-    return;
-  }
-
-  grid.innerHTML = filtered.map(p => {
-    const name = (currentLang === 'en' && p.name_en) ? p.name_en : (currentLang === 'de' && p.name_de) ? p.name_de : p.name;
-    return `
-    <div class="product-card" onclick="openProductModal(${p.id})" role="button" tabindex="0" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">
-      ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
-      ${p.image 
-        ? `<img class="product-img" src="${p.image}" alt="${name}" loading="lazy">`
-        : `<div class="product-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>`
-      }
-      <div class="product-info">
-        <div class="product-category">${translateCat(p.category)}</div>
-        <div class="product-name">${name}</div>
-        ${p.price ? `<div class="product-price">
-          ${p.oldPrice ? `<span class="old-price">${p.oldPrice} ₺</span>` : ''}
-          ${p.price} ₺
-        </div>` : ''}
-        <span class="product-detail-btn">${t('products.detail')}</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function filterProducts(cat) {
-  // Eğer tümü/all/alle geldiyse allLabel'e normalize et, aksi hâlde TR key sakla
-  const allLabel = t('products.all');
-  currentFilter = (cat === 'Tümü' || cat === 'All' || cat === 'Alle' || cat === allLabel) ? allLabel : cat;
-  currentSearchQuery = '';
-  renderProducts();
-  document.getElementById('urunler').scrollIntoView({ behavior: 'smooth' });
-}
-
-// ══════════ DİNAMİK KATEGORİ KARTLARI ══════════
-// Sadece içinde ürün olan kategoriler kart olarak gösterilir.
-function renderCategories() {
-  const grid = document.getElementById('catGrid');
-  if (!grid) return;
-  const section = document.getElementById('kategoriler');
-  const products = getData(STORAGE_KEYS.products);
-  const s = getSettings();
-
-  // Bilinen kategorilerin sıralaması + görsel/alt başlık eşlemesi
-  const CAT_ORDER = ['Koltuk Takımı','Köşe Takımı','Yatak Odası','Yemek Odası','TV Ünitesi','Genç Odası','Aksesuar'];
-  const META = {
-    'Koltuk Takımı': { imgKey:'sofa',    subKey:'cats.sofa.sub' },
-    'Yatak Odası':   { imgKey:'bedroom', subKey:'cats.bedroom.sub' },
-    'Yemek Odası':   { imgKey:'dining',  subKey:'cats.dining.sub' },
-    'TV Ünitesi':    { imgKey:'tv',      subKey:'cats.tv.sub' },
-    'Köşe Takımı':   { imgKey:'kose' },
-    'Genç Odası':    { imgKey:'genc' },
-    'Aksesuar':      { imgKey:'aksesuar' }
-  };
-  const DEFAULT_BG = {
-    sofa:    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80',
-    bedroom: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80',
-    dining:  'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80',
-    tv:      'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80'
-  };
-
-  // Ürünü olan kategorileri topla
-  const present = {};
-  products.forEach(p => { if (p.category) { (present[p.category] = present[p.category] || []).push(p); } });
-
-  // Önce bilinen sıraya göre, sonra listede olmayan ekstra kategoriler
-  const ordered = CAT_ORDER.filter(c => present[c]);
-  Object.keys(present).forEach(c => { if (!ordered.includes(c)) ordered.push(c); });
-
-  // Hiç ürün yoksa kategori bölümünü tamamen gizle
-  if (ordered.length === 0) { if (section) section.style.display = 'none'; grid.innerHTML = ''; return; }
-  if (section) section.style.display = '';
-
-  const countWord = currentLang === 'en' ? 'products' : currentLang === 'de' ? 'Produkte' : 'ürün';
-
-  grid.innerHTML = ordered.map(cat => {
-    const items = present[cat];
-    const meta = META[cat];
-    // Arka plan: ayarlardaki kategori görseli → kategorideki ilk ürün görseli → varsayılan
-    let bg = '';
-    if (meta && s['catImg_' + meta.imgKey]) bg = s['catImg_' + meta.imgKey];
-    if (!bg) { const withImg = items.find(p => p.image); if (withImg) bg = withImg.image; }
-    if (!bg && meta && DEFAULT_BG[meta.imgKey]) bg = DEFAULT_BG[meta.imgKey];
-    if (!bg) bg = DEFAULT_BG.sofa;
-    const name = translateCat(cat);
-    const sub = (meta && meta.subKey) ? t(meta.subKey) : `${items.length} ${countWord}`;
-    const safeCat = cat.replace(/'/g, "\\'");
-    return `
-      <div class="cat-card" onclick="filterProducts('${safeCat}')">
-        <div class="cat-card-bg" style="background-image:url('${bg}')"></div>
-        <div class="cat-card-content">
-          <h3>${name}</h3>
-          <p>${sub}</p>
-        </div>
-      </div>`;
-  }).join('');
-}
-window.renderCategories = renderCategories;
-
-// ══════════ PRODUCT MODAL ══════════
-let modalGalleryImgs = [];
-let modalGalleryIdx = 0;
-
-function openProductModal(id) {
-  const products = getData(STORAGE_KEYS.products);
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-
-  const settings = getSettings();
-  const wa = settings.whatsapp || '905000000000';
-
-  const name = (currentLang === 'en' && p.name_en) ? p.name_en : (currentLang === 'de' && p.name_de) ? p.name_de : p.name;
-  const desc = (currentLang === 'en' && p.desc_en) ? p.desc_en : (currentLang === 'de' && p.desc_de) ? p.desc_de : (p.desc || t('modal.no-desc'));
-
-  // Build images array (support old single-image products)
-  modalGalleryImgs = (p.images && p.images.length > 0) ? p.images : (p.image ? [p.image] : []);
-  modalGalleryIdx = 0;
-
-  renderModalGallery();
-
-  document.getElementById('modalInfo').innerHTML = `
-    <div class="modal-label">${translateCat(p.category)}</div>
-    <h2>${name}</h2>
-    <div class="modal-divider"></div>
-    ${p.oldPrice ? `<span class="modal-old-price">${p.oldPrice} ₺</span>` : ''}
-    ${p.price ? `<div class="modal-price">${p.price} ₺</div>` : ''}
-    <p class="modal-desc">${desc}</p>
-    <a href="https://wa.me/${wa}?text=${encodeURIComponent('Merhaba, ' + name + ' hakkında bilgi almak istiyorum.')}" target="_blank" class="product-modal-whatsapp">
-      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M16 2C8.28 2 2 8.28 2 16c0 2.46.66 4.86 1.9 6.97L2 30l7.25-1.87A13.94 13.94 0 0016 30c7.72 0 14-6.28 14-14S23.72 2 16 2zm0 25.5a11.44 11.44 0 01-5.84-1.6l-.42-.25-4.3 1.1 1.13-4.17-.28-.44A11.46 11.46 0 014.5 16C4.5 9.6 9.6 4.5 16 4.5S27.5 9.6 27.5 16 22.4 27.5 16 27.5zm6.27-8.57c-.34-.17-2.02-.99-2.33-1.1-.31-.12-.54-.17-.77.17-.23.34-.88 1.1-1.08 1.33-.2.23-.4.26-.74.09-.34-.18-1.44-.53-2.74-1.69-1.01-.9-1.7-2.01-1.9-2.35-.2-.34-.02-.52.15-.69.15-.15.34-.4.51-.6.17-.2.23-.34.34-.57.12-.23.06-.43-.03-.6-.09-.17-.77-1.85-1.05-2.53-.28-.67-.56-.58-.77-.59l-.65-.01c-.23 0-.6.09-.91.43-.31.34-1.19 1.16-1.19 2.83s1.22 3.28 1.39 3.51c.17.23 2.4 3.66 5.81 5.13.81.35 1.44.56 1.93.72.81.26 1.55.22 2.13.13.65-.1 2.02-.82 2.3-1.62.29-.8.29-1.48.2-1.62-.08-.14-.31-.23-.65-.4z"/></svg>
-      ${t('modal.whatsapp')}
-    </a>
-  `;
-
-  document.getElementById('productModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  document.body.style.position = 'fixed';
-  document.body.style.width = '100%';
-}
-
-function renderModalGallery() {
-  const container = document.getElementById('modalImg');
-  if (modalGalleryImgs.length === 0) {
-    container.innerHTML = `<div class="modal-gallery"><div class="modal-gallery-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" width="80" height="80"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div></div>`;
-    return;
-  }
-  const hasMany = modalGalleryImgs.length > 1;
-  container.innerHTML = `
-    <div class="modal-gallery" onclick="openLightbox(${modalGalleryIdx})" title="Büyütmek için tıklayın">
-      <img class="modal-gallery-img" src="${modalGalleryImgs[0]}" id="modalMainImg" alt="ürün görseli">
-      ${hasMany ? `
-        <button class="gallery-nav prev" onclick="event.stopPropagation();changeModalImg(-1)">&#8249;</button>
-        <button class="gallery-nav next" onclick="event.stopPropagation();changeModalImg(1)">&#8250;</button>
-        <div class="gallery-counter" id="galleryCounter">1 / ${modalGalleryImgs.length}</div>
-      ` : ''}
-      <div class="zoom-hint">🔍 BÜYÜTMEK İÇİN TIKLAYIN</div>
-    </div>
-    ${hasMany ? `
-    <div class="gallery-thumbs">
-      ${modalGalleryImgs.map((src, i) => `<img class="gallery-thumb-item${i===0?' active':''}" src="${src}" onclick="goModalImg(${i})" alt="thumb ${i+1}">`).join('')}
-    </div>` : ''}
-  `;
-}
-
-// ══════════ LIGHTBOX (ZOOM) ══════════
-// ── Lightbox zoom state ──
-let lbZoomed = false;
-let lbZoomOrigin = { x: 50, y: 50 };
-
-function openLightbox(startIdx) {
-  const overlay = document.getElementById('lightboxOverlay');
-  overlay.classList.add('open');
-  const lbImg = document.getElementById('lightboxImg');
-  lbImg.src = modalGalleryImgs[startIdx !== undefined ? startIdx : modalGalleryIdx];
-  document.getElementById('lightboxCounter').textContent = modalGalleryImgs.length > 1
-    ? (startIdx !== undefined ? startIdx + 1 : modalGalleryIdx + 1) + ' / ' + modalGalleryImgs.length
-    : '';
-  const hasMany = modalGalleryImgs.length > 1;
-  document.getElementById('lbPrev').style.display = hasMany ? 'flex' : 'none';
-  document.getElementById('lbNext').style.display = hasMany ? 'flex' : 'none';
-  lbResetZoom();
-}
-
-function lbResetZoom() {
-  lbZoomed = false;
-  const lbImg = document.getElementById('lightboxImg');
-  const overlay = document.getElementById('lightboxOverlay');
-  const hint = document.getElementById('lbZoomHint');
-  lbImg.style.transform = 'scale(1)';
-  lbImg.style.transformOrigin = '50% 50%';
-  lbImg.style.cursor = 'zoom-in';
-  overlay.style.cursor = 'zoom-out';
-  lbImg.style.transition = 'transform 0.3s ease';
-  if (hint) hint.style.opacity = '1';
-}
-
-function lbToggleZoom(e) {
-  e.stopPropagation();
-  const lbImg = document.getElementById('lightboxImg');
-  const overlay = document.getElementById('lightboxOverlay');
-  if (lbZoomed) {
-    lbResetZoom();
-  } else {
-    // Tıklanan noktayı merkez al
-    const rect = lbImg.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    lbImg.style.transformOrigin = x + '% ' + y + '%';
-    lbImg.style.transform = 'scale(2.5)';
-    lbImg.style.cursor = 'zoom-out';
-    lbImg.style.transition = 'transform 0.3s ease';
-    overlay.style.cursor = 'default';
-    lbZoomed = true;
-    const hint = document.getElementById('lbZoomHint');
-    if (hint) hint.style.opacity = '0';
-  }
-}
-
-// Zoom sıfırla - görsel değişince
-function lbChangeImg() {
-  lbResetZoom();
-}
-
-// Touch pinch-to-zoom
-(function() {
-  let startDist = 0;
-  let startScale = 1;
-  document.addEventListener('touchstart', function(e) {
-    if (!document.getElementById('lightboxOverlay').classList.contains('open')) return;
-    if (e.touches.length === 2) {
-      startDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const lbImg = document.getElementById('lightboxImg');
-      const m = lbImg.style.transform.match(/scale\(([^)]+)\)/);
-      startScale = m ? parseFloat(m[1]) : 1;
-    }
-  }, { passive: true });
-  document.addEventListener('touchmove', function(e) {
-    if (!document.getElementById('lightboxOverlay').classList.contains('open')) return;
-    if (e.touches.length === 2) {
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const scale = Math.min(Math.max(startScale * (dist / startDist), 1), 4);
-      const lbImg = document.getElementById('lightboxImg');
-      lbImg.style.transition = 'none';
-      lbImg.style.transform = 'scale(' + scale + ')';
-      lbImg.style.transformOrigin = '50% 50%';
-      lbZoomed = scale > 1.1;
-      lbImg.style.cursor = lbZoomed ? 'zoom-out' : 'zoom-in';
-    }
-  }, { passive: true });
+// Önbellekteki ürünler varsa hemen göster (sonra canlı veri günceller)
+(function () {
+  const cached = readLS('vh_products', null);
+  if (Array.isArray(cached) && cached.length) State.products = normalizeProducts(cached);
 })();
 
-function closeLightbox(e) {
-  if (!e || e.target === document.getElementById('lightboxOverlay') || e.currentTarget === document.querySelector('.lightbox-close')) {
-    document.getElementById('lightboxOverlay').classList.remove('open');
-    lbResetZoom();
-  }
+function normalizeProducts(list) {
+  return (list || []).filter(p => p && (p.name || p.name_en || p.name_de)).map(p => {
+    const images = (Array.isArray(p.images) && p.images.length ? p.images : (p.image ? [p.image] : []))
+      .map(safeUrl).filter(Boolean);
+    return Object.assign({}, p, {
+      _key: String(p.id != null ? p.id : p._docId),
+      images,
+      image: images[0] || ''
+    });
+  }).sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
 }
 
-function changeLightboxImg(dir) {
-  lbResetZoom();
-  modalGalleryIdx = (modalGalleryIdx + dir + modalGalleryImgs.length) % modalGalleryImgs.length;
-  const lbImg = document.getElementById('lightboxImg');
-  lbImg.style.opacity = '0';
-  setTimeout(() => {
-    lbImg.src = modalGalleryImgs[modalGalleryIdx];
-    lbImg.style.opacity = '1';
-  }, 120);
-  document.getElementById('lightboxCounter').textContent = (modalGalleryIdx + 1) + ' / ' + modalGalleryImgs.length;
-  updateModalImg();
+function getProducts() { return State.products || []; }
+function getSettings() { return State.settings || {}; }
+function findProduct(key) { return getProducts().find(p => p._key === String(key)); }
+
+function waNumber() {
+  const n = String(getSettings().whatsapp || DEFAULT_WA).replace(/\D/g, '');
+  return n || DEFAULT_WA;
 }
+function waLink(text) { return 'https://wa.me/' + waNumber() + '?text=' + encodeURIComponent(text); }
 
-// Klavye desteği (ESC / sol-sağ ok)
-document.addEventListener('keydown', function(e) {
-  const lb = document.getElementById('lightboxOverlay');
-  if (lb.classList.contains('open')) {
-    if (e.key === 'Escape') lb.classList.remove('open');
-    if (e.key === 'ArrowLeft') changeLightboxImg(-1);
-    if (e.key === 'ArrowRight') changeLightboxImg(1);
-  }
-  if (document.getElementById('productModal').classList.contains('open')) {
-    if (e.key === 'Escape') closeProductModal();
-    if (e.key === 'ArrowLeft' && modalGalleryImgs.length > 1) changeModalImg(-1);
-    if (e.key === 'ArrowRight' && modalGalleryImgs.length > 1) changeModalImg(1);
-  }
-});
-
-function changeModalImg(dir) {
-  modalGalleryIdx = (modalGalleryIdx + dir + modalGalleryImgs.length) % modalGalleryImgs.length;
-  updateModalImg();
-}
-function goModalImg(idx) {
-  modalGalleryIdx = idx;
-  updateModalImg();
-}
-function updateModalImg() {
-  const img = document.getElementById('modalMainImg');
-  if (img) { img.style.opacity = '0'; setTimeout(() => { img.src = modalGalleryImgs[modalGalleryIdx]; img.style.opacity = '1'; }, 150); }
-  const counter = document.getElementById('galleryCounter');
-  if (counter) counter.textContent = (modalGalleryIdx + 1) + ' / ' + modalGalleryImgs.length;
-  document.querySelectorAll('.gallery-thumb-item').forEach((t, i) => t.classList.toggle('active', i === modalGalleryIdx));
-}
-function closeProductModal() {
-  document.getElementById('productModal').classList.remove('open');
-  document.body.style.overflow = '';
-  document.body.style.position = '';
-  document.body.style.width = '';
-}
-document.getElementById('productModal').addEventListener('click', function(e) {
-  if (e.target === this) closeProductModal();
-});
-
-// ══════════ ADMIN PRODUCT LIST ══════════
-
-// ══════════ CATALOG MANAGEMENT ══════════
-let currentCatalogFile = null;
-function handleCatalogFile(input) {
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
-    document.getElementById('catFileName').textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = function(e) { currentCatalogFile = { name: file.name, data: e.target.result }; };
-    reader.readAsDataURL(file);
-  }
-}
-
-
-
-function renderCatalogs() {
-  const catalogs = getData(STORAGE_KEYS.catalogs);
-  const grid = document.getElementById('catalogGrid');
-  if (catalogs.length === 0) {
-    grid.innerHTML = `<div class="catalog-item" style="opacity:0.5">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.5" width="36" height="36"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
-      <h4>${t('catalog.soon')}</h4>
-      <p>Kataloglar yükleniyor...</p>
-    </div>`;
-    return;
-  }
-  grid.innerHTML = catalogs.map(c => `
-    <a class="catalog-item" ${c.file ? `href="${c.file}" download="${c.fileName || c.name + '.pdf'}"` : ''}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.5" width="36" height="36"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-      <h4>${c.name}</h4>
-      <p>${c.file ? t('catalog.download') : c.date}</p>
-    </a>
-  `).join('');
-}
-
-// ══════════ SETTINGS ══════════
-
-
-// ══════════ DİL METİNLERİ (varsayılan) ══════════
+// ══════════ DİL ══════════
 const DEFAULT_TEXTS = {
   tr: { 'nav.home':'Ana Sayfa','nav.categories':'Kategoriler','nav.products':'Ürünler','nav.catalog':'Katalog','nav.about':'Hakkımızda','nav.contact':'İletişim','hero.tagline':'Zarafet ve konforun buluştuğu yer','hero.cta':'Koleksiyonu Keşfet','products.label':'Ürünlerimiz','products.title':'Öne Çıkanlar','products.all':'Tümü','products.detail':'Detay →','products.empty':'Henüz ürün eklenmemiş.','catalog.label':'Dijital Katalog','catalog.title':'Kataloglarımız','catalog.desc':'Tüm koleksiyonlarımızı dijital kataloglarımız üzerinden inceleyebilirsiniz.','catalog.download':'İndirmek için tıklayın','catalog.soon':'Yakında','about.label':'Hakkımızda','about.title':'Evinize Değer Katan Tasarımlar','about.p1':'Velariva Home olarak, yaşam alanlarınızı estetik ve fonksiyonelliğin mükemmel uyumuyla şekillendiriyoruz.','about.p2':'Modern tasarım anlayışımızla, evinizin her köşesine zarafet ve konfor katıyoruz.','about.stat1':'Mutlu Müşteri','about.stat2':'Ürün Çeşidi','about.stat3':'Yıllık Tecrübe','contact.label':'Bize Ulaşın','contact.title':'İletişim','modal.whatsapp':'WhatsApp ile Bilgi Al','modal.no-desc':'Bu ürün hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.','cats.label':'Koleksiyonlar','cats.title':'Kategoriler','cats.sofa':'Koltuk Takımları','cats.sofa.sub':'Konfor ve Şıklık','cats.bedroom':'Yatak Odaları','cats.bedroom.sub':'Huzurlu Uykular','cats.dining':'Yemek Odaları','cats.dining.sub':'Bir Arada Olmak','cats.tv':'TV Üniteleri','cats.tv.sub':'Modern Çizgiler','contact.info.title':'İletişim Bilgileri','contact.address.label':'Adres','contact.phone.label':'Telefon','contact.email.label':'E-Posta','contact.social.label':'Sosyal Medya','contact.form.title':'Mesaj Gönderin','contact.form.send':'Gönder','contact.form.name':'Adınız Soyadınız','contact.form.email':'E-Posta Adresiniz','contact.form.phone':'Telefon Numaranız','contact.form.message':'Mesajınız...','footer.brand.desc':'Zarafet ve konforun buluştuğu yer.','footer.quicklinks':'Hızlı Erişim','footer.categories':'Kategoriler','footer.copyright':'© 2026 Velariva Home — Tüm Hakları Saklıdır.','search.placeholder':'Ürün adı veya kategori ara...','search.no-result':'Sonuç bulunamadı.' },
   en: { 'nav.home':'Home','nav.categories':'Collections','nav.products':'Products','nav.catalog':'Catalog','nav.about':'About Us','nav.contact':'Contact','hero.tagline':'Where elegance meets comfort','hero.cta':'Explore Collection','products.label':'Our Products','products.title':'Featured','products.all':'All','products.detail':'Details →','products.empty':'No products added yet.','catalog.label':'Digital Catalog','catalog.title':'Our Catalogs','catalog.desc':'Browse all our collections through our digital catalogs.','catalog.download':'Click to download','catalog.soon':'Coming Soon','about.label':'About Us','about.title':'Designs That Add Value To Your Home','about.p1':'At Velariva Home, we shape your living spaces.','about.p2':'With our modern design approach we add elegance and comfort.','about.stat1':'Happy Customers','about.stat2':'Product Varieties','about.stat3':'Years of Experience','contact.label':'Reach Us','contact.title':'Contact','modal.whatsapp':'Get Info via WhatsApp','modal.no-desc':'Please contact us for detailed information.','cats.label':'Collections','cats.title':'Categories','cats.sofa':'Sofa Sets','cats.sofa.sub':'Comfort & Style','cats.bedroom':'Bedrooms','cats.bedroom.sub':'Peaceful Nights','cats.dining':'Dining Rooms','cats.dining.sub':'Together at the Table','cats.tv':'TV Units','cats.tv.sub':'Modern Lines','contact.info.title':'Contact Information','contact.address.label':'Address','contact.phone.label':'Phone','contact.email.label':'E-Mail','contact.social.label':'Social Media','contact.form.title':'Send a Message','contact.form.send':'Send','contact.form.name':'Your Full Name','contact.form.email':'Your E-Mail Address','contact.form.phone':'Your Phone Number','contact.form.message':'Your message...','footer.brand.desc':'Where elegance meets comfort.','footer.quicklinks':'Quick Links','footer.categories':'Categories','footer.copyright':'© 2026 Velariva Home — All Rights Reserved.','search.placeholder':'Search by product or category...','search.no-result':'No results found.' },
   de: { 'nav.home':'Startseite','nav.categories':'Kollektionen','nav.products':'Produkte','nav.catalog':'Katalog','nav.about':'Über uns','nav.contact':'Kontakt','hero.tagline':'Wo Eleganz auf Komfort trifft','hero.cta':'Kollektion entdecken','products.label':'Unsere Produkte','products.title':'Highlights','products.all':'Alle','products.detail':'Details →','products.empty':'Noch keine Produkte hinzugefügt.','catalog.label':'Digitaler Katalog','catalog.title':'Unsere Kataloge','catalog.desc':'Entdecken Sie alle Kollektionen in unseren Katalogen.','catalog.download':'Zum Herunterladen klicken','catalog.soon':'Demnächst','about.label':'Über uns','about.title':'Designs die Ihrem Zuhause Wert verleihen','about.p1':'Bei Velariva Home gestalten wir Ihre Wohnräume.','about.p2':'Mit unserem modernen Designansatz bringen wir Eleganz.','about.stat1':'Zufriedene Kunden','about.stat2':'Produktvarianten','about.stat3':'Jahre Erfahrung','contact.label':'Kontakt aufnehmen','contact.title':'Kontakt','modal.whatsapp':'Infos per WhatsApp','modal.no-desc':'Bitte kontaktieren Sie uns für Informationen.','cats.label':'Kollektionen','cats.title':'Kategorien','cats.sofa':'Sofagarnituren','cats.sofa.sub':'Komfort & Stil','cats.bedroom':'Schlafzimmer','cats.bedroom.sub':'Erholsamer Schlaf','cats.dining':'Esszimmer','cats.dining.sub':'Gemeinsam am Tisch','cats.tv':'TV-Einheiten','cats.tv.sub':'Moderne Linien','contact.info.title':'Kontaktinformationen','contact.address.label':'Adresse','contact.phone.label':'Telefon','contact.email.label':'E-Mail','contact.social.label':'Soziale Medien','contact.form.title':'Nachricht senden','contact.form.send':'Senden','contact.form.name':'Ihr vollständiger Name','contact.form.email':'Ihre E-Mail-Adresse','contact.form.phone':'Ihre Telefonnummer','contact.form.message':'Ihre Nachricht...','footer.brand.desc':'Wo Eleganz auf Komfort trifft.','footer.quicklinks':'Schnellzugriff','footer.categories':'Kategorien','footer.copyright':'© 2026 Velariva Home — Alle Rechte vorbehalten.','search.placeholder':'Nach Produkt oder Kategorie suchen...','search.no-result':'Keine Ergebnisse gefunden.' }
 };
 
-let currentLang = localStorage.getItem('vh_lang') || 'tr';
+const EXTRA_TEXTS = {
+  tr: {
+    'products.empty-cat': 'Bu kategoride henüz ürün bulunmuyor.',
+    'products.search-result': 'Arama sonuçları: “{q}”',
+    'products.search-empty': '“{q}” için sonuç bulunamadı.',
+    'products.search-clear': 'Aramayı temizle ×',
+    'catalog.soon.desc': 'Dijital kataloglarımız çok yakında burada.',
+    'gallery.zoom': 'Büyütmek için tıklayın',
+    'gallery.prev': 'Önceki görsel', 'gallery.next': 'Sonraki görsel', 'modal.close': 'Kapat',
+    'wa.product': 'Merhaba, "{name}" hakkında bilgi almak istiyorum.',
+    'wa.general': 'Merhaba, Velariva Home hakkında bilgi almak istiyorum.',
+    'search.aria': 'Ara',
+    'contact.form.sent': 'Mesajınız WhatsApp’ta hazırlandı — göndermek için onaylayın.',
+    'contact.form.note': 'Mesajınız WhatsApp üzerinden doğrudan bize iletilir.',
+    'contact.form.err-name': 'Lütfen adınızı girin.',
+    'contact.form.err-contact': 'Lütfen telefon veya e-posta bilgisi girin.',
+    'contact.form.err-email': 'Lütfen geçerli bir e-posta adresi girin.',
+    'contact.form.err-msg': 'Lütfen mesajınızı yazın.',
+    'contact.form.wa-head': 'Merhaba, web sitenizden yazıyorum.',
+    'contact.form.wa-name': 'Ad Soyad', 'contact.form.wa-phone': 'Telefon', 'contact.form.wa-email': 'E-posta', 'contact.form.wa-msg': 'Mesaj',
+    'popup.blocked': 'WhatsApp açılamadı. Lütfen tarayıcınızın açılır pencere iznini kontrol edin.'
+  },
+  en: {
+    'products.empty-cat': 'There are no products in this category yet.',
+    'products.search-result': 'Search results for “{q}”',
+    'products.search-empty': 'No results found for “{q}”.',
+    'products.search-clear': 'Clear search ×',
+    'catalog.soon.desc': 'Our digital catalogs will be available here soon.',
+    'gallery.zoom': 'Click to zoom',
+    'gallery.prev': 'Previous image', 'gallery.next': 'Next image', 'modal.close': 'Close',
+    'wa.product': 'Hello, I would like to get information about "{name}".',
+    'wa.general': 'Hello, I would like to get information about Velariva Home.',
+    'search.aria': 'Search',
+    'contact.form.sent': 'Your message is ready in WhatsApp — tap send to deliver it.',
+    'contact.form.note': 'Your message is delivered to us directly via WhatsApp.',
+    'contact.form.err-name': 'Please enter your name.',
+    'contact.form.err-contact': 'Please enter a phone number or e-mail address.',
+    'contact.form.err-email': 'Please enter a valid e-mail address.',
+    'contact.form.err-msg': 'Please write your message.',
+    'contact.form.wa-head': 'Hello, I am writing from your website.',
+    'contact.form.wa-name': 'Name', 'contact.form.wa-phone': 'Phone', 'contact.form.wa-email': 'E-mail', 'contact.form.wa-msg': 'Message',
+    'popup.blocked': 'WhatsApp could not be opened. Please allow pop-ups for this site.'
+  },
+  de: {
+    'products.empty-cat': 'In dieser Kategorie gibt es noch keine Produkte.',
+    'products.search-result': 'Suchergebnisse für „{q}“',
+    'products.search-empty': 'Keine Ergebnisse für „{q}“.',
+    'products.search-clear': 'Suche löschen ×',
+    'catalog.soon.desc': 'Unsere digitalen Kataloge sind bald hier verfügbar.',
+    'gallery.zoom': 'Zum Vergrößern klicken',
+    'gallery.prev': 'Vorheriges Bild', 'gallery.next': 'Nächstes Bild', 'modal.close': 'Schließen',
+    'wa.product': 'Hallo, ich möchte Informationen zu „{name}“ erhalten.',
+    'wa.general': 'Hallo, ich möchte Informationen über Velariva Home erhalten.',
+    'search.aria': 'Suchen',
+    'contact.form.sent': 'Ihre Nachricht ist in WhatsApp vorbereitet – bitte zum Senden bestätigen.',
+    'contact.form.note': 'Ihre Nachricht wird uns direkt per WhatsApp übermittelt.',
+    'contact.form.err-name': 'Bitte geben Sie Ihren Namen ein.',
+    'contact.form.err-contact': 'Bitte geben Sie eine Telefonnummer oder E-Mail-Adresse ein.',
+    'contact.form.err-email': 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
+    'contact.form.err-msg': 'Bitte schreiben Sie Ihre Nachricht.',
+    'contact.form.wa-head': 'Hallo, ich schreibe über Ihre Website.',
+    'contact.form.wa-name': 'Name', 'contact.form.wa-phone': 'Telefon', 'contact.form.wa-email': 'E-Mail', 'contact.form.wa-msg': 'Nachricht',
+    'popup.blocked': 'WhatsApp konnte nicht geöffnet werden. Bitte erlauben Sie Pop-ups.'
+  }
+};
 
-function getLangTexts() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('vh_lang_texts') || '{}');
-    const merged = {};
-    ['tr','en','de'].forEach(lang => {
-      merged[lang] = Object.assign({}, DEFAULT_TEXTS[lang], saved[lang] || {});
-    });
-    return merged;
-  } catch { return DEFAULT_TEXTS; }
+const LANGS = ['tr', 'en', 'de'];
+let currentLang = readLS('vh_lang', null);
+if (typeof currentLang !== 'string') { try { currentLang = localStorage.getItem('vh_lang'); } catch (e) {} }
+if (!LANGS.includes(currentLang)) currentLang = 'tr';
+
+function buildLangTexts(savedJson) {
+  let saved = {};
+  try { saved = typeof savedJson === 'string' ? JSON.parse(savedJson || '{}') : (savedJson || {}); } catch (e) { saved = {}; }
+  const merged = {};
+  LANGS.forEach(l => { merged[l] = Object.assign({}, DEFAULT_TEXTS[l], EXTRA_TEXTS[l], saved[l] || {}); });
+  return merged;
+}
+(function () { let raw = null; try { raw = localStorage.getItem('vh_lang_texts'); } catch (e) {} State.langTexts = buildLangTexts(raw); })();
+
+function t(key, vars) {
+  const T = State.langTexts;
+  let s = (T[currentLang] && T[currentLang][key]) || (T.tr && T.tr[key]) || key;
+  if (vars) Object.keys(vars).forEach(k => { s = s.split('{' + k + '}').join(vars[k]); });
+  return s;
 }
 
-function t(key) {
-  const texts = getLangTexts();
-  return (texts[currentLang] && texts[currentLang][key]) || (texts['tr'] && texts['tr'][key]) || key;
+const CAT_TRANSLATIONS = {
+  'Koltuk Takımı': { tr: 'Koltuk Takımı', en: 'Sofa Set', de: 'Sofagarnitur' },
+  'Yatak Odası':   { tr: 'Yatak Odası',   en: 'Bedroom',  de: 'Schlafzimmer' },
+  'Yemek Odası':   { tr: 'Yemek Odası',   en: 'Dining Room', de: 'Esszimmer' },
+  'TV Ünitesi':    { tr: 'TV Ünitesi',    en: 'TV Unit',  de: 'TV-Einheit' },
+  'Köşe Takımı':   { tr: 'Köşe Takımı',   en: 'Corner Sofa', de: 'Ecksofa' },
+  'Genç Odası':    { tr: 'Genç Odası',    en: 'Youth Room', de: 'Jugendzimmer' },
+  'Aksesuar':      { tr: 'Aksesuar',      en: 'Accessory', de: 'Zubehör' }
+};
+function translateCat(trKey) {
+  const map = CAT_TRANSLATIONS[trKey];
+  return map ? (map[currentLang] || map.tr) : (trKey || '');
+}
+function pName(p) { return (currentLang === 'en' && p.name_en) || (currentLang === 'de' && p.name_de) || p.name || p.name_en || p.name_de || ''; }
+function pDesc(p) { return (currentLang === 'en' && p.desc_en) || (currentLang === 'de' && p.desc_de) || p.desc || ''; }
+
+function applyI18n() {
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.getAttribute('data-i18n-placeholder')); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria'))); });
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+  ['productModalClose', 'lbClose'].forEach(id => $(id) && $(id).setAttribute('aria-label', t('modal.close')));
+  $('lbPrev').setAttribute('aria-label', t('gallery.prev'));
+  $('lbNext').setAttribute('aria-label', t('gallery.next'));
+  $('lbZoomHint').textContent = '🔍 ' + t('gallery.zoom');
 }
 
 function setLang(lang) {
+  if (!LANGS.includes(lang)) return;
   currentLang = lang;
-  localStorage.setItem('vh_lang', lang);
-  // Update active buttons
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang));
-  applyI18n();
-  renderProducts();
-  renderCatalogs();
+  writeLS('vh_lang', lang);
+  renderAll();
+  if (Modal.key) renderModalInfo();
 }
 
-function applyI18n() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    el.textContent = t(key);
-  });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const key = el.getAttribute('data-i18n-placeholder');
-    el.placeholder = t(key);
-  });
+// ══════════ TOAST ══════════
+let toastTimer = null;
+function showToast(msg) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
 
+// ══════════ NAVBAR / MOBİL MENÜ ══════════
+window.addEventListener('scroll', () => {
+  $('navbar').classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
 
-// ══════════ INIT ══════════
-renderProducts();
-renderCatalogs();
-applyI18n();
-// Set active lang button on load
-document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === currentLang));
+function setMobileMenu(open) {
+  document.querySelector('.mobile-menu').classList.toggle('open', open);
+  document.querySelector('.mobile-overlay').classList.toggle('open', open);
+  document.querySelector('.hamburger').classList.toggle('open', open);
+  document.querySelector('.hamburger').setAttribute('aria-expanded', open ? 'true' : 'false');
+  document.body.classList.toggle('menu-open', open);
+}
+function toggleMobile() { setMobileMenu(!document.querySelector('.mobile-menu').classList.contains('open')); }
 
-// Kategori arka plan görsellerini settings'ten uygula
-function applyCatImages() {
-  const s = getSettings();
-  const defaults = {
-    sofa: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80',
-    bedroom: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80',
-    dining: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80',
-    tv: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80'
-  };
-  ['sofa','bedroom','dining','tv'].forEach(k => {
-    const el = document.getElementById('catBg_'+k);
-    if (el) el.style.backgroundImage = `url('${s['catImg_'+k] || defaults[k]}')`;
-  });
-  // Hakkımızda görseli
-  const aboutImg = document.getElementById('aboutVisualImg');
-  if (aboutImg) {
-    if (s.aboutImg) {
-      aboutImg.src = s.aboutImg;
-      aboutImg.style.display = 'block';
-    } else {
-      aboutImg.style.display = 'none';
-    }
+// ══════════ ÜRÜNLER ══════════
+let currentFilter = 'all';     // 'all' veya TR kategori anahtarı
+let currentSearchQuery = '';
+
+function productMatches(p, q) {
+  const hay = norm([p.name, p.name_en, p.name_de, p.category, translateCat(p.category),
+    (CAT_TRANSLATIONS[p.category] || {}).en, (CAT_TRANSLATIONS[p.category] || {}).de].join(' '));
+  return norm(q).split(/\s+/).filter(Boolean).every(w => hay.includes(w));
+}
+
+const PLACEHOLDER_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+
+function renderProducts() {
+  const grid = $('productGrid');
+  const filters = $('productFilters');
+  const info = $('productSearchInfo');
+  const products = getProducts();
+
+  // Yükleniyor iskeleti
+  if (!State.loaded && !State.products) {
+    filters.innerHTML = '';
+    info.innerHTML = '';
+    grid.innerHTML = Array.from({ length: 6 }).map(() =>
+      '<div class="product-card skeleton" aria-hidden="true"><div class="sk-img"></div><div class="product-info"><div class="sk-line short"></div><div class="sk-line"></div><div class="sk-line mid"></div></div></div>').join('');
+    grid.setAttribute('aria-busy', 'true');
+    return;
   }
-  // İletişim bilgileri ve istatistikler (site ayarlarından)
-  const setTxt = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
-  setTxt('contactPhone', s.phone);
-  setTxt('contactEmail', s.email);
+  grid.removeAttribute('aria-busy');
+
+  // Filtre butonları
+  const cats = [...new Set(products.map(p => p.category).filter(Boolean))];
+  if (currentFilter !== 'all' && !cats.includes(currentFilter) && !CAT_TRANSLATIONS[currentFilter]) currentFilter = 'all';
+  filters.innerHTML = products.length ? (
+    `<button type="button" class="filter-btn${currentFilter === 'all' ? ' active' : ''}" data-filter="all">${esc(t('products.all'))}</button>` +
+    cats.map(k => `<button type="button" class="filter-btn${currentFilter === k ? ' active' : ''}" data-filter="${esc(k)}">${esc(translateCat(k))}</button>`).join('')
+  ) : '';
+
+  let list = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
+  if (currentSearchQuery) list = list.filter(p => productMatches(p, currentSearchQuery));
+
+  info.innerHTML = currentSearchQuery
+    ? `<span>${esc(t('products.search-result', { q: currentSearchQuery }))}</span><button type="button" class="search-clear" data-action="clear-search">${esc(t('products.search-clear'))}</button>`
+    : '';
+
+  if (!list.length) {
+    const msg = currentSearchQuery ? t('products.search-empty', { q: currentSearchQuery })
+      : (products.length ? t('products.empty-cat') : t('products.empty'));
+    grid.innerHTML = `<div class="no-products">${esc(msg)}</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(p => {
+    const name = esc(pName(p));
+    return `
+    <div class="product-card" data-key="${esc(p._key)}" role="button" tabindex="0" aria-label="${name}">
+      ${p.badge ? `<div class="product-badge">${esc(p.badge)}</div>` : ''}
+      ${p.image
+        ? `<img class="product-img" src="${p.image}" alt="${name}" loading="lazy" decoding="async">`
+        : `<div class="product-placeholder">${PLACEHOLDER_SVG}</div>`}
+      <div class="product-info">
+        <div class="product-category">${esc(translateCat(p.category))}</div>
+        <div class="product-name">${name}</div>
+        ${p.price ? `<div class="product-price">${esc(p.price)} ₺${p.oldPrice ? `<span class="old-price">${esc(p.oldPrice)} ₺</span>` : ''}</div>` : ''}
+        <span class="product-detail-btn">${esc(t('products.detail'))}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterProducts(cat, scroll) {
+  currentFilter = (!cat || cat === 'all') ? 'all' : cat;
+  currentSearchQuery = '';
+  renderProducts();
+  if (scroll) scrollToEl($('urunler'), true);
+}
+
+// ══════════ KATEGORİ KARTLARI + FOOTER KATEGORİLERİ ══════════
+const CAT_ORDER = ['Koltuk Takımı', 'Köşe Takımı', 'Yatak Odası', 'Yemek Odası', 'TV Ünitesi', 'Genç Odası', 'Aksesuar'];
+const CAT_META = {
+  'Koltuk Takımı': { imgKey: 'sofa', subKey: 'cats.sofa.sub' },
+  'Yatak Odası':   { imgKey: 'bedroom', subKey: 'cats.bedroom.sub' },
+  'Yemek Odası':   { imgKey: 'dining', subKey: 'cats.dining.sub' },
+  'TV Ünitesi':    { imgKey: 'tv', subKey: 'cats.tv.sub' },
+  'Köşe Takımı':   { imgKey: 'kose' },
+  'Genç Odası':    { imgKey: 'genc' },
+  'Aksesuar':      { imgKey: 'aksesuar' }
+};
+const DEFAULT_BG = {
+  sofa: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80',
+  bedroom: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80',
+  dining: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80',
+  tv: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80'
+};
+
+function orderedCategories() {
+  const present = {};
+  getProducts().forEach(p => { if (p.category) (present[p.category] = present[p.category] || []).push(p); });
+  const ordered = CAT_ORDER.filter(c => present[c]);
+  Object.keys(present).forEach(c => { if (!ordered.includes(c)) ordered.push(c); });
+  return { ordered, present };
+}
+
+function renderCategories() {
+  const grid = $('catGrid');
+  const section = $('kategoriler');
+  const footer = $('footerCats');
+  const s = getSettings();
+  const { ordered, present } = orderedCategories();
+
+  footer.innerHTML = ordered.map(c => `<a href="#urunler" data-filter-link="${esc(c)}">${esc(translateCat(c))}</a>`).join('');
+  $('footerCatsCol').style.display = ordered.length ? '' : 'none';
+
+  if (!ordered.length) { section.style.display = 'none'; grid.innerHTML = ''; return; }
+  section.style.display = '';
+
+  const countWord = currentLang === 'en' ? 'products' : currentLang === 'de' ? 'Produkte' : 'ürün';
+  grid.innerHTML = ordered.map(cat => {
+    const items = present[cat];
+    const meta = CAT_META[cat];
+    let bg = (meta && safeUrl(s['catImg_' + meta.imgKey])) || '';
+    if (!bg) { const w = items.find(p => p.image); if (w) bg = w.image; }
+    if (!bg) bg = (meta && DEFAULT_BG[meta.imgKey]) || DEFAULT_BG.sofa;
+    const sub = (meta && meta.subKey) ? t(meta.subKey) : `${items.length} ${countWord}`;
+    return `
+      <div class="cat-card" data-cat="${esc(cat)}" role="button" tabindex="0" aria-label="${esc(translateCat(cat))}">
+        <div class="cat-card-bg" style="background-image:url('${bg}')"></div>
+        <div class="cat-card-content"><h3>${esc(translateCat(cat))}</h3><p>${esc(sub)}</p></div>
+      </div>`;
+  }).join('');
+}
+
+// ══════════ KATALOGLAR ══════════
+function renderCatalogs() {
+  const grid = $('catalogGrid');
+  const list = (State.catalogs || []).filter(c => c && c.name);
+  if (!list.length) {
+    grid.innerHTML = `<div class="catalog-item is-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.5" width="36" height="36"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
+      <h4>${esc(t('catalog.soon'))}</h4><p>${esc(t('catalog.soon.desc'))}</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(c => {
+    const file = safeUrl(c.file || c.url);
+    const isData = /^data:/i.test(file);
+    const attrs = file ? (isData ? `href="${file}" download="${esc(c.fileName || c.name + '.pdf')}"` : `href="${file}" target="_blank" rel="noopener"`) : '';
+    return `<a class="catalog-item" ${attrs}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.5" width="36" height="36"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+      <h4>${esc(c.name)}</h4><p>${esc(file ? t('catalog.download') : (c.date || ''))}</p></a>`;
+  }).join('');
+}
+
+// ══════════ SİTE AYARLARI ══════════
+function applySettings() {
+  const s = getSettings();
+  const aboutImg = $('aboutVisualImg');
+  const aboutSrc = safeUrl(s.aboutImg);
+  if (aboutSrc) { aboutImg.src = aboutSrc; aboutImg.style.display = 'block'; }
+  else aboutImg.style.display = 'none';
+
+  const setTxt = (id, val) => { const el = $(id); if (el && val) el.textContent = val; };
   setTxt('contactAddress', s.address);
   setTxt('statNumber1', s.stat1);
   setTxt('statNumber2', s.stat2);
   setTxt('statNumber3', s.stat3);
-  // Kategori görselleri değişmiş olabilir — kartları yeniden çiz
-  if (typeof renderCategories === 'function') renderCategories();
+
+  const phone = $('contactPhone');
+  if (s.phone) { phone.textContent = s.phone; phone.href = 'tel:' + String(s.phone).replace(/[^\d+]/g, ''); }
+  const email = $('contactEmail');
+  if (s.email) { email.textContent = s.email; email.href = 'mailto:' + s.email; }
+
+  $('waFloatBtn').href = waLink(t('wa.general'));
 }
-applyCatImages();
 
-// Expose globals for Firebase module
-window.renderProducts = renderProducts;
-window.renderCatalogs = renderCatalogs;
-window.showToast = showToast;
+// ══════════ HERO ARAMA ══════════
+let searchActiveIdx = -1;
+function heroSearch(val) {
+  const box = $('heroSearchResults');
+  const q = val.trim();
+  searchActiveIdx = -1;
+  if (!q) { box.classList.remove('open'); box.innerHTML = ''; return; }
+  const matched = getProducts().filter(p => productMatches(p, q)).slice(0, 6);
+  box.innerHTML = matched.length ? matched.map(p => {
+    const name = esc(pName(p));
+    return `<div class="hero-search-result-item" role="option" data-key="${esc(p._key)}">
+      ${p.image ? `<img class="hero-search-result-img" src="${p.image}" alt="" loading="lazy">`
+        : `<div class="hero-search-result-img-placeholder"><svg viewBox="0 0 24 24" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>`}
+      <div><div class="hero-search-result-name">${name}</div><div class="hero-search-result-cat">${esc(translateCat(p.category))}</div></div>
+    </div>`;
+  }).join('') : `<div class="hero-search-no-result">${esc(t('search.no-result'))}</div>`;
+  box.classList.add('open');
+}
+function closeSearchBox() { $('heroSearchResults').classList.remove('open'); searchActiveIdx = -1; }
+function heroSearchSelect(key) {
+  closeSearchBox();
+  $('heroSearchInput').value = '';
+  $('heroSearchInput').blur();
+  scrollToEl($('urunler'), false);   // ürünlere anında in, pencere kapanınca kullanıcı oradan devam eder
+  openProductModal(key);
+}
+function heroSearchGo() {
+  const q = $('heroSearchInput').value.trim();
+  if (!q) return;
+  closeSearchBox();
+  $('heroSearchInput').value = '';
+  $('heroSearchInput').blur();
+  currentFilter = 'all';
+  currentSearchQuery = q;
+  renderProducts();
+  scrollToEl($('urunler'), true);
+}
 
-// Firebase bağlandıktan sonra ürünleri yükle (fallback)
-window.addEventListener('load', function() {
-  setTimeout(function() {
-    if (window.loadProductsFromFirebase) {
-      window.loadProductsFromFirebase();
-    } else {
-      // Firebase bağlanmadıysa localStorage'dan göster
-      renderProducts();
-      renderCatalogs();
+// ══════════ ÜRÜN PENCERESİ ══════════
+const Modal = { key: null, imgs: [], idx: 0, scrollY: 0, lastFocus: null };
+
+function lockScroll() {
+  if (document.body.classList.contains('modal-open')) return;
+  Modal.scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+  const sbw = window.innerWidth - document.documentElement.clientWidth;
+  document.body.style.top = '-' + Modal.scrollY + 'px';
+  if (sbw > 0) document.body.style.paddingRight = sbw + 'px';
+  document.body.classList.add('modal-open');
+}
+function unlockScroll() {
+  if (!document.body.classList.contains('modal-open')) return;
+  document.body.classList.remove('modal-open');
+  document.body.style.top = '';
+  document.body.style.paddingRight = '';
+  instantOr(false, () => window.scrollTo(0, Modal.scrollY));
+}
+
+function openProductModal(key) {
+  const p = findProduct(key);
+  if (!p) return;
+  Modal.key = p._key;
+  Modal.imgs = p.images.slice();
+  Modal.idx = 0;
+  Modal.lastFocus = document.activeElement;
+  renderModalGallery();
+  renderModalInfo();
+  lockScroll();
+  const ov = $('productModal');
+  ov.classList.add('open');
+  ov.setAttribute('aria-hidden', 'false');
+  $('modalInfo').scrollTop = 0;
+  setTimeout(() => { try { $('productModalClose').focus({ preventScroll: true }); } catch (e) {} }, 50);
+}
+
+function closeProductModal() {
+  if (!Modal.key) return;
+  closeLightbox();
+  const ov = $('productModal');
+  ov.classList.remove('open');
+  ov.setAttribute('aria-hidden', 'true');
+  Modal.key = null;
+  unlockScroll();
+  const f = Modal.lastFocus;
+  if (f && document.contains(f) && f.focus) { try { f.focus({ preventScroll: true }); } catch (e) {} }
+}
+
+function renderModalInfo() {
+  const p = findProduct(Modal.key);
+  if (!p) return;
+  const name = pName(p);
+  const desc = pDesc(p) || t('modal.no-desc');
+  $('modalInfo').innerHTML = `
+    <div class="modal-label">${esc(translateCat(p.category))}</div>
+    <h2>${esc(name)}</h2>
+    <div class="modal-divider"></div>
+    ${p.oldPrice ? `<span class="modal-old-price">${esc(p.oldPrice)} ₺</span>` : ''}
+    ${p.price ? `<div class="modal-price">${esc(p.price)} ₺</div>` : ''}
+    <p class="modal-desc">${esc(desc).replace(/\n/g, '<br>')}</p>
+    <a href="${waLink(t('wa.product', { name }))}" target="_blank" rel="noopener noreferrer" class="product-modal-whatsapp">
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><use href="#waIconPath"/></svg>
+      ${esc(t('modal.whatsapp'))}
+    </a>`;
+}
+
+function renderModalGallery() {
+  const box = $('modalImg');
+  const imgs = Modal.imgs;
+  if (!imgs.length) {
+    box.innerHTML = `<div class="modal-gallery no-img"><div class="modal-gallery-placeholder">${PLACEHOLDER_SVG}</div></div>`;
+    return;
+  }
+  const many = imgs.length > 1;
+  const name = esc(pName(findProduct(Modal.key) || {}));
+  box.innerHTML = `
+    <div class="modal-gallery" id="modalGallery">
+      <img class="modal-gallery-img" src="${imgs[Modal.idx]}" id="modalMainImg" alt="${name}" draggable="false">
+      ${many ? `
+        <button type="button" class="gallery-nav prev" data-gal="-1" aria-label="${esc(t('gallery.prev'))}">&#8249;</button>
+        <button type="button" class="gallery-nav next" data-gal="1" aria-label="${esc(t('gallery.next'))}">&#8250;</button>
+        <div class="gallery-counter" id="galleryCounter">${Modal.idx + 1} / ${imgs.length}</div>` : ''}
+      <div class="zoom-hint">🔍 ${esc(t('gallery.zoom'))}</div>
+    </div>
+    ${many ? `<div class="gallery-thumbs" id="galleryThumbs">
+      ${imgs.map((src, i) => `<img class="gallery-thumb-item${i === Modal.idx ? ' active' : ''}" src="${src}" data-thumb="${i}" alt="" loading="lazy" draggable="false">`).join('')}
+    </div>` : ''}`;
+  preloadAround();
+}
+
+function preloadAround() {
+  const n = Modal.imgs.length;
+  if (n < 2) return;
+  [1, -1].forEach(d => { const im = new Image(); im.src = Modal.imgs[(Modal.idx + d + n) % n]; });
+}
+
+function goModalImg(i) {
+  const n = Modal.imgs.length;
+  if (!n) return;
+  Modal.idx = ((i % n) + n) % n;
+  const img = $('modalMainImg');
+  if (img) {
+    img.style.opacity = '0';
+    const target = Modal.imgs[Modal.idx];
+    setTimeout(() => { img.src = target; img.style.opacity = '1'; }, 150);
+  }
+  const c = $('galleryCounter');
+  if (c) c.textContent = (Modal.idx + 1) + ' / ' + n;
+  const thumbs = $('galleryThumbs');
+  if (thumbs) {
+    thumbs.querySelectorAll('.gallery-thumb-item').forEach((el, k) => el.classList.toggle('active', k === Modal.idx));
+    const act = thumbs.children[Modal.idx];
+    if (act) {
+      const left = act.offsetLeft - (thumbs.clientWidth - act.offsetWidth) / 2;
+      thumbs.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
     }
-  }, 1000);
+  }
+  preloadAround();
+}
+function changeModalImg(dir) { goModalImg(Modal.idx + dir); }
+
+// ══════════ LIGHTBOX ══════════
+const LB = { open: false, zoomed: false };
+
+function openLightbox() {
+  if (!Modal.imgs.length) return;
+  const ov = $('lightboxOverlay');
+  const many = Modal.imgs.length > 1;
+  $('lbPrev').style.display = many ? 'flex' : 'none';
+  $('lbNext').style.display = many ? 'flex' : 'none';
+  setLightboxImg(false);
+  ov.classList.add('open');
+  ov.setAttribute('aria-hidden', 'false');
+  LB.open = true;
+}
+function setLightboxImg(fade) {
+  const img = $('lightboxImg');
+  const n = Modal.imgs.length;
+  lbResetZoom();
+  const src = Modal.imgs[Modal.idx];
+  if (fade) { img.style.opacity = '0'; setTimeout(() => { img.src = src; img.style.opacity = '1'; }, 120); }
+  else { img.src = src; img.style.opacity = '1'; }
+  $('lightboxCounter').textContent = n > 1 ? (Modal.idx + 1) + ' / ' + n : '';
+  $('lightboxCounter').style.display = n > 1 ? '' : 'none';
+}
+function closeLightbox() {
+  if (!LB.open) return;
+  const ov = $('lightboxOverlay');
+  ov.classList.remove('open');
+  ov.setAttribute('aria-hidden', 'true');
+  LB.open = false;
+  lbResetZoom();
+}
+function changeLightboxImg(dir) {
+  goModalImg(Modal.idx + dir);   // alttaki galeri de senkron kalır
+  setLightboxImg(true);
+}
+function lbResetZoom() {
+  LB.zoomed = false;
+  const img = $('lightboxImg');
+  img.style.transition = 'transform 0.3s ease, opacity 0.2s ease';
+  img.style.transform = 'scale(1)';
+  img.style.transformOrigin = '50% 50%';
+  img.classList.remove('zoomed');
+  $('lbZoomHint').style.opacity = '1';
+}
+function lbSetOrigin(clientX, clientY) {
+  const img = $('lightboxImg');
+  const r = img.getBoundingClientRect();
+  // ölçeklenmiş kutu yerine ölçeksiz kutuya göre hesapla
+  const w = img.offsetWidth, h = img.offsetHeight;
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const x = Math.min(100, Math.max(0, ((clientX - (cx - w / 2)) / w) * 100));
+  const y = Math.min(100, Math.max(0, ((clientY - (cy - h / 2)) / h) * 100));
+  img.style.transformOrigin = x + '% ' + y + '%';
+}
+function lbToggleZoom(e) {
+  const img = $('lightboxImg');
+  if (LB.zoomed) { lbResetZoom(); return; }
+  lbSetOrigin(e.clientX, e.clientY);
+  img.style.transition = 'transform 0.3s ease';
+  img.style.transform = 'scale(2.5)';
+  img.classList.add('zoomed');
+  LB.zoomed = true;
+  $('lbZoomHint').style.opacity = '0';
+}
+
+// ══════════ OLAYLAR (tek merkezden) ══════════
+document.addEventListener('click', e => {
+  const el = e.target;
+
+  // Dil butonları
+  const lb = el.closest('.lang-btn');
+  if (lb) { setLang(lb.dataset.lang); if (lb.closest('.mobile-menu')) setMobileMenu(false); return; }
+
+  // Ürün kartı
+  const card = el.closest('.product-card[data-key]');
+  if (card) { openProductModal(card.dataset.key); return; }
+
+  // Filtre butonları
+  const fb = el.closest('.filter-btn[data-filter]');
+  if (fb) { filterProducts(fb.dataset.filter, false); return; }
+
+  // Kategori kartı
+  const cc = el.closest('.cat-card[data-cat]');
+  if (cc) { filterProducts(cc.dataset.cat, true); return; }
+
+  // Footer kategori linki
+  const fl = el.closest('[data-filter-link]');
+  if (fl) { e.preventDefault(); filterProducts(fl.dataset.filterLink, true); return; }
+
+  // Aramayı temizle
+  if (el.closest('[data-action="clear-search"]')) { currentSearchQuery = ''; renderProducts(); return; }
+
+  // Arama sonucu
+  const sr = el.closest('.hero-search-result-item[data-key]');
+  if (sr) { heroSearchSelect(sr.dataset.key); return; }
+  if (el.closest('#heroSearchBtn')) { heroSearchGo(); return; }
+  if (!el.closest('.hero-search')) closeSearchBox();
+
+  // Ürün penceresi
+  if (el.closest('#productModalClose')) { closeProductModal(); return; }
+  if (el.id === 'productModal') { closeProductModal(); return; }
+  const gn = el.closest('[data-gal]');
+  if (gn) { changeModalImg(Number(gn.dataset.gal)); return; }
+  const th = el.closest('[data-thumb]');
+  if (th) { goModalImg(Number(th.dataset.thumb)); return; }
+  if (el.closest('#modalGallery')) {
+    if (swipe.justSwiped) return;
+    openLightbox(); return;
+  }
+
+  // Lightbox
+  if (el.closest('#lbClose')) { closeLightbox(); return; }
+  if (el.closest('#lbPrev')) { changeLightboxImg(-1); return; }
+  if (el.closest('#lbNext')) { changeLightboxImg(1); return; }
+  if (el.id === 'lightboxImg') { if (!swipe.justSwiped) lbToggleZoom(e); return; }
+  if (el.id === 'lightboxOverlay' || el.id === 'lightboxCounter') { closeLightbox(); return; }
+
+  // Mobil menü
+  if (el.closest('.hamburger') || el.classList.contains('mobile-overlay')) { toggleMobile(); return; }
+
+  // Sayfa içi bağlantılar (navbar yüksekliği kadar boşlukla)
+  const a = el.closest('a[href^="#"]');
+  if (a) {
+    const href = a.getAttribute('href');
+    const target = href.length > 1 ? document.querySelector(href) : null;
+    if (target) { e.preventDefault(); setMobileMenu(false); scrollToEl(target, true); }
+    else if (href === '#') { e.preventDefault(); }
+  }
 });
 
-// Smooth scroll fix for anchors
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', function(e) {
-    const href = this.getAttribute('href');
-    if (href && href !== '#') {
-      e.preventDefault();
-      const target = document.querySelector(href);
-      if (target) {
-        const offset = 80;
-        const y = target.getBoundingClientRect().top + window.pageYOffset - offset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-    }
-  });
+// Klavye
+document.addEventListener('keydown', e => {
+  const tag = (e.target && e.target.tagName) || '';
+  const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+  if (LB.open) {
+    if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); }
+    else if (Modal.imgs.length > 1 && e.key === 'ArrowLeft') { e.preventDefault(); changeLightboxImg(-1); }
+    else if (Modal.imgs.length > 1 && e.key === 'ArrowRight') { e.preventDefault(); changeLightboxImg(1); }
+    return;
+  }
+  if (Modal.key) {
+    if (e.key === 'Escape') { e.preventDefault(); closeProductModal(); }
+    else if (Modal.imgs.length > 1 && e.key === 'ArrowLeft') { e.preventDefault(); changeModalImg(-1); }
+    else if (Modal.imgs.length > 1 && e.key === 'ArrowRight') { e.preventDefault(); changeModalImg(1); }
+    else if (e.key === 'Tab') trapFocus(e);
+    return;
+  }
+  if (e.key === 'Escape' && document.querySelector('.mobile-menu.open')) { setMobileMenu(false); return; }
+  if (typing) return;
+
+  // Kartlarda Enter / Boşluk
+  if (e.key === 'Enter' || e.key === ' ') {
+    const card = e.target.closest && e.target.closest('.product-card[data-key], .cat-card[data-cat]');
+    if (card) { e.preventDefault(); card.click(); }
+  }
 });
-</script>
-<!-- ═══ WHATSAPP FLOATING BUTTON ═══ -->
-<a id="waFloatBtn" href="#" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp ile iletişime geçin" style="
-  position: fixed;
-  bottom: 28px;
-  right: 28px;
-  width: 58px;
-  height: 58px;
-  background: #25d366;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(37,211,102,0.45);
-  z-index: 9000;
-  transition: transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.3s ease;
-  text-decoration: none;
-">
-  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:32px;">
-    <path fill="white" d="M16 2C8.28 2 2 8.28 2 16c0 2.46.66 4.86 1.9 6.97L2 30l7.25-1.87A13.94 13.94 0 0016 30c7.72 0 14-6.28 14-14S23.72 2 16 2zm0 25.5a11.44 11.44 0 01-5.84-1.6l-.42-.25-4.3 1.1 1.13-4.17-.28-.44A11.46 11.46 0 014.5 16C4.5 9.6 9.6 4.5 16 4.5S27.5 9.6 27.5 16 22.4 27.5 16 27.5zm6.27-8.57c-.34-.17-2.02-.99-2.33-1.1-.31-.12-.54-.17-.77.17-.23.34-.88 1.1-1.08 1.33-.2.23-.4.26-.74.09-.34-.18-1.44-.53-2.74-1.69-1.01-.9-1.7-2.01-1.9-2.35-.2-.34-.02-.52.15-.69.15-.15.34-.4.51-.6.17-.2.23-.34.34-.57.12-.23.06-.43-.03-.6-.09-.17-.77-1.85-1.05-2.53-.28-.67-.56-.58-.77-.59l-.65-.01c-.23 0-.6.09-.91.43-.31.34-1.19 1.16-1.19 2.83s1.22 3.28 1.39 3.51c.17.23 2.4 3.66 5.81 5.13.81.35 1.44.56 1.93.72.81.26 1.55.22 2.13.13.65-.1 2.02-.82 2.3-1.62.29-.8.29-1.48.2-1.62-.08-.14-.31-.23-.65-.4z"/>
-  </svg>
-</a>
 
-<style>
-  #waFloatBtn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 28px rgba(37,211,102,0.6);
-  }
-  @media (max-width: 768px) {
-    #waFloatBtn {
-      bottom: 20px;
-      right: 20px;
-      width: 52px;
-      height: 52px;
-    }
-    #waFloatBtn svg {
-      width: 28px;
-      height: 28px;
-    }
-  }
-</style>
+function trapFocus(e) {
+  const f = [...$('productModal').querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])')].filter(x => x.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
 
-<script>
-  (function() {
-    function initWaBtn() {
-      const btn = document.getElementById('waFloatBtn');
-      if (!btn) return;
-      const s = JSON.parse(localStorage.getItem('vh_settings') || '{}');
-      const wa = s.whatsapp || '905000000000';
-      btn.href = 'https://wa.me/' + wa.replace(/\D/g, '') + '?text=' + encodeURIComponent('Merhaba, Velariva Home hakkında bilgi almak istiyorum.');
+// Arama kutusu
+const searchInput = $('heroSearchInput');
+searchInput.addEventListener('input', () => heroSearch(searchInput.value));
+searchInput.addEventListener('focus', () => { if (searchInput.value.trim()) heroSearch(searchInput.value); });
+searchInput.addEventListener('keydown', e => {
+  const items = [...$('heroSearchResults').querySelectorAll('.hero-search-result-item')];
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    if (!items.length) return;
+    e.preventDefault();
+    searchActiveIdx = e.key === 'ArrowDown' ? Math.min(items.length - 1, searchActiveIdx + 1) : Math.max(-1, searchActiveIdx - 1);
+    items.forEach((it, i) => it.classList.toggle('active', i === searchActiveIdx));
+    if (items[searchActiveIdx]) items[searchActiveIdx].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (searchActiveIdx >= 0 && items[searchActiveIdx]) heroSearchSelect(items[searchActiveIdx].dataset.key);
+    else heroSearchGo();
+  } else if (e.key === 'Escape') {
+    closeSearchBox();
+  }
+});
+
+// Bozuk görsel → yer tutucu
+document.addEventListener('error', e => {
+  const img = e.target;
+  if (!img || img.tagName !== 'IMG') return;
+  if (img.classList.contains('product-img')) {
+    const ph = document.createElement('div');
+    ph.className = 'product-placeholder';
+    ph.innerHTML = PLACEHOLDER_SVG;
+    img.replaceWith(ph);
+  } else if (img.classList.contains('hero-search-result-img') || img.classList.contains('gallery-thumb-item')) {
+    img.style.visibility = 'hidden';
+  }
+}, true);
+
+// ══════════ DOKUNMATİK: kaydırma (swipe) + iki parmak yakınlaştırma ══════════
+const swipe = { x: 0, y: 0, t: 0, active: false, justSwiped: false, pinch: false, startDist: 0, startScale: 1 };
+function markSwiped() { swipe.justSwiped = true; setTimeout(() => { swipe.justSwiped = false; }, 350); }
+
+document.addEventListener('touchstart', e => {
+  const inLb = LB.open && e.target.closest('#lightboxOverlay');
+  const inGal = !LB.open && e.target.closest('#modalGallery');
+  if (!inLb && !inGal) { swipe.active = false; return; }
+  if (e.touches.length === 2 && inLb) {
+    swipe.pinch = true; swipe.active = false;
+    swipe.startDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    const m = $('lightboxImg').style.transform.match(/scale\(([^)]+)\)/);
+    swipe.startScale = m ? parseFloat(m[1]) : 1;
+    return;
+  }
+  if (e.touches.length === 1) {
+    swipe.active = true; swipe.pinch = false;
+    swipe.x = e.touches[0].clientX; swipe.y = e.touches[0].clientY; swipe.t = Date.now();
+  }
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+  if (!swipe.pinch || !LB.open || e.touches.length !== 2) return;
+  const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+  const scale = Math.min(Math.max(swipe.startScale * (d / swipe.startDist), 1), 4);
+  const img = $('lightboxImg');
+  img.style.transition = 'none';
+  img.style.transform = 'scale(' + scale + ')';
+  LB.zoomed = scale > 1.05;
+  img.classList.toggle('zoomed', LB.zoomed);
+  $('lbZoomHint').style.opacity = LB.zoomed ? '0' : '1';
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (swipe.pinch) { if (e.touches.length === 0) { swipe.pinch = false; markSwiped(); } return; }
+  if (!swipe.active) return;
+  swipe.active = false;
+  const tch = e.changedTouches[0];
+  const dx = tch.clientX - swipe.x, dy = tch.clientY - swipe.y;
+  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3 && Date.now() - swipe.t < 700 && Modal.imgs.length > 1) {
+    if (LB.open) { if (LB.zoomed) return; changeLightboxImg(dx < 0 ? 1 : -1); }
+    else changeModalImg(dx < 0 ? 1 : -1);
+    markSwiped();
+  }
+}, { passive: true });
+
+// Yakınlaştırılmışken fareyle gezinme
+$('lightboxImg').addEventListener('mousemove', e => {
+  if (!LB.zoomed) return;
+  const img = $('lightboxImg');
+  img.style.transition = 'none';
+  lbSetOrigin(e.clientX, e.clientY);
+});
+
+// ══════════ İLETİŞİM FORMU → WhatsApp ══════════
+$('contactForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target;
+  const name = f.elements.name.value.trim();
+  const email = f.elements.email.value.trim();
+  const phone = f.elements.phone.value.trim();
+  const msg = f.elements.message.value.trim();
+  const errBox = $('contactError');
+  f.querySelectorAll('.invalid').forEach(x => x.classList.remove('invalid'));
+
+  let err = '', bad = null;
+  if (!name) { err = t('contact.form.err-name'); bad = f.elements.name; }
+  else if (!email && !phone) { err = t('contact.form.err-contact'); bad = f.elements.phone; }
+  else if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err = t('contact.form.err-email'); bad = f.elements.email; }
+  else if (!msg) { err = t('contact.form.err-msg'); bad = f.elements.message; }
+  if (err) { errBox.textContent = err; errBox.style.display = 'block'; bad.classList.add('invalid'); bad.focus(); return; }
+  errBox.style.display = 'none';
+
+  const lines = [
+    t('contact.form.wa-head'), '',
+    t('contact.form.wa-name') + ': ' + name,
+    phone ? t('contact.form.wa-phone') + ': ' + phone : '',
+    email ? t('contact.form.wa-email') + ': ' + email : '',
+    '', t('contact.form.wa-msg') + ':', msg
+  ].filter((l, i, arr) => !(l === '' && arr[i - 1] === ''));
+  const w = window.open(waLink(lines.join('\n')), '_blank', 'noopener');
+  if (w === null && !/Mobi|Android|iPhone/i.test(navigator.userAgent)) { showToast(t('popup.blocked')); return; }
+  showToast(t('contact.form.sent'));
+  f.reset();
+});
+
+// ══════════ VERİ GİRİŞ NOKTALARI (Firebase modülü çağırır) ══════════
+function renderAll() {
+  applyI18n();
+  renderCategories();
+  renderProducts();
+  renderCatalogs();
+  applySettings();
+  if (Modal.key && !findProduct(Modal.key)) closeProductModal();
+}
+
+window.VH = {
+  setProducts(list) {
+    State.products = normalizeProducts(list);
+    State.loaded = true;
+    writeLS('vh_products', list);
+    renderCategories();
+    renderProducts();
+    if (Modal.key) {
+      const p = findProduct(Modal.key);
+      if (!p) closeProductModal();
+      else if (!LB.open) { renderModalInfo(); }
     }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initWaBtn);
-    } else {
-      initWaBtn();
-    }
-  })();
+    if ($('heroSearchResults').classList.contains('open')) heroSearch(searchInput.value);
+  },
+  setSettings(data) {
+    State.settings = Object.assign({}, State.settings, data);
+    writeLS('vh_settings', State.settings);
+    applySettings();
+    renderCategories();
+  },
+  setLangTexts(json) {
+    writeLS('vh_lang_texts', json);
+    State.langTexts = buildLangTexts(json);
+    renderAll();
+    if (Modal.key) renderModalInfo();
+  },
+  setCatalogs(list) {
+    State.catalogs = list;
+    writeLS('vh_catalogs', list);
+    renderCatalogs();
+  },
+  dataFailed() {
+    if (State.loaded) return;
+    State.loaded = true;
+    if (!State.products) State.products = [];
+    renderCategories();
+    renderProducts();
+  }
+};
+
+// Bağlantı hiç kurulamazsa sonsuza kadar "yükleniyor" kalmasın
+setTimeout(() => { if (!State.loaded) window.VH.dataFailed(); }, 10000);
+
+// ══════════ BAŞLAT ══════════
+renderAll();
+})();
 </script>
+
+<!-- WhatsApp simgesi (tekrar kullanım için) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <path id="waIconPath" fill="white" d="M16 2C8.28 2 2 8.28 2 16c0 2.46.66 4.86 1.9 6.97L2 30l7.25-1.87A13.94 13.94 0 0016 30c7.72 0 14-6.28 14-14S23.72 2 16 2zm0 25.5a11.44 11.44 0 01-5.84-1.6l-.42-.25-4.3 1.1 1.13-4.17-.28-.44A11.46 11.46 0 014.5 16C4.5 9.6 9.6 4.5 16 4.5S27.5 9.6 27.5 16 22.4 27.5 16 27.5zm6.27-8.57c-.34-.17-2.02-.99-2.33-1.1-.31-.12-.54-.17-.77.17-.23.34-.88 1.1-1.08 1.33-.2.23-.4.26-.74.09-.34-.18-1.44-.53-2.74-1.69-1.01-.9-1.7-2.01-1.9-2.35-.2-.34-.02-.52.15-.69.15-.15.34-.4.51-.6.17-.2.23-.34.34-.57.12-.23.06-.43-.03-.6-.09-.17-.77-1.85-1.05-2.53-.28-.67-.56-.58-.77-.59l-.65-.01c-.23 0-.6.09-.91.43-.31.34-1.19 1.16-1.19 2.83s1.22 3.28 1.39 3.51c.17.23 2.4 3.66 5.81 5.13.81.35 1.44.56 1.93.72.81.26 1.55.22 2.13.13.65-.1 2.02-.82 2.3-1.62.29-.8.29-1.48.2-1.62-.08-.14-.31-.23-.65-.4z"/>
+</defs></svg>
 
 </body>
 </html>
