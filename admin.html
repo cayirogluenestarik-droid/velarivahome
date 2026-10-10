@@ -358,6 +358,21 @@
   .catalog-admin-item h4 { font-size: 14px; margin-bottom: 4px; }
   .catalog-admin-item p { font-size: 12px; color: var(--text-mid); margin-bottom: 10px; }
 
+  /* Kategori isimleri */
+  .cn-item { display:grid; grid-template-columns:200px 1fr; gap:20px; padding:20px 0; border-bottom:1px solid rgba(45,74,46,0.08); }
+  .cn-preview { position:relative; height:150px; background:var(--green-deep); overflow:hidden; }
+  .cn-preview-bg { position:absolute; inset:0; background-size:cover; background-position:center; opacity:.55; }
+  .cn-preview-txt { position:absolute; left:0; right:0; bottom:0; padding:16px 14px 12px; background:linear-gradient(transparent, rgba(45,74,46,0.95)); }
+  .cn-preview-txt h4 { font-family:'Playfair Display',serif; font-size:17px; color:var(--cream); font-weight:500; margin-bottom:3px; }
+  .cn-preview-txt p { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--gold-light); }
+  .cn-id { font-size:10px; letter-spacing:1px; color:var(--text-mid); margin-top:6px; }
+  .cn-row-label { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin:0 0 8px; }
+  .cn-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .cn-grid span { display:block; font-size:10px; color:var(--text-mid); margin-bottom:4px; }
+  .cn-grid input { width:100%; padding:9px 10px; border:1px solid rgba(45,74,46,0.12); background:var(--cream-pale); font-family:'Jost',sans-serif; font-size:13px; outline:none; }
+  .cn-grid input:focus { border-color:var(--gold); background:var(--white); }
+  @media(max-width:800px) { .cn-item { grid-template-columns:1fr; } .cn-grid { grid-template-columns:1fr; } }
+
   /* Lang tab buttons */
   .lang-tab-btn { transition: var(--transition) !important; }
 
@@ -478,6 +493,7 @@
         <button class="mobile-tab-btn active" onclick="switchTab('products', this)">+ Ürün Ekle</button>
         <button class="mobile-tab-btn" onclick="switchTab('productList', this)">Ürün Listesi</button>
         <button class="mobile-tab-btn" onclick="switchTab('catalogs', this)">Katalog</button>
+        <button class="mobile-tab-btn" onclick="switchTab('catNames', this)">🏷️ Kategori İsimleri</button>
         <button class="mobile-tab-btn" onclick="switchTab('langMgmt', this)">🌐 Dil Metinleri</button>
         <button class="mobile-tab-btn" onclick="switchTab('settings', this)">Ayarlar</button>
       </div>
@@ -489,6 +505,7 @@
       <button class="sidebar-btn" onclick="switchTab('productList', this)">Ürün Listesi</button>
       <div class="sidebar-label">İçerik</div>
       <button class="sidebar-btn" onclick="switchTab('catalogs', this)">Katalog</button>
+      <button class="sidebar-btn" onclick="switchTab('catNames', this)">🏷️ Kategori İsimleri</button>
       <button class="sidebar-btn" onclick="switchTab('langMgmt', this)">🌐 Dil Metinleri</button>
       <div class="sidebar-label">Sistem</div>
       <button class="sidebar-btn" onclick="switchTab('settings', this)">Ayarlar</button>
@@ -602,6 +619,16 @@
         <div class="admin-card">
           <h3>Yüklenen Kataloglar</h3>
           <div class="catalog-list-admin" id="adminCatalogList"></div>
+        </div>
+      </div>
+
+      <!-- TAB: Category Names -->
+      <div class="admin-section" id="tabCatNames">
+        <div class="admin-card">
+          <h3>🏷️ Kategori İsimleri</h3>
+          <p style="color:var(--text-mid);font-size:13px;margin-bottom:22px;line-height:1.7;">Sitede görünen kategori adlarını ve kategori görsellerinin üzerindeki alt yazıları buradan değiştirin. Değişiklik kategori kartlarında, filtre butonlarında, ürün kartlarında, ürün penceresinde ve footer'da aynı anda uygulanır. Ürünlerinizi yeniden düzenlemenize gerek yok. Boş bırakılan alan varsayılan metne döner.</p>
+          <div id="catNamesContent"></div>
+          <button class="btn-primary" onclick="saveCatNames()" style="margin-top:8px">Kaydet</button>
         </div>
       </div>
 
@@ -1195,6 +1222,8 @@ function showAdminScreen() {
   loadSettingsIntoForm();
   renderAdminProducts();
   renderAdminCatalogs();
+  if (window.loadLangTextsFirebase) window.loadLangTextsFirebase().then(refreshCatOptions);
+  else refreshCatOptions();
 }
 
 function doLogout() {
@@ -1237,11 +1266,15 @@ function switchTab(tab, btn) {
   document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.mobile-tab-btn').forEach(b => b.classList.remove('active'));
-  const map = { products: 'tabProducts', productList: 'tabProductList', catalogs: 'tabCatalogs', langMgmt: 'tabLangMgmt', settings: 'tabSettings' };
+  const map = { products: 'tabProducts', productList: 'tabProductList', catalogs: 'tabCatalogs', langMgmt: 'tabLangMgmt', catNames: 'tabCatNames', settings: 'tabSettings' };
   document.getElementById(map[tab]).classList.add('active');
   if (btn) btn.classList.add('active');
   if (tab === 'productList') renderAdminProducts();
   if (tab === 'catalogs') renderAdminCatalogs();
+  if (tab === 'catNames') {
+    if (window.loadLangTextsFirebase) { window.loadLangTextsFirebase().then(() => renderCatNames()); }
+    else renderCatNames();
+  }
   if (tab === 'langMgmt') {
     if (window.loadLangTextsFirebase) { window.loadLangTextsFirebase().then(() => renderLangMgmt()); }
     else renderLangMgmt();
@@ -1646,9 +1679,9 @@ async function saveSettings() {
 
 // ══ LANGUAGE MANAGEMENT ══
 const DEFAULT_TEXTS = {
-  tr: { 'nav.home':'Ana Sayfa','nav.categories':'Kategoriler','nav.products':'Ürünler','nav.catalog':'Katalog','nav.about':'Hakkımızda','nav.contact':'İletişim','hero.tagline':'Zarafet ve konforun buluştuğu yer','hero.cta':'Koleksiyonu Keşfet','products.label':'Ürünlerimiz','products.title':'Öne Çıkanlar','products.all':'Tümü','products.detail':'Detay →','products.empty':'Henüz ürün eklenmemiş.','catalog.label':'Dijital Katalog','catalog.title':'Kataloglarımız','catalog.desc':'Tüm koleksiyonlarımızı dijital kataloglarımız üzerinden inceleyebilirsiniz.','catalog.download':'İndirmek için tıklayın','catalog.soon':'Yakında','about.label':'Hakkımızda','about.title':'Evinize Değer Katan Tasarımlar','about.p1':'Velariva Home olarak, yaşam alanlarınızı estetik ve fonksiyonelliğin mükemmel uyumuyla şekillendiriyoruz.','about.p2':'Modern tasarım anlayışımızla, evinizin her köşesine zarafet ve konfor katıyoruz.','about.stat1':'Mutlu Müşteri','about.stat2':'Ürün Çeşidi','about.stat3':'Yıllık Tecrübe','contact.label':'Bize Ulaşın','contact.title':'İletişim','modal.whatsapp':'WhatsApp ile Bilgi Al','modal.no-desc':'Bu ürün hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.','cats.label':'Koleksiyonlar','cats.title':'Kategoriler','cats.sofa':'Koltuk Takımları','cats.sofa.sub':'Konfor ve Şıklık','cats.bedroom':'Yatak Odaları','cats.bedroom.sub':'Huzurlu Uykular','cats.dining':'Yemek Odaları','cats.dining.sub':'Bir Arada Olmak','cats.tv':'TV Üniteleri','cats.tv.sub':'Modern Çizgiler','contact.info.title':'İletişim Bilgileri','contact.address.label':'Adres','contact.phone.label':'Telefon','contact.email.label':'E-Posta','contact.social.label':'Sosyal Medya','contact.form.title':'Mesaj Gönderin','contact.form.send':'Gönder','contact.form.name':'Adınız Soyadınız','contact.form.email':'E-Posta Adresiniz','contact.form.phone':'Telefon Numaranız','contact.form.message':'Mesajınız...','footer.brand.desc':'Zarafet ve konforun buluştuğu yer.','footer.quicklinks':'Hızlı Erişim','footer.categories':'Kategoriler','footer.copyright':'© 2026 Velariva Home — Tüm Hakları Saklıdır.','search.placeholder':'Ürün adı veya kategori ara...','search.no-result':'Sonuç bulunamadı.' },
-  en: { 'nav.home':'Home','nav.categories':'Collections','nav.products':'Products','nav.catalog':'Catalog','nav.about':'About Us','nav.contact':'Contact','hero.tagline':'Where elegance meets comfort','hero.cta':'Explore Collection','products.label':'Our Products','products.title':'Featured','products.all':'All','products.detail':'Details →','products.empty':'No products added yet.','catalog.label':'Digital Catalog','catalog.title':'Our Catalogs','catalog.desc':'Browse all our collections through our digital catalogs.','catalog.download':'Click to download','catalog.soon':'Coming Soon','about.label':'About Us','about.title':'Designs That Add Value To Your Home','about.p1':'At Velariva Home, we shape your living spaces.','about.p2':'With our modern design approach we add elegance and comfort.','about.stat1':'Happy Customers','about.stat2':'Product Varieties','about.stat3':'Years of Experience','contact.label':'Reach Us','contact.title':'Contact','modal.whatsapp':'Get Info via WhatsApp','modal.no-desc':'Please contact us for detailed information.','cats.label':'Collections','cats.title':'Categories','cats.sofa':'Sofa Sets','cats.sofa.sub':'Comfort & Style','cats.bedroom':'Bedrooms','cats.bedroom.sub':'Peaceful Nights','cats.dining':'Dining Rooms','cats.dining.sub':'Together at the Table','cats.tv':'TV Units','cats.tv.sub':'Modern Lines','contact.info.title':'Contact Information','contact.address.label':'Address','contact.phone.label':'Phone','contact.email.label':'E-Mail','contact.social.label':'Social Media','contact.form.title':'Send a Message','contact.form.send':'Send','contact.form.name':'Your Full Name','contact.form.email':'Your E-Mail Address','contact.form.phone':'Your Phone Number','contact.form.message':'Your message...','footer.brand.desc':'Where elegance meets comfort.','footer.quicklinks':'Quick Links','footer.categories':'Categories','footer.copyright':'© 2026 Velariva Home — All Rights Reserved.','search.placeholder':'Search by product or category...','search.no-result':'No results found.' },
-  de: { 'nav.home':'Startseite','nav.categories':'Kollektionen','nav.products':'Produkte','nav.catalog':'Katalog','nav.about':'Über uns','nav.contact':'Kontakt','hero.tagline':'Wo Eleganz auf Komfort trifft','hero.cta':'Kollektion entdecken','products.label':'Unsere Produkte','products.title':'Highlights','products.all':'Alle','products.detail':'Details →','products.empty':'Noch keine Produkte hinzugefügt.','catalog.label':'Digitaler Katalog','catalog.title':'Unsere Kataloge','catalog.desc':'Entdecken Sie alle Kollektionen in unseren Katalogen.','catalog.download':'Zum Herunterladen klicken','catalog.soon':'Demnächst','about.label':'Über uns','about.title':'Designs die Ihrem Zuhause Wert verleihen','about.p1':'Bei Velariva Home gestalten wir Ihre Wohnräume.','about.p2':'Mit unserem modernen Designansatz bringen wir Eleganz.','about.stat1':'Zufriedene Kunden','about.stat2':'Produktvarianten','about.stat3':'Jahre Erfahrung','contact.label':'Kontakt aufnehmen','contact.title':'Kontakt','modal.whatsapp':'Infos per WhatsApp','modal.no-desc':'Bitte kontaktieren Sie uns für Informationen.','cats.label':'Kollektionen','cats.title':'Kategorien','cats.sofa':'Sofagarnituren','cats.sofa.sub':'Komfort & Stil','cats.bedroom':'Schlafzimmer','cats.bedroom.sub':'Erholsamer Schlaf','cats.dining':'Esszimmer','cats.dining.sub':'Gemeinsam am Tisch','cats.tv':'TV-Einheiten','cats.tv.sub':'Moderne Linien','contact.info.title':'Kontaktinformationen','contact.address.label':'Adresse','contact.phone.label':'Telefon','contact.email.label':'E-Mail','contact.social.label':'Soziale Medien','contact.form.title':'Nachricht senden','contact.form.send':'Senden','contact.form.name':'Ihr vollständiger Name','contact.form.email':'Ihre E-Mail-Adresse','contact.form.phone':'Ihre Telefonnummer','contact.form.message':'Ihre Nachricht...','footer.brand.desc':'Wo Eleganz auf Komfort trifft.','footer.quicklinks':'Schnellzugriff','footer.categories':'Kategorien','footer.copyright':'© 2026 Velariva Home — Alle Rechte vorbehalten.','search.placeholder':'Nach Produkt oder Kategorie suchen...','search.no-result':'Keine Ergebnisse gefunden.' }
+  tr: { 'nav.home':'Ana Sayfa','nav.categories':'Kategoriler','nav.products':'Ürünler','nav.catalog':'Katalog','nav.about':'Hakkımızda','nav.contact':'İletişim','hero.tagline':'Zarafet ve konforun buluştuğu yer','hero.cta':'Koleksiyonu Keşfet','products.label':'Ürünlerimiz','products.title':'Öne Çıkanlar','products.all':'Tümü','products.detail':'Detay →','products.empty':'Henüz ürün eklenmemiş.','catalog.label':'Dijital Katalog','catalog.title':'Kataloglarımız','catalog.desc':'Tüm koleksiyonlarımızı dijital kataloglarımız üzerinden inceleyebilirsiniz.','catalog.download':'İndirmek için tıklayın','catalog.soon':'Yakında','about.label':'Hakkımızda','about.title':'Evinize Değer Katan Tasarımlar','about.p1':'Velariva Home olarak, yaşam alanlarınızı estetik ve fonksiyonelliğin mükemmel uyumuyla şekillendiriyoruz.','about.p2':'Modern tasarım anlayışımızla, evinizin her köşesine zarafet ve konfor katıyoruz.','about.stat1':'Mutlu Müşteri','about.stat2':'Ürün Çeşidi','about.stat3':'Yıllık Tecrübe','contact.label':'Bize Ulaşın','contact.title':'İletişim','modal.whatsapp':'WhatsApp ile Bilgi Al','modal.no-desc':'Bu ürün hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.','cats.label':'Koleksiyonlar','cats.title':'Kategoriler','cats.sofa':'Koltuk Takımları','cats.sofa.sub':'Konfor ve Şıklık','cats.bedroom':'Yatak Odaları','cats.bedroom.sub':'Huzurlu Uykular','cats.dining':'Yemek Odaları','cats.dining.sub':'Bir Arada Olmak','cats.tv':'TV Üniteleri','cats.tv.sub':'Modern Çizgiler','cats.kose':'Köşe Takımları','cats.kose.sub':'Geniş Oturum Alanları','cats.genc':'Genç Odaları','cats.genc.sub':'Genç ve Dinamik','cats.aksesuar':'Aksesuarlar','cats.aksesuar.sub':'Detaylarda Zarafet','contact.info.title':'İletişim Bilgileri','contact.address.label':'Adres','contact.phone.label':'Telefon','contact.email.label':'E-Posta','contact.social.label':'Sosyal Medya','contact.form.title':'Mesaj Gönderin','contact.form.send':'Gönder','contact.form.name':'Adınız Soyadınız','contact.form.email':'E-Posta Adresiniz','contact.form.phone':'Telefon Numaranız','contact.form.message':'Mesajınız...','footer.brand.desc':'Zarafet ve konforun buluştuğu yer.','footer.quicklinks':'Hızlı Erişim','footer.categories':'Kategoriler','footer.copyright':'© 2026 Velariva Home — Tüm Hakları Saklıdır.','search.placeholder':'Ürün adı veya kategori ara...','search.no-result':'Sonuç bulunamadı.' },
+  en: { 'nav.home':'Home','nav.categories':'Collections','nav.products':'Products','nav.catalog':'Catalog','nav.about':'About Us','nav.contact':'Contact','hero.tagline':'Where elegance meets comfort','hero.cta':'Explore Collection','products.label':'Our Products','products.title':'Featured','products.all':'All','products.detail':'Details →','products.empty':'No products added yet.','catalog.label':'Digital Catalog','catalog.title':'Our Catalogs','catalog.desc':'Browse all our collections through our digital catalogs.','catalog.download':'Click to download','catalog.soon':'Coming Soon','about.label':'About Us','about.title':'Designs That Add Value To Your Home','about.p1':'At Velariva Home, we shape your living spaces.','about.p2':'With our modern design approach we add elegance and comfort.','about.stat1':'Happy Customers','about.stat2':'Product Varieties','about.stat3':'Years of Experience','contact.label':'Reach Us','contact.title':'Contact','modal.whatsapp':'Get Info via WhatsApp','modal.no-desc':'Please contact us for detailed information.','cats.label':'Collections','cats.title':'Categories','cats.sofa':'Sofa Sets','cats.sofa.sub':'Comfort & Style','cats.bedroom':'Bedrooms','cats.bedroom.sub':'Peaceful Nights','cats.dining':'Dining Rooms','cats.dining.sub':'Together at the Table','cats.tv':'TV Units','cats.tv.sub':'Modern Lines','cats.kose':'Corner Sofas','cats.kose.sub':'Spacious Seating','cats.genc':'Youth Rooms','cats.genc.sub':'Young & Dynamic','cats.aksesuar':'Accessories','cats.aksesuar.sub':'Elegance in Details','contact.info.title':'Contact Information','contact.address.label':'Address','contact.phone.label':'Phone','contact.email.label':'E-Mail','contact.social.label':'Social Media','contact.form.title':'Send a Message','contact.form.send':'Send','contact.form.name':'Your Full Name','contact.form.email':'Your E-Mail Address','contact.form.phone':'Your Phone Number','contact.form.message':'Your message...','footer.brand.desc':'Where elegance meets comfort.','footer.quicklinks':'Quick Links','footer.categories':'Categories','footer.copyright':'© 2026 Velariva Home — All Rights Reserved.','search.placeholder':'Search by product or category...','search.no-result':'No results found.' },
+  de: { 'nav.home':'Startseite','nav.categories':'Kollektionen','nav.products':'Produkte','nav.catalog':'Katalog','nav.about':'Über uns','nav.contact':'Kontakt','hero.tagline':'Wo Eleganz auf Komfort trifft','hero.cta':'Kollektion entdecken','products.label':'Unsere Produkte','products.title':'Highlights','products.all':'Alle','products.detail':'Details →','products.empty':'Noch keine Produkte hinzugefügt.','catalog.label':'Digitaler Katalog','catalog.title':'Unsere Kataloge','catalog.desc':'Entdecken Sie alle Kollektionen in unseren Katalogen.','catalog.download':'Zum Herunterladen klicken','catalog.soon':'Demnächst','about.label':'Über uns','about.title':'Designs die Ihrem Zuhause Wert verleihen','about.p1':'Bei Velariva Home gestalten wir Ihre Wohnräume.','about.p2':'Mit unserem modernen Designansatz bringen wir Eleganz.','about.stat1':'Zufriedene Kunden','about.stat2':'Produktvarianten','about.stat3':'Jahre Erfahrung','contact.label':'Kontakt aufnehmen','contact.title':'Kontakt','modal.whatsapp':'Infos per WhatsApp','modal.no-desc':'Bitte kontaktieren Sie uns für Informationen.','cats.label':'Kollektionen','cats.title':'Kategorien','cats.sofa':'Sofagarnituren','cats.sofa.sub':'Komfort & Stil','cats.bedroom':'Schlafzimmer','cats.bedroom.sub':'Erholsamer Schlaf','cats.dining':'Esszimmer','cats.dining.sub':'Gemeinsam am Tisch','cats.tv':'TV-Einheiten','cats.tv.sub':'Moderne Linien','cats.kose':'Ecksofas','cats.kose.sub':'Großzügiges Sitzen','cats.genc':'Jugendzimmer','cats.genc.sub':'Jung & Dynamisch','cats.aksesuar':'Accessoires','cats.aksesuar.sub':'Eleganz im Detail','contact.info.title':'Kontaktinformationen','contact.address.label':'Adresse','contact.phone.label':'Telefon','contact.email.label':'E-Mail','contact.social.label':'Soziale Medien','contact.form.title':'Nachricht senden','contact.form.send':'Senden','contact.form.name':'Ihr vollständiger Name','contact.form.email':'Ihre E-Mail-Adresse','contact.form.phone':'Ihre Telefonnummer','contact.form.message':'Ihre Nachricht...','footer.brand.desc':'Wo Eleganz auf Komfort trifft.','footer.quicklinks':'Schnellzugriff','footer.categories':'Kategorien','footer.copyright':'© 2026 Velariva Home — Alle Rechte vorbehalten.','search.placeholder':'Nach Produkt oder Kategorie suchen...','search.no-result':'Keine Ergebnisse gefunden.' }
 };
 
 const LANG_LABELS = {
@@ -1659,7 +1692,6 @@ const LANG_LABELS = {
   'contact.label':'İletişim — Üst Etiket','contact.title':'İletişim — Başlık',
   'modal.whatsapp':'Modal — WhatsApp Butonu','modal.no-desc':'Modal — Varsayılan Açıklama',
   'cats.label':'Kategoriler — Üst Etiket','cats.title':'Kategoriler — Başlık',
-  'cats.sofa':'Koltuk Takımları','cats.sofa.sub':'Koltuk — Alt Başlık','cats.bedroom':'Yatak Odaları','cats.bedroom.sub':'Yatak Odası — Alt Başlık','cats.dining':'Yemek Odaları','cats.dining.sub':'Yemek Odası — Alt Başlık','cats.tv':'TV Üniteleri','cats.tv.sub':'TV — Alt Başlık',
   'contact.info.title':'İletişim — Başlık','contact.address.label':'Adres Etiketi','contact.phone.label':'Telefon Etiketi','contact.email.label':'E-Posta Etiketi','contact.social.label':'Sosyal Medya Etiketi',
   'contact.form.title':'Form — Başlık','contact.form.send':'Form — Gönder Butonu','contact.form.name':'Form — Ad Placeholder','contact.form.email':'Form — E-Posta Placeholder','contact.form.phone':'Form — Telefon Placeholder','contact.form.message':'Form — Mesaj Placeholder',
   'footer.brand.desc':'Footer — Marka Açıklaması','footer.quicklinks':'Footer — Hızlı Erişim','footer.categories':'Footer — Kategoriler','footer.copyright':'Footer — Telif Hakkı',
@@ -1701,18 +1733,117 @@ function renderLangMgmt() {
   });
 }
 
-function saveLangTexts() {
-  const keys = Object.keys(LANG_LABELS);
-  const saved = { tr:{}, en:{}, de:{} };
-  keys.forEach(key => {
+// Kaydedilmiş dil metinlerini okur; yalnızca verilen anahtarları günceller (diğer sekmenin metinleri silinmez)
+function readSavedLang() {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('vh_lang_texts') || '{}') || {}; } catch { saved = {}; }
+  ['tr','en','de'].forEach(l => { if (!saved[l] || typeof saved[l] !== 'object') saved[l] = {}; });
+  return saved;
+}
+async function saveLangKeys(values) {
+  if (window.loadLangTextsFirebase) await window.loadLangTextsFirebase();
+  const saved = readSavedLang();
+  Object.keys(values).forEach(lang => Object.keys(values[lang]).forEach(k => {
+    const v = values[lang][k];
+    if (v) saved[lang][k] = v; else delete saved[lang][k];
+  }));
+  localStorage.setItem('vh_lang_texts', JSON.stringify(saved));
+  return window.saveLangTextsFirebase ? await window.saveLangTextsFirebase(saved) : true;
+}
+
+async function saveLangTexts() {
+  const vals = { tr:{}, en:{}, de:{} };
+  Object.keys(LANG_LABELS).forEach(key => {
     ['tr','en','de'].forEach(lang => {
       const el = document.getElementById('lt_'+lang+'_'+key.replace(/\./g,'_'));
-      if (el && el.value.trim()) saved[lang][key] = el.value.trim();
+      if (el) vals[lang][key] = el.value.trim();
     });
   });
-  localStorage.setItem('vh_lang_texts', JSON.stringify(saved));
-  if (window.saveLangTextsFirebase) { window.saveLangTextsFirebase(saved); }
-  showToast('✅ Dil metinleri kaydedildi!');
+  const ok = await saveLangKeys(vals);
+  showToast(ok ? '✅ Dil metinleri kaydedildi!' : '⚠️ Firebase\'e kaydedilemedi (yerel kaydedildi).');
+}
+
+// ══ KATEGORİ İSİMLERİ ══
+// value = ürünlerde saklanan sabit kimlik (değişmez), key = dil metni anahtarı
+const CAT_DEFS = [
+  { value:'Koltuk Takımı', key:'sofa' },
+  { value:'Köşe Takımı',   key:'kose' },
+  { value:'Yatak Odası',   key:'bedroom' },
+  { value:'Yemek Odası',   key:'dining' },
+  { value:'TV Ünitesi',    key:'tv' },
+  { value:'Genç Odası',    key:'genc' },
+  { value:'Aksesuar',      key:'aksesuar' }
+];
+const DEFAULT_CAT_IMG = {
+  sofa: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80',
+  bedroom: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80',
+  dining: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80',
+  tv: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80'
+};
+
+function catPreviewImg(key, value) {
+  const s = getSettings();
+  if (s['catImg_'+key]) return s['catImg_'+key];
+  const p = getData(STORAGE_KEYS.products).find(x => x.category === value && x.image);
+  return p ? p.image : (DEFAULT_CAT_IMG[key] || DEFAULT_CAT_IMG.sofa);
+}
+
+function renderCatNames() {
+  const texts = getLangTexts();
+  const flags = { tr:'🇹🇷 TR', en:'🇬🇧 EN', de:'🇩🇪 DE' };
+  const box = document.getElementById('catNamesContent');
+  box.innerHTML = CAT_DEFS.map(c => {
+    const field = (kind, id) => `<div class="cn-grid">${['tr','en','de'].map(l =>
+      `<div><span>${flags[l]}</span><input type="text" id="cn_${kind}_${l}_${c.key}" data-cn="${c.key}" data-lang="${l}" data-kind="${kind}"></div>`).join('')}</div>`;
+    return `<div class="cn-item">
+      <div>
+        <div class="cn-preview"><div class="cn-preview-bg" style="background-image:url('${catPreviewImg(c.key, c.value)}')"></div>
+          <div class="cn-preview-txt"><h4 id="cnPrevName_${c.key}"></h4><p id="cnPrevSub_${c.key}"></p></div></div>
+        <div class="cn-id">Sistem kimliği: ${c.value}</div>
+      </div>
+      <div>
+        <div class="cn-row-label">Kategori Adı</div>${field('name')}
+        <div class="cn-row-label">Görsel Üstü Alt Yazı</div>${field('sub')}
+      </div>
+    </div>`;
+  }).join('');
+  CAT_DEFS.forEach(c => ['tr','en','de'].forEach(l => {
+    document.getElementById(`cn_name_${l}_${c.key}`).value = (texts[l] && texts[l]['cats.'+c.key]) || '';
+    document.getElementById(`cn_sub_${l}_${c.key}`).value  = (texts[l] && texts[l]['cats.'+c.key+'.sub']) || '';
+  }));
+  CAT_DEFS.forEach(c => updateCatPreview(c.key));
+}
+
+function updateCatPreview(key) {
+  const v = (kind) => (document.getElementById(`cn_${kind}_tr_${key}`)?.value || '').trim();
+  const def = CAT_DEFS.find(c => c.key === key);
+  document.getElementById('cnPrevName_'+key).textContent = v('name') || DEFAULT_TEXTS.tr['cats.'+key] || def.value;
+  document.getElementById('cnPrevSub_'+key).textContent = v('sub') || DEFAULT_TEXTS.tr['cats.'+key+'.sub'] || '';
+}
+document.addEventListener('input', e => {
+  if (e.target.dataset && e.target.dataset.cn && e.target.dataset.lang === 'tr') updateCatPreview(e.target.dataset.cn);
+});
+
+async function saveCatNames() {
+  const vals = { tr:{}, en:{}, de:{} };
+  CAT_DEFS.forEach(c => ['tr','en','de'].forEach(l => {
+    vals[l]['cats.'+c.key] = document.getElementById(`cn_name_${l}_${c.key}`).value.trim();
+    vals[l]['cats.'+c.key+'.sub'] = document.getElementById(`cn_sub_${l}_${c.key}`).value.trim();
+  }));
+  showToast('⏳ Kaydediliyor...');
+  const ok = await saveLangKeys(vals);
+  renderCatNames();
+  refreshCatOptions();
+  showToast(ok ? '✅ Kategori isimleri kaydedildi — sitede hemen görünür.' : '⚠️ Firebase\'e kaydedilemedi (yerel kaydedildi).');
+}
+
+// Ürün formlarındaki kategori listesinde de yeni (TR) adları göster — değer sabit kalır
+function refreshCatOptions() {
+  const texts = getLangTexts();
+  document.querySelectorAll('#pCategory option, #eCategory option').forEach(o => {
+    const c = CAT_DEFS.find(x => x.value === o.value);
+    if (c) o.textContent = (texts.tr && texts.tr['cats.'+c.key]) || c.value;
+  });
 }
 
 // ══ INIT ══
